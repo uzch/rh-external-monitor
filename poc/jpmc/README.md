@@ -4,9 +4,9 @@
 Demonstrate that external account events can be filtered, interpreted through a Red Hat lens, ranked, and delivered as concise seller-ready actions.
 
 ## Open these first
-1. `First_PoC_TLDR_and_Design.docx`
+1. `First_PoC_Visuals_and_Build_Blueprint.md`
 2. `JPMC_Account_Pulse_First_PoC.xlsx`
-3. `visuals/First_PoC_Flow_Visual.png`
+3. `First_PoC_Flow_Visual.png`
 
 ## What this POC proves
 - A high-volume external information set can be filtered into a small set of seller-relevant signals.
