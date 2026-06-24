@@ -12,7 +12,7 @@ External account news is high-volume and noisy. Sellers need a concise view of w
 
 ## Start here
 1. [Project overview](docs/project-overview.md)
-2. [JPMC first POC](docs/poc/jpmc/README.md)
+2. [JPMC first POC](poc/jpmc/README.md)
 3. [Internship roadmap](docs/roadmap/internship-roadmap.md)
 4. [Product requirements](docs/product/product-requirements.md)
 
