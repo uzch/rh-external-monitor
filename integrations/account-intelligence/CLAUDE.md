@@ -1,20 +1,5 @@
-# Claude CLI Instructions
+# Claude CLI entry point
 
-Use this bundle exactly as an agent-neutral workflow. Do not replace the People.ai source skills with improvised API behavior.
+Follow the repository-wide instructions in [`../../AGENTS.md`](../../AGENTS.md) and the bundle-specific workflow in [`AGENTS.md`](AGENTS.md). This file only identifies the Claude CLI entry point so Claude and Codex use the same behavior.
 
-## Entry point
-
-Read:
-
-1. `README.md`
-2. `AGENTS.md`
-3. `skills/external-monitor-account-intelligence/SKILL.md`
-
-When a task requires People.ai Query API behavior, load `skills/people-ai/sales-data-explorer/SKILL.md` and its referenced catalogs. When a task requires Backstory MCP, load `skills/people-ai/sales-insights/SKILL.md` and its MCP behavior reference.
-
-## Output discipline
-
-- Produce the portfolio JSON contract first.
-- Validate it before rendering.
-- Preserve evidence, provenance, missing values, and ambiguity.
-- Do not expose secrets in command output or generated files.
+Start with `README.md`, then the orchestration skill and output contract. Load People.ai source skills only for the capability being executed. Produce and validate the portfolio JSON contract before rendering HTML or mapping it to Sheets.
