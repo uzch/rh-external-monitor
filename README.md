@@ -44,7 +44,7 @@ The sources remain separate in output. Missing data stays null with a caveat. Am
 
 ## Current limitations
 
-- This repository is an agent-agnostic integration bundle, not a deployed web application or service.
+- This repository is an agent-agnostic skill bundle, not a deployed web application or service.
 - The repository does not contain a live Enterprise Accounts dataset or customer output.
 - Backstory MCP requires the user's interactive OAuth connection. Query API calls require the People.ai credentials described in the source skill installation files.
 - MCP cannot enumerate accounts; the registry or Query API must establish scope first.
@@ -55,14 +55,13 @@ The sources remain separate in output. Missing data stays null with a caveat. Am
 
 ## Start here
 
-1. Read [`integrations/account-intelligence/README.md`](integrations/account-intelligence/README.md).
-2. Read [`integrations/account-intelligence/AGENTS.md`](integrations/account-intelligence/AGENTS.md) or [`integrations/account-intelligence/CLAUDE.md`](integrations/account-intelligence/CLAUDE.md).
-3. Read the orchestration skill at [`integrations/account-intelligence/skills/external-monitor-account-intelligence/SKILL.md`](integrations/account-intelligence/skills/external-monitor-account-intelligence/SKILL.md).
-4. Read the People.ai source skill only for the capability being run. Those files are authoritative for API behavior, catalogs, authentication, windows, and MCP limits.
+1. Read this README and [`AGENTS.md`](AGENTS.md) or [`CLAUDE.md`](CLAUDE.md).
+2. Read the orchestration skill at [`skills/external-monitor-account-intelligence/SKILL.md`](skills/external-monitor-account-intelligence/SKILL.md).
+3. Read the People.ai source skill only for the capability being run. Those files are authoritative for API behavior, catalogs, authentication, windows, and MCP limits.
 
 ## Validate the included example
 
-From `integrations/account-intelligence`:
+From the repository root:
 
 ```powershell
 python skills/external-monitor-account-intelligence/scripts/validate_portfolio.py skills/external-monitor-account-intelligence/examples/portfolio-output.example.json
@@ -79,6 +78,7 @@ The renderer creates a local generated artifact. Do not commit customer intellig
 | Architecture and boundaries | [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md), [`docs/DATA_MODEL.md`](docs/DATA_MODEL.md) |
 | Evidence and provenance | [`docs/PROVENANCE.md`](docs/PROVENANCE.md) |
 | Planned direction | [`docs/ROADMAP.md`](docs/ROADMAP.md) |
-| Orchestration contract | [`integrations/account-intelligence/skills/external-monitor-account-intelligence/`](integrations/account-intelligence/skills/external-monitor-account-intelligence/) |
-| People.ai authoritative skills | [`integrations/account-intelligence/skills/people-ai/`](integrations/account-intelligence/skills/people-ai/) |
+| Orchestration contract | [`skills/external-monitor-account-intelligence/`](skills/external-monitor-account-intelligence/) |
+| People.ai authoritative skills | [`skills/people-ai/`](skills/people-ai/) |
+| Shared documentation | [`docs/`](docs/) |
 | Archived planning and PoC material | [`archive/`](archive/) |

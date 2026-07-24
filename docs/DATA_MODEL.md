@@ -1,6 +1,6 @@
 # Data model
 
-The primary artifact is `portfolio.json`, validated by [`portfolio-output.schema.json`](../integrations/account-intelligence/skills/external-monitor-account-intelligence/schemas/portfolio-output.schema.json).
+The primary artifact is `portfolio.json`, validated by [`portfolio-output.schema.json`](../skills/external-monitor-account-intelligence/schemas/portfolio-output.schema.json).
 
 At the top level it records scope, summary, accounts, run metadata, and caveats. Each account retains:
 
