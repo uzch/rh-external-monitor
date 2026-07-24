@@ -1,0 +1,57 @@
+{
+  "object": "activity",
+  "columns": [
+    {
+      "slug": "ootb_activity_uid"
+    },
+    {
+      "slug": "ootb_activity_timestamp"
+    },
+    {
+      "slug": "ootb_activity_type"
+    },
+    {
+      "slug": "ootb_activity_subject"
+    },
+    {
+      "slug": "ootb_activity_account_name"
+    },
+    {
+      "slug": "ootb_activity_opportunity_name"
+    },
+    {
+      "slug": "ootb_activity_external"
+    },
+    {
+      "slug": "ootb_activity_outbound"
+    },
+    {
+      "slug": "ootb_activity_originator"
+    },
+    {
+      "slug": "ootb_activity_email_from"
+    }
+  ],
+  "filter": {
+    "$and": [
+      {
+        "attribute": {
+          "slug": "ootb_activity_account_name"
+        },
+        "clause": {
+          "$in": [
+            "{{owned_account_names}}"
+          ]
+        }
+      },
+      {
+        "attribute": {
+          "slug": "ootb_activity_timestamp"
+        },
+        "clause": {
+          "$gte": "{{window_start_epoch_ms_int}}"
+        }
+      }
+    ]
+  }
+}

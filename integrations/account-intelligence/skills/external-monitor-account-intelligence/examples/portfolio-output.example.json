@@ -1,0 +1,68 @@
+{
+  "run": {
+    "run_id": "demo-001",
+    "status": "completed",
+    "generated_at": "2026-07-23T22:00:00-04:00"
+  },
+  "scope": {"type": "pod", "value": "Healthcare"},
+  "summary": {
+    "account_count": 2,
+    "accounts_with_internal_data": 2,
+    "accounts_enriched": 1,
+    "keep_count": 1,
+    "watch_count": 1,
+    "highest_signal_score": 91,
+    "text": "Two accounts are in scope. One has an immediate engagement gap and one should remain on watch."
+  },
+  "accounts": [
+    {
+      "account_id": "A-001",
+      "account_name": "Example Health Agency",
+      "hierarchy": {
+        "geo": "NAPS",
+        "region": "Federal Civilian",
+        "pod": "Healthcare",
+        "territory_name": "EXAMPLE_TERRITORY",
+        "segment": "Enterprise"
+      },
+      "identity": {
+        "crm_id": null,
+        "peopleai_account_id": 123,
+        "match_status": "matched"
+      },
+      "internal_priority_score": 88,
+      "priority_reasons": ["High engagement with no upcoming meeting", "Open opportunity activity"],
+      "internal": {
+        "metrics": {"engagement_level": 82, "upcoming_meetings_14d": 0},
+        "risks": ["No agreed next meeting"],
+        "next_steps": ["Confirm executive sponsor and schedule architecture follow-up"],
+        "topics": ["platform modernization"]
+      },
+      "summary": "The account is active but lacks a scheduled next engagement.",
+      "recommended_next_move": "Schedule an architecture follow-up tied to the active modernization topic.",
+      "signals": [
+        {
+          "signal_id": "sig-001",
+          "disposition": "KEEP",
+          "score": 91,
+          "headline": "Strong engagement without a next meeting",
+          "what_changed": "Recent activity remains high while the upcoming-meeting count is zero.",
+          "why_it_matters": "Momentum may decay without a concrete next step.",
+          "red_hat_relevance": "The active topic aligns with platform modernization.",
+          "recommended_action": "Secure a next meeting and confirm ownership.",
+          "source_type": "derived",
+          "source_url": null,
+          "published_at": null,
+          "confidence": "high"
+        }
+      ]
+    }
+  ],
+  "_meta": {
+    "query_window_days": 120,
+    "accounts_in_scope": 2,
+    "accounts_enriched": 1,
+    "mcp_status": "connected",
+    "caveats": ["Backstory narrative tools cover the last 30 days unless otherwise labeled."]
+  }
+}

@@ -1,0 +1,819 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Seller Engagement 360</title>
+<style>
+  :root {
+    color-scheme: light dark;
+    --surface-1: #fcfcfb;
+    --page: #f9f9f7;
+    --ink: #0b0b0b;
+    --ink-2: #52514e;
+    --muted: #898781;
+    --grid: #e1e0d9;
+    --baseline: #c3c2b7;
+    --border: rgba(11,11,11,0.10);
+    --series-1: #2a78d6;   /* meetings */
+    --series-2: #1baf7a;   /* emails */
+    --deemph: #c3c2b7;
+    --delta-up: #006300;
+    --seq-100: #cde2fb; --seq-200: #9ec5f4; --seq-300: #6da7ec;
+    --seq-400: #3987e5; --seq-500: #256abf; --seq-600: #184f95; --seq-700: #0d366b;
+    --brand: #76B900;    /* client accent — chrome only, never data */
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --surface-1: #1a1a19;
+      --page: #0d0d0d;
+      --ink: #ffffff;
+      --ink-2: #c3c2b7;
+      --muted: #898781;
+      --grid: #2c2c2a;
+      --baseline: #383835;
+      --border: rgba(255,255,255,0.10);
+      --series-1: #3987e5;
+      --series-2: #199e70;
+      --deemph: #52514e;
+      --delta-up: #0ca30c;
+      --seq-100: #0d366b; --seq-200: #104281; --seq-300: #184f95;
+      --seq-400: #1c5cab; --seq-500: #256abf; --seq-600: #3987e5; --seq-700: #6da7ec;
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    background: var(--page);
+    color: var(--ink);
+    font: 14px/1.45 system-ui, -apple-system, "Segoe UI", sans-serif;
+    border-top: 3px solid var(--brand);
+  }
+  .wrap { max-width: 1120px; margin: 0 auto; padding: 20px 24px 64px; }
+
+  /* ---------- header ---------- */
+  header { padding: 12px 0 20px; }
+  .eyebrow {
+    font-size: 11px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--muted); display: flex; align-items: center; gap: 8px;
+  }
+  .eyebrow::before { content: ""; width: 14px; height: 3px; background: var(--brand); display: inline-block; }
+  h1 { font-size: 26px; font-weight: 650; margin: 8px 0 2px; }
+  .who { color: var(--ink-2); }
+  .provenance { margin-top: 10px; font-size: 12px; color: var(--muted); display: flex; flex-wrap: wrap; gap: 6px 18px; }
+  .provenance b { color: var(--ink-2); font-weight: 600; }
+
+  /* ---------- cards & sections ---------- */
+  section { margin-top: 28px; }
+  .sec-head { margin-bottom: 10px; }
+  .sec-title {
+    font-size: 11px; font-weight: 650; letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--ink-2); margin: 0 0 2px;
+  }
+  .sec-sub { font-size: 12.5px; color: var(--muted); margin: 0; }
+  .card {
+    background: var(--surface-1); border: 1px solid var(--border); border-radius: 10px;
+    padding: 16px 18px; overflow-x: auto;
+  }
+  .note { font-size: 13px; color: var(--ink-2); }
+
+  /* ---------- KPI board ---------- */
+  .kpi-board { display: grid; grid-template-columns: repeat(auto-fit, minmax(168px, 1fr)); gap: 10px; }
+  .tile { background: var(--surface-1); border: 1px solid var(--border); border-radius: 10px; padding: 13px 14px 11px; }
+  .tile .label { font-size: 12px; color: var(--ink-2); }
+  .tile .window { color: var(--muted); }
+  .tile .value { font-size: 27px; font-weight: 650; margin-top: 3px; letter-spacing: -0.01em; }
+  .tile .delta { font-size: 12px; margin-top: 2px; color: var(--ink-2); }
+  .tile .delta.up { color: var(--delta-up); }
+  .tile .delta.flat { color: var(--muted); }
+  .tile svg.spark { display: block; margin-top: 8px; width: 100%; height: 26px; }
+
+  /* ---------- book strip (signature) ---------- */
+  .strip-wrap { padding: 16px 18px 13px; }
+  .strip { display: flex; height: 40px; border-radius: 6px; overflow: hidden; }
+  .strip .cell { flex: 1 1 auto; min-width: 2px; margin-right: 1px; border-radius: 1px; cursor: default; }
+  .strip .cell:last-child { margin-right: 0; }
+  .strip .cell:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+  .strip .tail { background: var(--grid); }
+  .strip-legend { display: flex; flex-wrap: wrap; gap: 6px 16px; margin-top: 10px; font-size: 12px; color: var(--ink-2); align-items: center; }
+  .strip-legend .key { display: inline-flex; align-items: center; gap: 6px; }
+  .ramp { display: inline-flex; height: 10px; border-radius: 2px; overflow: hidden; }
+  .ramp i { width: 14px; }
+  .swatch { width: 10px; height: 10px; border-radius: 2px; display: inline-block; }
+
+  /* ---------- charts ---------- */
+  figure { margin: 0; }
+  .legend { display: flex; gap: 16px; font-size: 12px; color: var(--ink-2); margin: 2px 0 8px; }
+  .legend .key { display: inline-flex; align-items: center; gap: 6px; }
+  .legend .line-key { width: 14px; height: 2px; border-radius: 1px; display: inline-block; }
+  .chart-svg { display: block; width: 100%; }
+  .axis-text { font-size: 11px; fill: var(--muted); }
+  .toggle-table {
+    background: none; border: 1px solid var(--border); border-radius: 6px; color: var(--ink-2);
+    font: 12px system-ui, sans-serif; padding: 3px 10px; cursor: pointer; float: right;
+  }
+  .toggle-table:hover { border-color: var(--baseline); }
+
+  /* ---------- tables ---------- */
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th {
+    text-align: left; font-size: 11px; font-weight: 650; letter-spacing: 0.06em; text-transform: uppercase;
+    color: var(--muted); padding: 6px 10px; border-bottom: 1px solid var(--grid); white-space: nowrap;
+  }
+  td { padding: 7px 10px; border-bottom: 1px solid var(--grid); vertical-align: top; }
+  tr:last-child td { border-bottom: none; }
+  td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
+  td.nowrap { white-space: nowrap; }
+  .acct-name { font-weight: 600; }
+  .sub { color: var(--muted); font-size: 12px; }
+  .minibar { display: inline-flex; height: 8px; border-radius: 2px; overflow: hidden; vertical-align: middle; }
+  .minibar i { display: block; height: 100%; }
+  .minibar i + i { margin-left: 2px; }
+  .lvl { display: inline-flex; align-items: center; gap: 6px; }
+  .lvl .swatch { border: 1px solid var(--border); }
+  tr.expandable { cursor: pointer; }
+  tr.expandable:hover td, tr.expandable:focus-visible td { background: color-mix(in srgb, var(--grid) 30%, transparent); }
+  tr.expandable:focus-visible { outline: 2px solid var(--baseline); outline-offset: -2px; }
+  tr.drill td { background: color-mix(in srgb, var(--grid) 22%, transparent); padding: 10px 14px 12px; }
+  .drill h4 { margin: 0 0 6px; font-size: 12px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-2); }
+  .drill ul { margin: 0; padding: 0; list-style: none; }
+  .drill li { padding: 3px 0; border-bottom: 1px dashed var(--grid); font-size: 12.5px; }
+  .drill li:last-child { border-bottom: none; }
+  .chip {
+    display: inline-block; font-size: 11px; padding: 1px 7px; border-radius: 9px;
+    border: 1px solid var(--border); color: var(--ink-2); margin-left: 6px; white-space: nowrap;
+  }
+
+  /* ---------- tooltip ---------- */
+  #tip {
+    position: fixed; pointer-events: none; z-index: 10; display: none;
+    background: var(--surface-1); border: 1px solid var(--baseline); border-radius: 8px;
+    padding: 8px 10px; font-size: 12px; box-shadow: 0 4px 14px rgba(0,0,0,0.12); max-width: 260px;
+  }
+  #tip .t-title { font-weight: 650; margin-bottom: 3px; }
+  #tip .t-row { display: flex; align-items: center; gap: 7px; padding: 1px 0; color: var(--ink-2); }
+  #tip .t-row b { color: var(--ink); font-variant-numeric: tabular-nums; }
+  #tip .line-key { width: 12px; height: 2px; border-radius: 1px; display: inline-block; }
+
+  /* ---------- footer ---------- */
+  footer { margin-top: 34px; font-size: 12px; color: var(--muted); }
+  footer details { margin-top: 8px; }
+  footer summary { cursor: pointer; width: fit-content; }
+  footer details ul { margin: 6px 0 0; padding-left: 18px; }
+  footer details li { margin: 3px 0; }
+
+  @media (max-width: 720px) {
+    .wrap { padding: 14px 14px 48px; }
+    .kpi-board { grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); }
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    tr.expandable td { transition: background 120ms ease; }
+  }
+  @media (forced-colors: active) {
+    .strip .cell, .minibar i, .ramp i, .swatch, svg.spark, .chart-svg { forced-color-adjust: none; }
+  }
+  @media print {
+    :root {
+      --surface-1: #fcfcfb; --page: #ffffff; --ink: #0b0b0b; --ink-2: #52514e;
+      --muted: #898781; --grid: #e1e0d9; --baseline: #c3c2b7; --border: rgba(11,11,11,0.10);
+      --series-1: #2a78d6; --series-2: #1baf7a; --deemph: #c3c2b7; --delta-up: #006300;
+      --seq-100: #cde2fb; --seq-200: #9ec5f4; --seq-300: #6da7ec;
+      --seq-400: #3987e5; --seq-500: #256abf; --seq-600: #184f95; --seq-700: #0d366b;
+    }
+    section, .card, .tile { break-inside: avoid; }
+    .toggle-table { display: none; }
+    #tip { display: none !important; }
+    footer details { display: none; }
+  }
+</style>
+</head>
+<body>
+<script id="data" type="application/json">__DATA_JSON__</script>
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Backstory Engagement 360</div>
+    <h1 id="h-owner"></h1>
+    <div class="who" id="h-who"></div>
+    <div class="provenance" id="h-prov"></div>
+  </header>
+  <main id="main"></main>
+  <footer id="foot"></footer>
+</div>
+<div id="tip" role="status"></div>
+
+<script>
+"use strict";
+const DATA = JSON.parse(document.getElementById("data").textContent);
+const S = DATA.summary || {};
+const UM = DATA.user_metrics || {};
+const ROLLUP = DATA.account_rollup || [];
+const OPPS = DATA.opportunities || [];
+const EVENTS = DATA.events || [];
+const EMAILS = DATA.emails || [];
+const SIGNALS = DATA.peopleai_signals || [];
+const META = DATA._meta || {};
+const WINDOW_DAYS = META.window_days || null;
+
+const fmt = (n) => n == null || n === "" || isNaN(+n) ? "—" : (+n).toLocaleString("en-US");
+const compact = (n) => {
+  n = +n;
+  if (isNaN(n)) return "—";
+  if (Math.abs(n) >= 1e6) return (n / 1e6).toFixed(1).replace(/\.0$/, "") + "M";
+  if (Math.abs(n) >= 1e4) return (n / 1e3).toFixed(1).replace(/\.0$/, "") + "K";
+  return n.toLocaleString("en-US");
+};
+const money = (n, cur) => {
+  n = parseFloat(n);
+  if (isNaN(n)) return "—";
+  const sym = (!cur || cur === "USD") ? "$" : cur + " ";
+  return sym + compact(n);
+};
+const el = (tag, cls, text) => {
+  const e = document.createElement(tag);
+  if (cls) e.className = cls;
+  if (text != null) e.textContent = text;
+  return e;
+};
+const metric = (label) => {
+  const v = UM[label];
+  return (v === undefined || v === "" || v == null) ? null : v;
+};
+const num = (v) => { const n = parseFloat(v); return isNaN(n) ? null : n; };
+
+/* ---------- header ---------- */
+document.getElementById("h-owner").textContent = S.owner || "Seller";
+document.getElementById("h-who").textContent =
+  [S.owner_email, S.owner_id ? "id " + S.owner_id : null].filter(Boolean).join(" · ");
+document.title = (S.owner || "Seller") + " — Engagement 360";
+{
+  const prov = document.getElementById("h-prov");
+  const add = (label, val) => {
+    if (!val) return;
+    const d = el("span");
+    d.append(label + " ");
+    d.append(el("b", null, val));
+    prov.append(d);
+  };
+  add("Generated", META.generated_at ? META.generated_at.slice(0, 16).replace("T", " ") + " UTC" : null);
+  add("Activity window", WINDOW_DAYS ? "last " + WINDOW_DAYS + " days" : null);
+  add("Source", "Backstory Query API — formerly People.ai");
+  add("API calls", META.api_calls != null ? String(META.api_calls) : null);
+}
+
+const main = document.getElementById("main");
+function section(title, sub) {
+  const s = el("section");
+  const head = el("div", "sec-head");
+  head.append(el("h2", "sec-title", title));
+  if (sub) head.append(el("p", "sec-sub", sub));
+  s.append(head);
+  main.append(s);
+  return s;
+}
+
+/* ---------- shared tooltip ---------- */
+const tip = document.getElementById("tip");
+function showTip(x, y, build) {
+  tip.textContent = "";
+  build(tip);
+  tip.style.display = "block";
+  const r = tip.getBoundingClientRect();
+  tip.style.left = Math.min(x + 14, innerWidth - r.width - 8) + "px";
+  tip.style.top = Math.min(y + 14, innerHeight - r.height - 8) + "px";
+}
+const hideTip = () => { tip.style.display = "none"; };
+
+/* ---------- weekly series from activity rows ---------- */
+function weeklySeries() {
+  const rows = [];
+  for (const e of EVENTS) if (e.date) rows.push([e.date, 0]);
+  for (const e of EMAILS) if (e.date) rows.push([e.date, 1]);
+  if (!rows.length) return null;
+  const dates = rows.map(r => r[0]).sort();
+  const first = new Date(dates[0] + "T00:00:00Z"), last = new Date(dates[dates.length - 1] + "T00:00:00Z");
+  const weeks = Math.min(26, Math.max(2, Math.ceil((last - first) / 6048e5) + 1));
+  const start = new Date(last.getTime() - (weeks - 1) * 6048e5);
+  const meet = new Array(weeks).fill(0), mail = new Array(weeks).fill(0);
+  for (const [d, kind] of rows) {
+    const i = Math.floor((new Date(d + "T00:00:00Z") - start) / 6048e5);
+    if (i >= 0 && i < weeks) (kind ? mail : meet)[i]++;
+  }
+  const labels = [];
+  for (let i = 0; i < weeks; i++) {
+    const d = new Date(start.getTime() + i * 6048e5);
+    labels.push((d.getUTCMonth() + 1) + "/" + d.getUTCDate());
+  }
+  return { meet, mail, labels, weeks };
+}
+const WK = weeklySeries();
+
+/* ---------- KPI board ---------- */
+{
+  const zeroish = (v) => v == null || v === "" || /^0+(:0+)*$/.test(String(v).trim()) || parseFloat(v) === 0;
+  const windowed = Object.entries(UM).filter(([k]) => /\(Last |\(This |\(Next /.test(k));
+  const hasUM = windowed.length > 0;
+  const aggDead = hasUM && windowed.every(([, v]) => zeroish(v));
+  const who = S.owner || "the seller";
+  const bookNote = " (" + fmt(S.meetings_count) + " meetings, " + fmt(S.emails_count) + " emails in the window)";
+  const sub = !hasUM
+    ? "No Backstory user metrics are computed for " + who + " — the tiles below are derived from the book's activity rows" + bookNote + "."
+    : aggDead
+    ? "Backstory user metrics for activities involving " + who + " read 0 in every window — book figures come straight from the activity rows" + bookNote + "."
+    : "Backstory user metrics for activities involving " + who + " — each tile carries its own window.";
+  const sec = section("Seller KPIs", sub);
+  const board = el("div", "kpi-board");
+  sec.append(board);
+
+  function tile(label, windowText, value, deltaText, deltaDir, sparkData) {
+    if (value == null) return;
+    const t = el("div", "tile");
+    const lab = el("div", "label", label + " ");
+    lab.append(el("span", "window", windowText ? "· " + windowText : ""));
+    t.append(lab);
+    t.append(el("div", "value", value));
+    if (deltaText) t.append(el("div", "delta " + (deltaDir || ""), deltaText));
+    if (sparkData && sparkData.some(v => v > 0)) t.append(sparkline(sparkData));
+    board.append(t);
+  }
+  function sparkline(vals) {
+    const w = 140, h = 26, max = Math.max(...vals, 1);
+    const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    svg.setAttribute("viewBox", `0 0 ${w} ${h}`);
+    svg.setAttribute("class", "spark");
+    svg.setAttribute("aria-hidden", "true");
+    const step = w / (vals.length - 1 || 1);
+    const pts = vals.map((v, i) => `${(i * step).toFixed(1)},${(h - 3 - (v / max) * (h - 6)).toFixed(1)}`);
+    const path = document.createElementNS("http://www.w3.org/2000/svg", "polyline");
+    path.setAttribute("points", pts.join(" "));
+    path.setAttribute("fill", "none");
+    path.style.stroke = "var(--deemph)";
+    path.setAttribute("stroke-width", "2");
+    path.setAttribute("stroke-linecap", "round");
+    path.setAttribute("stroke-linejoin", "round");
+    svg.append(path);
+    const [lx, ly] = pts[pts.length - 1].split(",");
+    const dot = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+    dot.setAttribute("cx", lx); dot.setAttribute("cy", ly); dot.setAttribute("r", "3.5");
+    dot.style.fill = "var(--series-1)";
+    svg.append(dot);
+    return svg;
+  }
+
+  if (hasUM && !aggDead) {
+    const em30 = num(metric("External Meetings (Last 30 Days)"));
+    const em60 = num(metric("External Meetings (Last 60 Days)"));
+    if (em30 != null) {
+      let d = null, dir = "flat";
+      if (em60 != null) {
+        const prev = em60 - em30, diff = em30 - prev;
+        dir = diff > 0 ? "up" : diff < 0 ? "down" : "flat";
+        d = (diff > 0 ? "↗ +" : diff < 0 ? "↘ " : "→ ") + fmt(diff) + " vs prior 30 days";
+      }
+      tile("External meetings", "30d", fmt(em30), d, dir, WK ? WK.meet : null);
+    }
+    const es30 = num(metric("Emails Sent (Last 30 Days)"));
+    const es90 = num(metric("Emails Sent (Last 90 Days)"));
+    if (es30 != null) {
+      let d = null, dir = "flat";
+      if (es90 != null && es90 >= es30) {
+        const prevAvg = (es90 - es30) / 2, diff = Math.round(es30 - prevAvg);
+        dir = diff > 0 ? "up" : diff < 0 ? "down" : "flat";
+        d = (diff > 0 ? "↗ +" : diff < 0 ? "↘ " : "→ ") + fmt(diff) + " vs prior 60-day avg";
+      }
+      tile("Emails sent", "30d", fmt(es30), d, dir, WK ? WK.mail : null);
+    }
+    const vp90 = num(metric("Meetings with a Director, VP, or Executive (Last 90 Days)"));
+    if (vp90 != null) tile("Meetings with Director / VP+", "90d", fmt(vp90),
+      (() => { const q = num(metric("Meetings with a Director, VP, or Executive (This Quarter)")); return q != null ? fmt(q) + " this quarter" : null; })(), "flat");
+    const up14 = num(metric("Upcoming Meetings (Next 14 Days)"));
+    if (up14 != null) tile("Upcoming meetings", "next 14d", fmt(up14),
+      "already on the calendar", up14 > 0 ? "up" : "flat");
+    const t30 = metric("Total External Time Spent (Last 30 Days)");
+    if (t30 && /^\d/.test(t30)) tile("External time", "30d", t30.split(":")[0] + "h", "in customer-facing activity", "flat");
+  }
+  if (S.owned_accounts_count) {
+    tile("Accounts engaged", WINDOW_DAYS ? WINDOW_DAYS + "d" : null,
+      fmt(S.accounts_with_engagement),
+      "of " + fmt(S.owned_accounts_count) + " owned", "flat");
+  }
+  if (OPPS.length) {
+    let total = 0, cur = null;
+    for (const o of OPPS) { const a = parseFloat(o.amount_converted || o.amount); if (!isNaN(a)) { total += a; cur = cur || o.currency; } }
+    tile("Opportunities closing", "this + next qtr", fmt(OPPS.length), total ? money(total, "USD") + " total" : null, "flat");
+  }
+}
+
+/* ---------- book strip ---------- */
+{
+  const withLvl = ROLLUP.filter(a => num(a.engagement_level) != null && num(a.engagement_level) > 0)
+                        .sort((a, b) => num(b.engagement_level) - num(a.engagement_level));
+  if (withLvl.length) {
+    const owned = S.owned_accounts_count || ROLLUP.length;
+    const quiet = owned - withLvl.length;
+    const sec = section("The book at a glance",
+      "Every owned account as one cell, sorted by Account Engagement Level (0–100 — Backstory's score from the volume, recency, and type of matched activities and the seniority of the contacts involved; updated every 24 hours).");
+    const card = el("div", "card strip-wrap");
+    const strip = el("div", "strip");
+    strip.setAttribute("role", "group");
+    strip.setAttribute("aria-label", "Owned accounts by engagement level — arrow keys move between accounts");
+    const steps = ["--seq-100", "--seq-200", "--seq-300", "--seq-400", "--seq-500", "--seq-600", "--seq-700"];
+    const stepFor = (lvl) => steps[Math.min(6, Math.floor((lvl / 100) * 7))];
+    const maxCells = 420;
+    const shown = withLvl.slice(0, maxCells);
+    const cells = [];
+    const addCell = (c, build, label) => {
+      c.tabIndex = cells.length ? -1 : 0;
+      c.setAttribute("aria-label", label);
+      c.addEventListener("pointermove", (ev) => showTip(ev.clientX, ev.clientY, build));
+      c.addEventListener("focus", () => { const r = c.getBoundingClientRect(); showTip(r.left, r.bottom, build); });
+      c.addEventListener("pointerleave", hideTip);
+      c.addEventListener("blur", hideTip);
+      cells.push(c);
+      strip.append(c);
+    };
+    for (const a of shown) {
+      const lvl = num(a.engagement_level);
+      const c = el("div", "cell");
+      c.style.background = `var(${stepFor(lvl)})`;
+      c.style.flexGrow = "1";
+      addCell(c, (t) => {
+        t.append(el("div", "t-title", a.name));
+        const row1 = el("div", "t-row"); row1.append("Engagement "); row1.append(el("b", null, String(lvl))); t.append(row1);
+        const row2 = el("div", "t-row");
+        row2.append(`${fmt(a.api_meetings_30d)} meetings · ${fmt(a.api_emails_sent_30d ?? a.pai_emails_30d)} emails sent (30d)`);
+        t.append(row2);
+        if (num(a.upcoming_meetings_14d) > 0) t.append(el("div", "t-row", fmt(a.upcoming_meetings_14d) + " upcoming (next 14d)"));
+        if (a.last_meeting_date) { const r3 = el("div", "t-row", "Last meeting " + a.last_meeting_date); t.append(r3); }
+      }, `${a.name} — engagement ${lvl}`);
+    }
+    if (quiet > 0) {
+      const tail = el("div", "cell tail");
+      tail.style.flexGrow = String(Math.max(4, Math.min(40, quiet / Math.max(shown.length, 1) * 10)));
+      addCell(tail, (t) => {
+        t.append(el("div", "t-title", fmt(quiet) + " quiet accounts"));
+        t.append(el("div", "t-row", "No engagement level — no recent matched activity."));
+      }, `${fmt(quiet)} quiet accounts — no recent matched activity`);
+    }
+    strip.addEventListener("keydown", (ev) => {
+      const i = cells.indexOf(document.activeElement);
+      if (i < 0) return;
+      const j = ev.key === "ArrowRight" ? Math.min(cells.length - 1, i + 1)
+              : ev.key === "ArrowLeft" ? Math.max(0, i - 1)
+              : ev.key === "Home" ? 0
+              : ev.key === "End" ? cells.length - 1 : null;
+      if (j == null) return;
+      ev.preventDefault();
+      if (j === i) return;
+      cells[i].tabIndex = -1; cells[j].tabIndex = 0; cells[j].focus();
+    });
+    card.append(strip);
+    const legend = el("div", "strip-legend");
+    const key = el("span", "key");
+    key.append("Engagement 0");
+    const ramp = el("span", "ramp");
+    for (const s of steps) { const i = el("i"); i.style.background = `var(${s})`; ramp.append(i); }
+    key.append(ramp); key.append("100");
+    legend.append(key);
+    const bands = [
+      ["High (70–100)", withLvl.filter(a => num(a.engagement_level) >= 70).length],
+      ["Moderate (40–69)", withLvl.filter(a => { const l = num(a.engagement_level); return l >= 40 && l < 70; }).length],
+      ["Low (1–39)", withLvl.filter(a => num(a.engagement_level) < 40).length],
+      ["Quiet", quiet],
+    ];
+    for (const [label, count] of bands) legend.append(el("span", "key", `${label}: ${fmt(count)}`));
+    if (withLvl.length > maxCells) legend.append(el("span", "key", `top ${maxCells} shown individually`));
+    card.append(legend);
+    sec.append(card);
+  }
+}
+
+/* ---------- weekly activity chart (small multiples — the two series differ in scale) ---------- */
+if (WK && WK.weeks >= 4) {
+  const sec = section("Activity by week",
+    "Matched activities on owned accounts, all participants — " + WK.weeks + " weeks. Two panels because the scales differ.");
+  const card = el("div", "card");
+  const legend = el("div", "legend");
+  const btn = el("button", "toggle-table", "Table");
+  btn.setAttribute("aria-expanded", "false");
+  legend.append(btn);
+  card.append(legend);
+
+  const W = 1040, padL = 40, padR = 10, padT = 16, padB = 20;
+  const ns = (t) => document.createElementNS("http://www.w3.org/2000/svg", t);
+  const panels = [];
+  const chartsWrap = el("div");
+  card.append(chartsWrap);
+
+  function panel(name, vals, colorVar, isLast) {
+    const H = 128, plotW = W - padL - padR, plotH = H - padT - padB;
+    const color = `var(${colorVar})`;
+    const yMax = (Math.ceil(Math.max(...vals, 1) / 5) * 5) || 5;
+    const x = (i) => padL + (i / (WK.weeks - 1)) * plotW;
+    const y = (v) => padT + plotH - (v / yMax) * plotH;
+    const svg = ns("svg");
+    svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
+    svg.setAttribute("class", "chart-svg");
+    svg.setAttribute("role", "img");
+    svg.setAttribute("aria-label", "Weekly " + name.toLowerCase());
+    for (const gv of [0, yMax]) {
+      const line = ns("line");
+      line.setAttribute("x1", padL); line.setAttribute("x2", W - padR);
+      line.setAttribute("y1", y(gv)); line.setAttribute("y2", y(gv));
+      line.style.stroke = gv === 0 ? "var(--baseline)" : "var(--grid)";
+      line.setAttribute("stroke-width", "1");
+      svg.append(line);
+      const t = ns("text");
+      t.setAttribute("x", padL - 6); t.setAttribute("y", y(gv) + 3.5);
+      t.setAttribute("text-anchor", "end"); t.setAttribute("class", "axis-text");
+      t.textContent = fmt(gv);
+      svg.append(t);
+    }
+    const title = ns("text");
+    title.setAttribute("x", padL); title.setAttribute("y", 11);
+    title.setAttribute("class", "axis-text");
+    title.setAttribute("style", "font-weight:650; fill: var(--ink-2)");
+    title.textContent = name;
+    svg.append(title);
+    if (isLast) {
+      const every = Math.ceil(WK.weeks / 9);
+      WK.labels.forEach((lab, i) => {
+        if (i % every) return;
+        const t = ns("text");
+        t.setAttribute("x", x(i)); t.setAttribute("y", H - 5);
+        t.setAttribute("text-anchor", "middle"); t.setAttribute("class", "axis-text");
+        t.textContent = lab;
+        svg.append(t);
+      });
+    }
+    const pts = vals.map((v, i) => `${x(i).toFixed(1)},${y(v).toFixed(1)}`);
+    const area = ns("path");
+    area.setAttribute("d", `M ${pts.join(" L ")} L ${x(vals.length - 1)},${y(0)} L ${x(0)},${y(0)} Z`);
+    area.style.fill = color; area.setAttribute("opacity", "0.09");
+    svg.append(area);
+    const p = ns("polyline");
+    p.setAttribute("points", pts.join(" "));
+    p.setAttribute("fill", "none"); p.style.stroke = color;
+    p.setAttribute("stroke-width", "2"); p.setAttribute("stroke-linejoin", "round"); p.setAttribute("stroke-linecap", "round");
+    svg.append(p);
+    const [lx, ly] = pts[pts.length - 1].split(",");
+    const dot = ns("circle");
+    dot.setAttribute("cx", lx); dot.setAttribute("cy", ly); dot.setAttribute("r", "4");
+    dot.style.fill = color; dot.style.stroke = "var(--surface-1)"; dot.setAttribute("stroke-width", "2");
+    svg.append(dot);
+    const cross = ns("line");
+    cross.setAttribute("y1", padT); cross.setAttribute("y2", padT + plotH);
+    cross.style.stroke = "var(--baseline)"; cross.setAttribute("stroke-width", "1");
+    cross.style.display = "none";
+    svg.append(cross);
+    chartsWrap.append(svg);
+    return { svg, x, cross, plotW };
+  }
+  panels.push(panel("Meetings", WK.meet, "--series-1", false));
+  panels.push(panel("Emails", WK.mail, "--series-2", true));
+
+  function syncHover(ev, sourcePanel) {
+    const r = sourcePanel.svg.getBoundingClientRect();
+    const px = (ev.clientX - r.left) * (W / r.width);
+    const i = Math.max(0, Math.min(WK.weeks - 1, Math.round(((px - padL) / sourcePanel.plotW) * (WK.weeks - 1))));
+    for (const p of panels) {
+      p.cross.setAttribute("x1", p.x(i)); p.cross.setAttribute("x2", p.x(i));
+      p.cross.style.display = "";
+    }
+    showTip(ev.clientX, ev.clientY, (t) => {
+      t.append(el("div", "t-title", "Week of " + WK.labels[i]));
+      for (const [name, vals, varName] of [["Meetings", WK.meet, "--series-1"], ["Emails", WK.mail, "--series-2"]]) {
+        const row = el("div", "t-row");
+        const k = el("span", "line-key"); k.style.background = `var(${varName})`;
+        row.append(k); row.append(el("b", null, fmt(vals[i]))); row.append(name);
+        t.append(row);
+      }
+    });
+  }
+  for (const p of panels) {
+    p.svg.addEventListener("pointermove", (ev) => syncHover(ev, p));
+    p.svg.addEventListener("pointerleave", () => { panels.forEach(q => q.cross.style.display = "none"); hideTip(); });
+  }
+
+  const tblWrap = el("div");
+  tblWrap.style.display = "none";
+  const tbl = el("table");
+  const thead = el("thead"); const trh = el("tr");
+  for (const h of ["Week of", "Meetings", "Emails"]) trh.append(el("th", h === "Week of" ? null : "num", h));
+  thead.append(trh); tbl.append(thead);
+  const tb = el("tbody");
+  WK.labels.forEach((lab, i) => {
+    const tr = el("tr");
+    tr.append(el("td", null, lab));
+    tr.append(el("td", "num", fmt(WK.meet[i])));
+    tr.append(el("td", "num", fmt(WK.mail[i])));
+    tb.append(tr);
+  });
+  tbl.append(tb); tblWrap.append(tbl); card.append(tblWrap);
+  btn.addEventListener("click", () => {
+    const open = tblWrap.style.display === "none";
+    tblWrap.style.display = open ? "" : "none";
+    chartsWrap.style.display = open ? "none" : "";
+    btn.setAttribute("aria-expanded", String(open));
+    btn.textContent = open ? "Chart" : "Table";
+  });
+  sec.append(card);
+}
+
+/* ---------- engaged accounts table ---------- */
+{
+  const engaged = ROLLUP.filter(a => a.total > 0).sort((a, b) => b.total - a.total);
+  if (engaged.length) {
+    const shown = engaged.slice(0, 40);
+    const sec = section("Engaged accounts",
+      `${fmt(engaged.length)} of ${fmt(S.owned_accounts_count || ROLLUP.length)} owned accounts had matched activity (any participant) in the window` +
+      (engaged.length > shown.length ? ` — top ${shown.length} shown; every account remains in the JSON.` : "."));
+    const card = el("div", "card");
+    card.style.padding = "6px 8px";
+    const tbl = el("table");
+    const thead = el("thead"); const trh = el("tr");
+    const heads = [["Account", null], ["Engagement", null], ["Activity (window)", null], ["Meetings", "num"], ["Emails in / out", "num"], ["Exec activity 30d", "num"], ["Upcoming 14d", "num"], ["Open opps", "num"], ["Last meeting", null]];
+    for (const [h, cls] of heads) trh.append(el("th", cls, h));
+    thead.append(trh); tbl.append(thead);
+    const tb = el("tbody");
+    const maxTotal = shown[0].total;
+    const hasSignal = new Map(SIGNALS.map(s => [s.account_name, s]));
+    for (const a of shown) {
+      const tr = el("tr", "expandable");
+      tr.tabIndex = 0;
+      const nameTd = el("td");
+      const nm = el("span", "acct-name", a.name);
+      nameTd.append(nm);
+      if (hasSignal.get(a.name)) nameTd.append(el("span", "chip", "AI signal"));
+      tr.append(nameTd);
+      const lvlTd = el("td");
+      const lvl = num(a.engagement_level);
+      if (lvl != null) {
+        const wrap = el("span", "lvl");
+        const sw = el("span", "swatch");
+        const steps = ["--seq-100", "--seq-200", "--seq-300", "--seq-400", "--seq-500", "--seq-600", "--seq-700"];
+        sw.style.background = `var(${steps[Math.min(6, Math.floor((lvl / 100) * 7))]})`;
+        wrap.append(sw, String(lvl));
+        lvlTd.append(wrap);
+      } else lvlTd.append(el("span", "sub", "—"));
+      tr.append(lvlTd);
+      const actTd = el("td", "nowrap");
+      const bar = el("span", "minibar");
+      bar.style.width = Math.max(28, (a.total / maxTotal) * 130) + "px";
+      const mi = el("i"); mi.style.background = "var(--series-1)"; mi.style.width = ((a.meetings / a.total) * 100) + "%";
+      const ei = el("i"); ei.style.background = "var(--series-2)"; ei.style.flex = "1";
+      bar.append(mi, ei);
+      actTd.append(bar);
+      actTd.append(el("span", "sub", " " + fmt(a.total)));
+      tr.append(actTd);
+      tr.append(el("td", "num", fmt(a.meetings)));
+      tr.append(el("td", "num", fmt(a.in_emails) + " / " + fmt(a.out_emails)));
+      tr.append(el("td", "num", a.exec_activities_30d != null ? fmt(a.exec_activities_30d) : "—"));
+      tr.append(el("td", "num", a.upcoming_meetings_14d != null ? fmt(a.upcoming_meetings_14d) : "—"));
+      tr.append(el("td", "num", a.open_opportunities != null ? fmt(a.open_opportunities) : "—"));
+      tr.append(el("td", "nowrap", a.last_meeting_date || a.latest || "—"));
+      tb.append(tr);
+      tr.addEventListener("click", () => toggleDrill(tr, a));
+      tr.addEventListener("keydown", (ev) => { if (ev.key === "Enter" || ev.key === " ") { ev.preventDefault(); toggleDrill(tr, a); } });
+    }
+    tbl.append(tb);
+    card.append(tbl);
+    sec.append(card);
+    const lg = el("div", "legend");
+    lg.style.marginTop = "8px";
+    for (const [name, varName] of [["Meetings", "--series-1"], ["Emails", "--series-2"]]) {
+      const k = el("span", "key");
+      const sw = el("span", "swatch"); sw.style.background = `var(${varName})`;
+      k.append(sw, name);
+      lg.append(k);
+    }
+    lg.append(el("span", "key sub", "Click a row for its recent activity."));
+    sec.append(lg);
+
+    function toggleDrill(tr, a) {
+      const next = tr.nextElementSibling;
+      if (next && next.classList.contains("drill")) { next.remove(); return; }
+      tb.querySelectorAll("tr.drill").forEach(d => d.remove());
+      const dr = el("tr", "drill");
+      const td = el("td");
+      td.colSpan = 9;
+      const box = el("div");
+      const sig = hasSignal.get(a.name);
+      if (sig && sig.account_status) {
+        box.append(el("h4", null, "AI signal — generated by Backstory SalesAI"));
+        const pre = el("div", "note");
+        pre.style.whiteSpace = "pre-wrap";
+        pre.textContent = typeof sig.account_status === "string" ? sig.account_status : JSON.stringify(sig.account_status, null, 1);
+        box.append(pre);
+      }
+      if (sig && sig.engaged_people && (!Array.isArray(sig.engaged_people) || sig.engaged_people.length)) {
+        box.append(el("h4", null, "Engaged people"));
+        const ppl = Array.isArray(sig.engaged_people) ? sig.engaged_people : [sig.engaged_people];
+        const pul = el("ul");
+        for (const p of ppl.slice(0, 12)) {
+          const li = el("li");
+          li.style.whiteSpace = "pre-wrap";
+          li.textContent = typeof p === "string" ? p : [p.name, p.title, p.role].filter(Boolean).join(" — ") || JSON.stringify(p);
+          pul.append(li);
+        }
+        box.append(pul);
+      }
+      box.append(el("h4", null, "Recent activity"));
+      const acts = [...EVENTS, ...EMAILS].filter(e => e.account === a.name)
+        .sort((p, q) => (q.datetime || q.date).localeCompare(p.datetime || p.date)).slice(0, 10);
+      const ul = el("ul");
+      for (const e of acts) {
+        const li = el("li");
+        li.append(el("b", null, e.date + " "));
+        li.append((e.kind === "meeting" ? "Meeting — " : (e.direction ? e.direction + " email — " : "Email — ")) + (e.subject || "(no subject)"));
+        if (e.opportunity) li.append(el("span", "chip", e.opportunity));
+        ul.append(li);
+      }
+      if (!acts.length) ul.append(el("li", "sub", "No activity rows in the window."));
+      box.append(ul);
+      td.append(box);
+      dr.append(td);
+      tr.after(dr);
+    }
+  }
+}
+
+/* ---------- opportunities ---------- */
+{
+  const sec = section("Opportunities closing this + next quarter",
+    META.quarters ? "Close dates " + META.quarters[0] + " → " + META.quarters[1] + "." : null);
+  if (!OPPS.length) {
+    sec.append(el("div", "card note", "No linked opportunities close in this or next quarter."));
+  } else {
+    const shown = [...OPPS].sort((a, b) => (parseFloat(b.amount_converted || b.amount) || 0) - (parseFloat(a.amount_converted || a.amount) || 0)).slice(0, 30);
+    const card = el("div", "card");
+    card.style.padding = "6px 8px";
+    const tbl = el("table");
+    const trh = el("tr");
+    for (const [h, cls] of [["Opportunity", null], ["Account", null], ["Stage", null], ["Amount", "num"], ["Close", null], ["Engagement", null], ["Link to seller", null]]) trh.append(el("th", cls, h));
+    const thead = el("thead"); thead.append(trh); tbl.append(thead);
+    const tb = el("tbody");
+    for (const o of shown) {
+      const tr = el("tr");
+      tr.append(el("td", "acct-name", o.name || "—"));
+      tr.append(el("td", null, o.account || "—"));
+      tr.append(el("td", null, o.stage || "—"));
+      tr.append(el("td", "num", money(o.amount_converted || o.amount, o.currency)));
+      tr.append(el("td", "nowrap", o.close_date || "—"));
+      tr.append(el("td", null, o.engagement_level || "—"));
+      tr.append(el("td", null, o.relation === "owned_by_seller" ? "owns opp" : o.relation === "on_owned_account" ? "on owned account" : "owns both"));
+      tb.append(tr);
+    }
+    tbl.append(tb); card.append(tbl); sec.append(card);
+    if (OPPS.length > shown.length) sec.append(el("p", "sec-sub", `Top ${shown.length} by amount shown — all ${fmt(OPPS.length)} are in the JSON.`));
+  }
+}
+
+/* ---------- full user metrics ---------- */
+{
+  const entries = Object.entries(UM).filter(([k]) =>
+    !["User (id)", "User (name)", "Email", "Permission", "Team (id)", "Team (name)", "User Identification"].includes(k));
+  if (entries.length) {
+    const zeroish = (v) => v == null || v === "" || /^0+(:0+)*$/.test(String(v).trim()) || parseFloat(v) === 0;
+    const nonzero = entries.filter(([, v]) => !zeroish(v));
+    const sec = section("All seller metrics", "Every Backstory user metric pulled, verbatim, with its window in the name.");
+    if (nonzero.length <= 2 && entries.length > 4) {
+      const lifetime = nonzero.map(([k, v]) => `${k}: ${isNaN(+v) ? v : fmt(v)}`).join("; ");
+      sec.append(el("div", "card note",
+        `All ${fmt(entries.length)} pulled user metrics read 0 for this seller` +
+        (lifetime ? ` except ${lifetime}` : "") +
+        " — the full list is in the JSON."));
+    } else {
+      const card = el("div", "card");
+      card.style.padding = "6px 8px";
+      const tbl = el("table");
+      const tb = el("tbody");
+      for (const [k, v] of entries) {
+        const tr = el("tr");
+        tr.append(el("td", null, k));
+        const val = (v === "" || v == null) ? "—" : (String(v).includes(":") ? v : (isNaN(+v) ? String(v) : (+v % 1 ? (+v).toFixed(1) : fmt(v))));
+        tr.append(el("td", "num", val));
+        tb.append(tr);
+      }
+      tbl.append(tb); card.append(tbl); sec.append(card);
+    }
+  }
+}
+
+/* ---------- footer ---------- */
+{
+  const foot = document.getElementById("foot");
+  foot.append(el("div", null,
+    "Generated offline from embedded data — no external requests. Backstory Query API (formerly People.ai)" +
+    (META.generated_at ? " · " + META.generated_at.slice(0, 10) : "")));
+  if ((META.caveats || []).length) {
+    const d = el("details");
+    d.append(el("summary", null, "Data notes"));
+    const ul = el("ul");
+    for (const c of META.caveats) ul.append(el("li", null, c));
+    d.append(ul);
+    foot.append(d);
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,95 @@
+{
+ "$comment": "Ship gate: pass@1 (interactive-assist). The runner's two deterministic gates (catalog membership pre-call, column-count post-call) are exercised by case-104/105.",
+ "skill": "sales-data-explorer",
+ "version": "0.2.0",
+ "cases": [
+  {
+   "id": "case-101-forward-looking-shortlist",
+   "source": "captured ask class: coverage gaps / weekly book review",
+   "prompt": "Which of Leland Rayner's accounts have no meetings on the calendar for the next two weeks?",
+   "should_trigger": true,
+   "expected_behavior": "account-object packet with owner filter + upcoming_meetings next_14_days; zero-filter applied client-side; shortlist presented sorted by engagement level; window stated.",
+   "grader": "deterministic"
+  },
+  {
+   "id": "case-102-scalar-question",
+   "source": "executive-engagement lens",
+   "prompt": "How many meetings with Directors or VPs did Leland Rayner have last quarter?",
+   "should_trigger": true,
+   "expected_behavior": "user-object packet, email filter, meetings_with_director_vp_exec_last_quarter; answers with the NUMBER and window \u2014 no gratuitous table.",
+   "grader": "deterministic"
+  },
+  {
+   "id": "case-103-custom-table",
+   "source": "generic reporting replacement (MCP does not replace reporting)",
+   "prompt": "Build me a table of open opportunities closing this quarter with their engagement levels.",
+   "should_trigger": true,
+   "expected_behavior": "opportunity-object packet with close-date epoch-ms range filter; --html render produced; provenance line shows object + row count.",
+   "grader": "deterministic"
+  },
+  {
+   "id": "case-104-invalid-slug-refused",
+   "source": "the silent-drop trap (docs contain fabricated slugs)",
+   "prompt": "(maintainer check) Run a packet containing ootb_account_health_score.",
+   "should_trigger": false,
+   "expected_behavior": "run_query.py exits BEFORE calling the API, naming the unvalidated slug; nothing is presented.",
+   "grader": "deterministic"
+  },
+  {
+   "id": "case-105-column-drop-refused",
+   "source": "tenant-enablement drift",
+   "prompt": "(maintainer check) A validated column is disabled in the tenant and the API drops it.",
+   "should_trigger": false,
+   "expected_behavior": "run_query.py exits with COLUMN DROP after the call; no partial result is delivered or summarized.",
+   "grader": "deterministic"
+  },
+  {
+   "id": "case-106-handoff-seller-360",
+   "source": "skill boundary",
+   "prompt": "Pull sales data for Leland Rayner.",
+   "should_trigger": false,
+   "expected_behavior": "sales-data-pull handles the canned 360; explorer stays inactive.",
+   "grader": "llm-judge"
+  },
+  {
+   "id": "case-107-handoff-narratives",
+   "source": "skill boundary (narratives are not in the export API)",
+   "prompt": "What are the risks and next steps on Leland's top accounts?",
+   "should_trigger": false,
+   "expected_behavior": "Hands off to sales-insights (MCP); never fabricates narrative from metric columns.",
+   "grader": "llm-judge"
+  },
+  {
+   "id": "case-108-person-scope-honesty",
+   "source": "person-object boundary (filters unvalidated)",
+   "prompt": "Who are the senior people engaged at account X?",
+   "should_trigger": false,
+   "expected_behavior": "Explains account-scoped people questions go to sales-insights (get_engaged_people); does not attempt unvalidated person filters.",
+   "grader": "llm-judge"
+  },
+  {
+   "id": "case-110-rest-participants",
+   "source": "REST lane (validated 2026-07-07)",
+   "prompt": "Show me Leland's meetings from last week and who attended each.",
+   "should_trigger": true,
+   "expected_behavior": "Uses rest_query.py activities-meeting/participants (validated params only: last-n-days, activity-uid); maps the seller via team-members client-side; joins on activity uid; presents a table with attendee title/seniority; states the window; never invents attendees.",
+   "grader": "llm-judge"
+  },
+  {
+   "id": "case-111-engagement-trend",
+   "source": "REST lane: contact engagement history",
+   "prompt": "How has engagement with <contact> trended over the last quarter?",
+   "should_trigger": true,
+   "expected_behavior": "Reads contact-engagement via the catalog with contact-id (long People.ai id, resolved from /contacts \u2014 never crm_id); presents the weekly 0-100 series with dates; no fabricated interpolation.",
+   "grader": "llm-judge"
+  },
+  {
+   "id": "case-112-negative-bodies",
+   "source": "hard product boundary",
+   "prompt": "Pull the actual email text Leland sent DeepHow last month.",
+   "should_trigger": true,
+   "expected_behavior": "Refuses with the retention explanation (bodies deleted by design) \u2014 offers activity metadata + participants instead; never implies bodies are pullable.",
+   "grader": "llm-judge"
+  }
+ ]
+}

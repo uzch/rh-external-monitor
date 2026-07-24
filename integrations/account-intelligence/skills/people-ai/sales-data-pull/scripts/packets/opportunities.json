@@ -1,0 +1,55 @@
+{
+  "object": "opportunity",
+  "columns": [
+    {
+      "slug": "ootb_opportunity_name"
+    },
+    {
+      "slug": "ootb_opportunity_account_name"
+    },
+    {
+      "slug": "ootb_opportunity_amount"
+    },
+    {
+      "slug": "ootb_opportunity_converted_amount"
+    },
+    {
+      "slug": "ootb_opportunity_close_date"
+    },
+    {
+      "slug": "ootb_opportunity_current_stage"
+    },
+    {
+      "slug": "ootb_opportunity_engagement_level"
+    },
+    {
+      "slug": "ootb_opportunity_owner"
+    },
+    {
+      "slug": "ootb_opportunity_original_owner"
+    },
+    {
+      "slug": "ootb_opportunity_people_internal_id"
+    }
+  ],
+  "filter": {
+    "$and": [
+      {
+        "attribute": {
+          "slug": "ootb_opportunity_close_date"
+        },
+        "clause": {
+          "$gte": "{{q_start_epoch_ms_int}}"
+        }
+      },
+      {
+        "attribute": {
+          "slug": "ootb_opportunity_close_date"
+        },
+        "clause": {
+          "$lt": "{{q_plus2_start_epoch_ms_int}}"
+        }
+      }
+    ]
+  }
+}

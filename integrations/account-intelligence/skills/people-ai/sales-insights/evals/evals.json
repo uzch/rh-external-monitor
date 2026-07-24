@@ -1,0 +1,111 @@
+{
+ "$comment": "Ship gate: pass@1 on these cases (interactive-assist flow). Skill 2 gates: window honesty (30/90/365 tiers stated, never blurred), credit discipline (free first, <=10, announced), no-enumeration honesty (the MCP cannot list accounts/opps/users).",
+ "skill": "sales-insights",
+ "version": "0.1.3",
+ "cases": [
+  {
+   "id": "case-001-cross-account-rollup",
+   "source": "core use case: cross-account rollup",
+   "prompt": "Summarize the risks and next steps across the seller's accounts.",
+   "should_trigger": true,
+   "expected_behavior": "Scopes from the sales-data-pull blob (or asks to run it); selects top accounts by activity, states the selection; free tools first; leads with 'N of M analyzed accounts\u2026' synthesis; per-account sections trace to tool responses; Caveats block present.",
+   "grader": "llm-judge"
+  },
+  {
+   "id": "case-002-single-account",
+   "source": "core use case: single account",
+   "prompt": "What's going on with the DeepHow account? Any risks?",
+   "should_trigger": true,
+   "expected_behavior": "find_account -> get_account_status (free); no credit-consuming call without announcing; 30d window labeled.",
+   "grader": "llm-judge"
+  },
+  {
+   "id": "case-003-window-honesty",
+   "source": "observed failure mode: silent window truncation",
+   "prompt": "Summarize what happened on the Starcloud account over the last 6 months.",
+   "should_trigger": true,
+   "expected_behavior": "States the three tiers: offers 30d free status, 30-90d via explicit-window ask_sales_ai (with credit notice), and the Query API pull for the full 6 months of activity rows. Never silently truncates to 30d, never fabricates >90d narrative.",
+   "grader": "llm-judge"
+  },
+  {
+   "id": "case-004-credit-cap-segmentation",
+   "source": "credit discipline on large books",
+   "prompt": "Run deep SalesAI analysis on every one of the seller's accounts.",
+   "should_trigger": true,
+   "expected_behavior": "Refuses the full fan-out; proposes segmentation (top-N by activity or user-picked); states the <=10 credit-call cap and asks before spending.",
+   "grader": "llm-judge"
+  },
+  {
+   "id": "case-005-explicit-window-phrasing",
+   "source": "required ask_sales_ai phrasing for 30-90d reach",
+   "prompt": "Why did engagement drop on this account two months ago?",
+   "should_trigger": true,
+   "expected_behavior": "The ask_sales_ai question includes explicit window phrasing ('review activity older than 30 days, up to 90 days ago'); credits announced before, reported after.",
+   "grader": "deterministic"
+  },
+  {
+   "id": "case-006-no-enumeration-honesty",
+   "source": "product boundary: no enumeration via MCP",
+   "prompt": "List all my accounts that have open opportunities closing this quarter.",
+   "should_trigger": true,
+   "expected_behavior": "Explains the MCP cannot enumerate accounts/opps; routes to sales-data-pull (Query API) for the list; offers to run insights on the result.",
+   "grader": "llm-judge"
+  },
+  {
+   "id": "case-007-top-themes",
+   "source": "core use case: cross-account themes",
+   "prompt": "What are the top themes across my accounts this month?",
+   "should_trigger": true,
+   "expected_behavior": "Aggregates topics from per-account statuses into ranked cross-account themes; themes trace to accounts; window labeled 30d.",
+   "grader": "llm-judge"
+  },
+  {
+   "id": "case-010-no-raw-json",
+   "source": "observed failure (customer session in Codex, 2026-07-02): the reply was one big JSON dump instead of an answer",
+   "prompt": "Give me insights on the DeepHow account.",
+   "should_trigger": true,
+   "expected_behavior": "The reply is written prose (status / risks / next steps + Caveats) \u2014 no raw JSON, no verbatim tool output, no code blocks of tool responses. Any JSON artifact is referenced by file path, never inlined as the answer.",
+   "grader": "llm-judge"
+  },
+  {
+   "id": "case-008-negative-data-pull",
+   "source": "skill boundary",
+   "prompt": "Pull the sales data for the seller for the last 4 months.",
+   "should_trigger": false,
+   "expected_behavior": "Hands off to sales-data-pull \u2014 raw data pulls, counts, and windows >90d are the companion skill's job.",
+   "grader": "llm-judge"
+  },
+  {
+   "id": "case-009-signals-merge",
+   "source": "engagement-dashboard interop (peopleai_signals)",
+   "prompt": "Add these insights to the seller's dashboard.",
+   "should_trigger": true,
+   "expected_behavior": "Writes signals.json in the contract shape ({account_name, peopleai_id, engaged_people, account_status}); merge_signals.py run produces updated JSON + HTML; pai_accounts_with_data recomputed; caveat appended.",
+   "grader": "deterministic"
+  },
+  {
+   "id": "case-011-company-news",
+   "source": "MCP tool coverage: account_company_news (probed 2026-07-07)",
+   "prompt": "Any recent news about the NVIDIA account I should know before my call?",
+   "should_trigger": true,
+   "expected_behavior": "Calls account_company_news after find_account; presents a handful of dated, relevant items in prose (filings/earnings-sourced, 200+ available \u2014 selects, never dumps); distinguishes external news from activity-derived insights; notes public-companies-only boundary if relevant; no fabricated headlines.",
+   "grader": "llm-judge"
+  },
+  {
+   "id": "case-012-situation-precedent",
+   "source": "MCP tool coverage: situation_search (probed 2026-07-07; verified contract = deal-precedent finder)",
+   "prompt": "We're getting pricing pushback on the <opportunity> deal \u2014 have we handled something like this before?",
+   "should_trigger": true,
+   "expected_behavior": "Calls situation_search with the chosen opportunity_id and the challenge description; presents up to 4 similar historical deals with dated actions_taken, outcome, and resolution_status; states that coverage is similarity-gated (>70%), and reports 'no similar situations found' as a valid result; never invents precedents.",
+   "grader": "llm-judge"
+  },
+  {
+   "id": "case-013-topic-search-honesty",
+   "source": "boundary: situation_search is NOT cross-account topic search",
+   "prompt": "Across all my accounts, where have security reviews come up recently?",
+   "should_trigger": true,
+   "expected_behavior": "Does NOT misuse situation_search for cross-account topic enumeration; scopes accounts via the data-pull blob (or asks), reads per-account topics from get_account_status, and states the no-enumeration limit explicitly.",
+   "grader": "llm-judge"
+  }
+ ]
+}

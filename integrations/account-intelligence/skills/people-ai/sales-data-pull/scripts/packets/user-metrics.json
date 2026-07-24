@@ -1,0 +1,92 @@
+{
+  "object": "user",
+  "columns": [
+    {
+      "slug": "ootb_user"
+    },
+    {
+      "slug": "ootb_user_email"
+    },
+    {
+      "slug": "ootb_user_role"
+    },
+    {
+      "slug": "ootb_user_team"
+    },
+    {
+      "slug": "ootb_user_primary_key"
+    },
+    {
+      "slug": "ootb_user_count_emails_sent",
+      "variation_id": "ootb_user_count_emails_sent_last_30_days"
+    },
+    {
+      "slug": "ootb_user_count_emails_sent",
+      "variation_id": "ootb_user_count_emails_sent_last_90_days"
+    },
+    {
+      "slug": "ootb_user_count_emails_sent",
+      "variation_id": "ootb_user_count_emails_sent_this_quarter"
+    },
+    {
+      "slug": "ootb_user_count_emails_sent",
+      "variation_id": "ootb_user_count_emails_sent_any_time"
+    },
+    {
+      "slug": "ootb_user_count_emails_received",
+      "variation_id": "ootb_user_count_emails_received_last_30_days"
+    },
+    {
+      "slug": "ootb_user_count_emails_received",
+      "variation_id": "ootb_user_count_emails_received_last_90_days"
+    },
+    {
+      "slug": "ootb_user_percentage_emails_inbound",
+      "variation_id": "ootb_user_percentage_emails_inbound_last_90_days_last_90_days"
+    },
+    {
+      "slug": "ootb_user_time_spent_activities_matched",
+      "variation_id": "ootb_user_time_spent_activities_matched_last_30_days"
+    },
+    {
+      "slug": "ootb_user_time_spent_activities_matched",
+      "variation_id": "ootb_user_time_spent_activities_matched_last_90_days"
+    },
+    {
+      "slug": "ootb_user_external_meetings_matched",
+      "variation_id": "ootb_user_external_meetings_matched_last_30_days"
+    },
+    {
+      "slug": "ootb_user_external_meetings_matched",
+      "variation_id": "ootb_user_external_meetings_matched_last_60_days"
+    },
+    {
+      "slug": "ootb_user_meetings_with_director_vp_exec",
+      "variation_id": "ootb_user_meetings_with_director_vp_exec_last_90_days"
+    },
+    {
+      "slug": "ootb_user_meetings_with_director_vp_exec",
+      "variation_id": "ootb_user_meetings_with_director_vp_exec_this_quarter"
+    },
+    {
+      "slug": "ootb_user_opportunity_created_standard",
+      "variation_id": "ootb_user_opportunity_created_standard_last_30_days"
+    },
+    {
+      "slug": "ootb_user_total_external_matched_activities_count",
+      "variation_id": "ootb_user_total_external_matched_activities_count_last_30_days"
+    },
+    {
+      "slug": "ootb_user_count_of_upcoming_meetings_standard",
+      "variation_id": "ootb_user_count_of_upcoming_meetings_standard_next_14_days"
+    }
+  ],
+  "filter": {
+    "attribute": {
+      "slug": "ootb_user_email"
+    },
+    "clause": {
+      "$eq": "{{seller_email}}"
+    }
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "scope_type": "pod",
+  "scope_value": "Healthcare",
+  "lookback_days": 120,
+  "deep_enrichment_limit": 5,
+  "external_research": false,
+  "research_objective": "Identify accounts needing immediate account-team attention and the next best conversation."
+}

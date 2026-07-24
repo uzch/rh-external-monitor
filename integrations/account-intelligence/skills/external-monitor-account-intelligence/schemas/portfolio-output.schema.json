@@ -1,0 +1,131 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.internal/schemas/external-monitor-portfolio.json",
+  "title": "External Monitor Portfolio Output",
+  "type": "object",
+  "required": ["run", "scope", "summary", "accounts", "_meta"],
+  "properties": {
+    "run": {
+      "type": "object",
+      "required": ["run_id", "status", "generated_at"],
+      "properties": {
+        "run_id": {"type": "string", "minLength": 1},
+        "status": {"enum": ["completed", "partial", "failed"]},
+        "generated_at": {"type": "string"}
+      },
+      "additionalProperties": true
+    },
+    "scope": {
+      "type": "object",
+      "required": ["type", "value"],
+      "properties": {
+        "type": {"enum": ["geo", "region", "pod", "territory", "account"]},
+        "value": {"type": "string"}
+      },
+      "additionalProperties": false
+    },
+    "summary": {
+      "type": "object",
+      "required": ["account_count", "accounts_with_internal_data", "accounts_enriched", "keep_count", "watch_count", "text"],
+      "properties": {
+        "account_count": {"type": "integer", "minimum": 0},
+        "accounts_with_internal_data": {"type": "integer", "minimum": 0},
+        "accounts_enriched": {"type": "integer", "minimum": 0},
+        "keep_count": {"type": "integer", "minimum": 0},
+        "watch_count": {"type": "integer", "minimum": 0},
+        "highest_signal_score": {"type": ["number", "null"], "minimum": 0, "maximum": 100},
+        "text": {"type": "string"}
+      },
+      "additionalProperties": true
+    },
+    "accounts": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/account"}
+    },
+    "_meta": {
+      "type": "object",
+      "required": ["query_window_days", "accounts_in_scope", "accounts_enriched", "caveats"],
+      "properties": {
+        "query_window_days": {"type": "integer", "minimum": 1, "maximum": 365},
+        "accounts_in_scope": {"type": "integer", "minimum": 0},
+        "accounts_enriched": {"type": "integer", "minimum": 0},
+        "mcp_status": {"enum": ["connected", "unavailable", "partial", "not_requested"]},
+        "caveats": {"type": "array", "items": {"type": "string"}}
+      },
+      "additionalProperties": true
+    }
+  },
+  "$defs": {
+    "account": {
+      "type": "object",
+      "required": ["account_id", "account_name", "hierarchy", "identity", "internal", "signals"],
+      "properties": {
+        "account_id": {"type": "string"},
+        "account_name": {"type": "string"},
+        "hierarchy": {
+          "type": "object",
+          "properties": {
+            "geo": {"type": ["string", "null"]},
+            "region": {"type": ["string", "null"]},
+            "pod": {"type": ["string", "null"]},
+            "territory_name": {"type": ["string", "null"]},
+            "segment": {"type": ["string", "null"]}
+          },
+          "additionalProperties": false
+        },
+        "identity": {
+          "type": "object",
+          "required": ["match_status"],
+          "properties": {
+            "crm_id": {"type": ["string", "null"]},
+            "peopleai_account_id": {"type": ["integer", "null"]},
+            "match_status": {"enum": ["unresolved", "matched", "ambiguous", "not_found"]}
+          },
+          "additionalProperties": true
+        },
+        "internal_priority_score": {"type": ["number", "null"], "minimum": 0, "maximum": 100},
+        "priority_reasons": {"type": "array", "items": {"type": "string"}},
+        "internal": {
+          "type": "object",
+          "properties": {
+            "metrics": {"type": "object"},
+            "account_status": {},
+            "recent_activity": {},
+            "engaged_people": {},
+            "risks": {"type": "array"},
+            "next_steps": {"type": "array"},
+            "topics": {"type": "array"}
+          },
+          "additionalProperties": true
+        },
+        "summary": {"type": ["string", "null"]},
+        "recommended_next_move": {"type": ["string", "null"]},
+        "signals": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/signal"}
+        }
+      },
+      "additionalProperties": true
+    },
+    "signal": {
+      "type": "object",
+      "required": ["signal_id", "disposition", "score", "headline", "source_type"],
+      "properties": {
+        "signal_id": {"type": "string"},
+        "disposition": {"enum": ["KEEP", "WATCH", "REJECT"]},
+        "score": {"type": "number", "minimum": 0, "maximum": 100},
+        "headline": {"type": "string"},
+        "what_changed": {"type": ["string", "null"]},
+        "why_it_matters": {"type": ["string", "null"]},
+        "red_hat_relevance": {"type": ["string", "null"]},
+        "recommended_action": {"type": ["string", "null"]},
+        "source_type": {"enum": ["peopleai_query", "backstory_mcp", "external_public", "derived"]},
+        "source_url": {"type": ["string", "null"]},
+        "published_at": {"type": ["string", "null"]},
+        "confidence": {"enum": ["high", "medium", "low"]}
+      },
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": false
+}

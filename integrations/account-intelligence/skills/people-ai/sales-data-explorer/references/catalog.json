@@ -1,0 +1,544 @@
+{
+ "_what": "Column vocabulary for the Backstory (formerly People.ai) Query API export \u2014 every slug here was verified against the LIVE API (the public docs list metric names that do not exist). Use ONLY these slugs; the API drops unknown columns silently.",
+ "api": "POST https://api.people.ai/v3/beta/insights/export",
+ "generated": "2026-07-02",
+ "period_vocabulary": {
+  "retrospective": [
+   "last_7_days",
+   "last_14_days",
+   "last_30_days",
+   "last_60_days",
+   "last_90_days",
+   "last_month",
+   "last_quarter",
+   "this_quarter",
+   "any_time"
+  ],
+  "future (upcoming-meetings metrics)": [
+   "next_7_days",
+   "next_14_days",
+   "next_30_days",
+   "this_week",
+   "this_month"
+  ],
+  "rejected_by_api": [
+   "current_month",
+   "current_quarter",
+   "current_year",
+   "current",
+   "last_year"
+  ],
+  "rules": "variation_id = <slug>_<period>. Percentage metrics DOUBLE the suffix (\u2026_last_30_days_last_30_days). Bare windowed slug = 7-day default (next-7-days for upcoming). Attribute-shaped columns (names, dates, ids, stages) take no suffix."
+ },
+ "not_available_via_export": {
+  "ootb_*_key_topics / next_steps / risks": "AI narrative fields do not export \u2014 use the sales-insights skill (MCP)",
+  "raw email/meeting bodies": "never exposed by design \u2014 CRM holds raw content",
+  "engaged people at an account": "person-object filters are unvalidated \u2014 use sales-insights (get_engaged_people)"
+ },
+ "excluded_known_bad": [
+  {
+   "slug": "ootb_user_total_activity",
+   "object": "user",
+   "why": "row-killer: silently drops all rows when combined with other metrics (verified in-tenant 2026-07-02)"
+  },
+  {
+   "slug": "ootb_activity_summary_ai",
+   "object": "activity",
+   "why": "columns return but every cell is empty (verified 2026-07-02) \u2014 no data to serve"
+  }
+ ],
+ "objects": {
+  "user": [
+   {
+    "slug": "ootb_user",
+    "windowing": "fixed-default-only"
+   },
+   {
+    "slug": "ootb_user_count_accounts_engaged_standard",
+    "windowing": "single-suffix (bare = 7-day default)"
+   },
+   {
+    "slug": "ootb_user_count_emails_received",
+    "windowing": "single-suffix",
+    "verified_variations": [
+     "ootb_user_count_emails_received_last_30_days",
+     "ootb_user_count_emails_received_last_7_days",
+     "ootb_user_count_emails_received_last_14_days",
+     "ootb_user_count_emails_received_last_60_days",
+     "ootb_user_count_emails_received_last_90_days",
+     "ootb_user_count_emails_received_last_month",
+     "ootb_user_count_emails_received_last_quarter",
+     "ootb_user_count_emails_received_this_quarter",
+     "ootb_user_count_emails_received_any_time"
+    ]
+   },
+   {
+    "slug": "ootb_user_count_emails_sent",
+    "windowing": "single-suffix",
+    "verified_variations": [
+     "ootb_user_count_emails_sent_last_30_days",
+     "ootb_user_count_emails_sent_last_7_days",
+     "ootb_user_count_emails_sent_last_14_days",
+     "ootb_user_count_emails_sent_last_60_days",
+     "ootb_user_count_emails_sent_last_90_days",
+     "ootb_user_count_emails_sent_last_month",
+     "ootb_user_count_emails_sent_last_quarter",
+     "ootb_user_count_emails_sent_this_quarter",
+     "ootb_user_count_emails_sent_any_time"
+    ]
+   },
+   {
+    "slug": "ootb_user_count_emails_sent_last_14_days",
+    "windowing": "fixed-default-only"
+   },
+   {
+    "slug": "ootb_user_count_of_upcoming_meetings_standard",
+    "windowing": "single-suffix-future (next_14_days verified; bare = next-7-days default)",
+    "verified_variations": [
+     "ootb_user_count_of_upcoming_meetings_standard_next_14_days",
+     "ootb_user_count_of_upcoming_meetings_standard_next_30_days",
+     "ootb_user_count_of_upcoming_meetings_standard_this_week"
+    ]
+   },
+   {
+    "slug": "ootb_user_email",
+    "windowing": "none"
+   },
+   {
+    "slug": "ootb_user_external_meetings_matched",
+    "windowing": "single-suffix",
+    "verified_variations": [
+     "ootb_user_external_meetings_matched_last_30_days",
+     "ootb_user_external_meetings_matched_last_7_days",
+     "ootb_user_external_meetings_matched_last_14_days",
+     "ootb_user_external_meetings_matched_last_60_days"
+    ]
+   },
+   {
+    "slug": "ootb_user_meetings_with_director_vp_exec",
+    "windowing": "single-suffix",
+    "verified_variations": [
+     "ootb_user_meetings_with_director_vp_exec_last_30_days",
+     "ootb_user_meetings_with_director_vp_exec_last_7_days",
+     "ootb_user_meetings_with_director_vp_exec_last_14_days",
+     "ootb_user_meetings_with_director_vp_exec_last_60_days",
+     "ootb_user_meetings_with_director_vp_exec_last_90_days",
+     "ootb_user_meetings_with_director_vp_exec_last_month",
+     "ootb_user_meetings_with_director_vp_exec_last_quarter",
+     "ootb_user_meetings_with_director_vp_exec_this_quarter",
+     "ootb_user_meetings_with_director_vp_exec_any_time"
+    ]
+   },
+   {
+    "slug": "ootb_user_opportunity_created_standard",
+    "windowing": "single-suffix",
+    "verified_variations": [
+     "ootb_user_opportunity_created_standard_last_30_days"
+    ]
+   },
+   {
+    "slug": "ootb_user_percentage_emails_inbound",
+    "windowing": "doubled-suffix",
+    "verified_variations": [
+     "ootb_user_percentage_emails_inbound_last_30_days_last_30_days",
+     "ootb_user_percentage_emails_inbound_last_7_days_last_7_days",
+     "ootb_user_percentage_emails_inbound_last_14_days_last_14_days",
+     "ootb_user_percentage_emails_inbound_last_60_days_last_60_days",
+     "ootb_user_percentage_emails_inbound_last_90_days_last_90_days",
+     "ootb_user_percentage_emails_inbound_last_month_last_month",
+     "ootb_user_percentage_emails_inbound_last_quarter_last_quarter",
+     "ootb_user_percentage_emails_inbound_this_quarter_this_quarter",
+     "ootb_user_percentage_emails_inbound_any_time_any_time"
+    ]
+   },
+   {
+    "slug": "ootb_user_percentage_time_spent_external",
+    "windowing": "doubled-suffix expected (class rule); only bare probed"
+   },
+   {
+    "slug": "ootb_user_primary_key",
+    "windowing": "not-probed (attribute-shaped; windowing n/a by design)"
+   },
+   {
+    "slug": "ootb_user_role",
+    "windowing": "none"
+   },
+   {
+    "slug": "ootb_user_team",
+    "windowing": "not-probed (attribute-shaped; windowing n/a by design)"
+   },
+   {
+    "slug": "ootb_user_time_spent_activities_matched",
+    "windowing": "single-suffix",
+    "verified_variations": [
+     "ootb_user_time_spent_activities_matched_last_30_days",
+     "ootb_user_time_spent_activities_matched_last_7_days",
+     "ootb_user_time_spent_activities_matched_last_14_days",
+     "ootb_user_time_spent_activities_matched_last_60_days",
+     "ootb_user_time_spent_activities_matched_last_90_days",
+     "ootb_user_time_spent_activities_matched_last_month",
+     "ootb_user_time_spent_activities_matched_last_quarter",
+     "ootb_user_time_spent_activities_matched_this_quarter",
+     "ootb_user_time_spent_activities_matched_any_time"
+    ]
+   },
+   {
+    "slug": "ootb_user_total_external_matched_activities_count",
+    "windowing": "single-suffix",
+    "verified_variations": [
+     "ootb_user_total_external_matched_activities_count_last_30_days",
+     "ootb_user_total_external_matched_activities_count_last_7_days",
+     "ootb_user_total_external_matched_activities_count_last_14_days",
+     "ootb_user_total_external_matched_activities_count_last_60_days",
+     "ootb_user_total_external_matched_activities_count_last_90_days",
+     "ootb_user_total_external_matched_activities_count_last_month",
+     "ootb_user_total_external_matched_activities_count_last_quarter",
+     "ootb_user_total_external_matched_activities_count_this_quarter",
+     "ootb_user_total_external_matched_activities_count_any_time"
+    ]
+   }
+  ],
+  "account": [
+   {
+    "slug": "ootb_account_count_of_emails_sent",
+    "windowing": "single-suffix",
+    "verified_variations": [
+     "ootb_account_count_of_emails_sent_last_30_days",
+     "ootb_account_count_of_emails_sent_last_7_days",
+     "ootb_account_count_of_emails_sent_last_14_days",
+     "ootb_account_count_of_emails_sent_last_60_days",
+     "ootb_account_count_of_emails_sent_last_90_days",
+     "ootb_account_count_of_emails_sent_last_month",
+     "ootb_account_count_of_emails_sent_last_quarter",
+     "ootb_account_count_of_emails_sent_this_quarter",
+     "ootb_account_count_of_emails_sent_any_time"
+    ]
+   },
+   {
+    "slug": "ootb_account_count_of_meetings_standard",
+    "windowing": "single-suffix",
+    "verified_variations": [
+     "ootb_account_count_of_meetings_standard_last_30_days",
+     "ootb_account_count_of_meetings_standard_last_7_days",
+     "ootb_account_count_of_meetings_standard_last_90_days",
+     "ootb_account_count_of_meetings_standard_last_14_days",
+     "ootb_account_count_of_meetings_standard_last_60_days",
+     "ootb_account_count_of_meetings_standard_last_month",
+     "ootb_account_count_of_meetings_standard_last_quarter",
+     "ootb_account_count_of_meetings_standard_this_quarter",
+     "ootb_account_count_of_meetings_standard_any_time"
+    ]
+   },
+   {
+    "slug": "ootb_account_domain",
+    "windowing": "not-probed (attribute-shaped; windowing n/a by design)"
+   },
+   {
+    "slug": "ootb_account_engagement_level",
+    "windowing": "fixed-default-only"
+   },
+   {
+    "slug": "ootb_account_executive_activities",
+    "windowing": "single-suffix",
+    "verified_variations": [
+     "ootb_account_executive_activities_last_30_days",
+     "ootb_account_executive_activities_last_7_days",
+     "ootb_account_executive_activities_last_14_days",
+     "ootb_account_executive_activities_last_60_days",
+     "ootb_account_executive_activities_last_90_days",
+     "ootb_account_executive_activities_last_month",
+     "ootb_account_executive_activities_last_quarter",
+     "ootb_account_executive_activities_this_quarter",
+     "ootb_account_executive_activities_any_time"
+    ]
+   },
+   {
+    "slug": "ootb_account_last_meeting_date",
+    "windowing": "not-probed (attribute-shaped; windowing n/a by design)"
+   },
+   {
+    "slug": "ootb_account_name",
+    "windowing": "not-probed (attribute-shaped; windowing n/a by design)"
+   },
+   {
+    "slug": "ootb_account_open_opportunities",
+    "windowing": "single-suffix",
+    "verified_variations": [
+     "ootb_account_open_opportunities_any_time",
+     "ootb_account_open_opportunities_last_7_days",
+     "ootb_account_open_opportunities_last_14_days",
+     "ootb_account_open_opportunities_last_30_days",
+     "ootb_account_open_opportunities_last_60_days",
+     "ootb_account_open_opportunities_last_90_days",
+     "ootb_account_open_opportunities_last_month",
+     "ootb_account_open_opportunities_last_quarter",
+     "ootb_account_open_opportunities_this_quarter"
+    ]
+   },
+   {
+    "slug": "ootb_account_open_opportunity_amount_closing_standard",
+    "windowing": "single-suffix",
+    "verified_variations": [
+     "ootb_account_open_opportunity_amount_closing_standard_this_quarter",
+     "ootb_account_open_opportunity_amount_closing_standard_last_7_days",
+     "ootb_account_open_opportunity_amount_closing_standard_last_14_days",
+     "ootb_account_open_opportunity_amount_closing_standard_last_30_days",
+     "ootb_account_open_opportunity_amount_closing_standard_last_60_days",
+     "ootb_account_open_opportunity_amount_closing_standard_last_90_days",
+     "ootb_account_open_opportunity_amount_closing_standard_last_month",
+     "ootb_account_open_opportunity_amount_closing_standard_last_quarter",
+     "ootb_account_open_opportunity_amount_closing_standard_any_time"
+    ]
+   },
+   {
+    "slug": "ootb_account_original_owner",
+    "windowing": "fixed-default-only",
+    "expands_to_columns": 2
+   },
+   {
+    "slug": "ootb_account_people_engaged",
+    "windowing": "single-suffix (bare = 7-day default)"
+   },
+   {
+    "slug": "ootb_account_people_internal_id",
+    "windowing": "not-probed (attribute-shaped; windowing n/a by design)"
+   },
+   {
+    "slug": "ootb_account_percentage_emails_inbound",
+    "windowing": "doubled-suffix",
+    "verified_variations": [
+     "ootb_account_percentage_emails_inbound_last_30_days_last_30_days",
+     "ootb_account_percentage_emails_inbound_last_7_days_last_7_days",
+     "ootb_account_percentage_emails_inbound_last_14_days_last_14_days",
+     "ootb_account_percentage_emails_inbound_last_60_days_last_60_days",
+     "ootb_account_percentage_emails_inbound_last_90_days_last_90_days",
+     "ootb_account_percentage_emails_inbound_last_month_last_month",
+     "ootb_account_percentage_emails_inbound_last_quarter_last_quarter",
+     "ootb_account_percentage_emails_inbound_this_quarter_this_quarter",
+     "ootb_account_percentage_emails_inbound_any_time_any_time"
+    ]
+   },
+   {
+    "slug": "ootb_account_total_activities_time_spent_standard",
+    "windowing": "single-suffix",
+    "verified_variations": [
+     "ootb_account_total_activities_time_spent_standard_last_90_days",
+     "ootb_account_total_activities_time_spent_standard_last_7_days",
+     "ootb_account_total_activities_time_spent_standard_last_14_days",
+     "ootb_account_total_activities_time_spent_standard_last_30_days",
+     "ootb_account_total_activities_time_spent_standard_last_60_days",
+     "ootb_account_total_activities_time_spent_standard_last_month",
+     "ootb_account_total_activities_time_spent_standard_last_quarter",
+     "ootb_account_total_activities_time_spent_standard_this_quarter",
+     "ootb_account_total_activities_time_spent_standard_any_time"
+    ]
+   },
+   {
+    "slug": "ootb_account_type",
+    "windowing": "not-probed (attribute-shaped; windowing n/a by design)"
+   },
+   {
+    "slug": "ootb_account_upcoming_meetings_standard",
+    "windowing": "single-suffix-future (next_*/this_* vocabulary; bare = next-7-days default)",
+    "verified_variations": [
+     "ootb_account_upcoming_meetings_standard_next_7_days",
+     "ootb_account_upcoming_meetings_standard_next_14_days",
+     "ootb_account_upcoming_meetings_standard_next_30_days",
+     "ootb_account_upcoming_meetings_standard_this_month",
+     "ootb_account_upcoming_meetings_standard_this_week"
+    ]
+   }
+  ],
+  "opportunity": [
+   {
+    "slug": "ootb_opportunity_account_name",
+    "windowing": "not-probed (attribute-shaped; windowing n/a by design)"
+   },
+   {
+    "slug": "ootb_opportunity_amount",
+    "windowing": "not-probed (attribute-shaped; windowing n/a by design)",
+    "expands_to_columns": 2
+   },
+   {
+    "slug": "ootb_opportunity_close_date",
+    "windowing": "not-probed (attribute-shaped; windowing n/a by design)"
+   },
+   {
+    "slug": "ootb_opportunity_converted_amount",
+    "windowing": "not-probed (attribute-shaped; windowing n/a by design)"
+   },
+   {
+    "slug": "ootb_opportunity_current_stage",
+    "windowing": "not-probed (attribute-shaped; windowing n/a by design)"
+   },
+   {
+    "slug": "ootb_opportunity_days_in_stage",
+    "windowing": "not-probed (attribute-shaped)"
+   },
+   {
+    "slug": "ootb_opportunity_engagement_level",
+    "windowing": "not-probed (attribute-shaped; windowing n/a by design)"
+   },
+   {
+    "slug": "ootb_opportunity_name",
+    "windowing": "not-probed (attribute-shaped; windowing n/a by design)"
+   },
+   {
+    "slug": "ootb_opportunity_original_owner",
+    "windowing": "not-probed (attribute-shaped; windowing n/a by design)"
+   },
+   {
+    "slug": "ootb_opportunity_owner",
+    "windowing": "not-probed (attribute-shaped; windowing n/a by design)"
+   },
+   {
+    "slug": "ootb_opportunity_people_engaged",
+    "windowing": "single-suffix (bare = 7-day default)"
+   },
+   {
+    "slug": "ootb_opportunity_people_internal_id",
+    "windowing": "not-probed (attribute-shaped; windowing n/a by design)"
+   },
+   {
+    "slug": "ootb_opportunity_time_spent_with_partner_standard",
+    "windowing": "single-suffix",
+    "verified_variations": [
+     "ootb_opportunity_time_spent_with_partner_standard_last_7_days",
+     "ootb_opportunity_time_spent_with_partner_standard_last_14_days",
+     "ootb_opportunity_time_spent_with_partner_standard_last_30_days",
+     "ootb_opportunity_time_spent_with_partner_standard_last_60_days",
+     "ootb_opportunity_time_spent_with_partner_standard_last_90_days",
+     "ootb_opportunity_time_spent_with_partner_standard_last_month",
+     "ootb_opportunity_time_spent_with_partner_standard_last_quarter",
+     "ootb_opportunity_time_spent_with_partner_standard_this_quarter",
+     "ootb_opportunity_time_spent_with_partner_standard_any_time"
+    ]
+   },
+   {
+    "slug": "ootb_opportunity_upcoming_meetings_standard",
+    "windowing": "single-suffix-future (assumed same next_*/this_* vocabulary as account; only bare probed)",
+    "verified_variations": [
+     "ootb_opportunity_upcoming_meetings_standard_next_14_days",
+     "ootb_opportunity_upcoming_meetings_standard_next_30_days"
+    ]
+   }
+  ],
+  "activity": [
+   {
+    "slug": "ootb_activity_account",
+    "windowing": "not-probed (attribute-shaped; windowing n/a by design)"
+   },
+   {
+    "slug": "ootb_activity_account_engagement_level",
+    "windowing": "not-probed (attribute-shaped; windowing n/a by design)"
+   },
+   {
+    "slug": "ootb_activity_account_name",
+    "windowing": "not-probed (attribute-shaped; windowing n/a by design)"
+   },
+   {
+    "slug": "ootb_activity_email_from",
+    "windowing": "not-probed (attribute-shaped; windowing n/a by design)"
+   },
+   {
+    "slug": "ootb_activity_external",
+    "windowing": "not-probed (attribute-shaped; windowing n/a by design)"
+   },
+   {
+    "slug": "ootb_activity_match_result",
+    "windowing": "not-probed (attribute-shaped; windowing n/a by design)",
+    "expands_to_columns": 9
+   },
+   {
+    "slug": "ootb_activity_opportunity",
+    "windowing": "not-probed (attribute-shaped; windowing n/a by design)"
+   },
+   {
+    "slug": "ootb_activity_opportunity_name",
+    "windowing": "not-probed (attribute-shaped; windowing n/a by design)"
+   },
+   {
+    "slug": "ootb_activity_opportunity_stage",
+    "windowing": "not-probed (attribute-shaped; windowing n/a by design)"
+   },
+   {
+    "slug": "ootb_activity_originator",
+    "windowing": "not-probed (attribute-shaped; windowing n/a by design)"
+   },
+   {
+    "slug": "ootb_activity_outbound",
+    "windowing": "not-probed (attribute-shaped; windowing n/a by design)"
+   },
+   {
+    "slug": "ootb_activity_owner",
+    "windowing": "not-probed (attribute-shaped; windowing n/a by design)"
+   },
+   {
+    "slug": "ootb_activity_subject",
+    "windowing": "not-probed (attribute-shaped; windowing n/a by design)"
+   },
+   {
+    "slug": "ootb_activity_timestamp",
+    "windowing": "not-probed (attribute-shaped; windowing n/a by design)"
+   },
+   {
+    "slug": "ootb_activity_type",
+    "windowing": "not-probed (attribute-shaped; windowing n/a by design)"
+   },
+   {
+    "slug": "ootb_activity_uid",
+    "windowing": "not-probed (attribute-shaped; windowing n/a by design)"
+   }
+  ],
+  "person": [
+   {
+    "slug": "ootb_person_department",
+    "windowing": "not-probed (attribute-shaped)"
+   },
+   {
+    "slug": "ootb_person_email",
+    "windowing": "not-probed (attribute-shaped)"
+   },
+   {
+    "slug": "ootb_person_engagement_level",
+    "windowing": "not-probed"
+   },
+   {
+    "slug": "ootb_person_external_participant",
+    "windowing": "not-probed (attribute-shaped)"
+   },
+   {
+    "slug": "ootb_person_job_title",
+    "windowing": "not-probed (attribute-shaped)"
+   },
+   {
+    "slug": "ootb_person_max_buying_power",
+    "windowing": "not-probed (attribute-shaped)"
+   },
+   {
+    "slug": "ootb_person_min_buying_power",
+    "windowing": "not-probed (attribute-shaped)"
+   },
+   {
+    "slug": "ootb_person_phone",
+    "windowing": "not-probed (attribute-shaped)"
+   },
+   {
+    "slug": "ootb_person_primary_key",
+    "windowing": "not-probed (attribute-shaped)"
+   },
+   {
+    "slug": "ootb_person_seniority",
+    "windowing": "not-probed (attribute-shaped)"
+   },
+   {
+    "slug": "ootb_person_seniority_level",
+    "windowing": "not-probed (attribute-shaped)"
+   },
+   {
+    "slug": "ootb_person_win_rate_level",
+    "windowing": "not-probed (attribute-shaped)"
+   }
+  ]
+ }
+}

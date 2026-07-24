@@ -1,0 +1,70 @@
+{
+  "object": "account",
+  "columns": [
+    {
+      "slug": "ootb_account_name"
+    },
+    {
+      "slug": "ootb_account_domain"
+    },
+    {
+      "slug": "ootb_account_people_internal_id"
+    },
+    {
+      "slug": "ootb_account_type"
+    },
+    {
+      "slug": "ootb_account_engagement_level"
+    },
+    {
+      "slug": "ootb_account_original_owner"
+    },
+    {
+      "slug": "ootb_account_last_meeting_date"
+    },
+    {
+      "slug": "ootb_account_open_opportunities",
+      "variation_id": "ootb_account_open_opportunities_any_time"
+    },
+    {
+      "slug": "ootb_account_open_opportunity_amount_closing_standard",
+      "variation_id": "ootb_account_open_opportunity_amount_closing_standard_this_quarter"
+    },
+    {
+      "slug": "ootb_account_count_of_meetings_standard",
+      "variation_id": "ootb_account_count_of_meetings_standard_last_30_days"
+    },
+    {
+      "slug": "ootb_account_count_of_meetings_standard",
+      "variation_id": "ootb_account_count_of_meetings_standard_last_90_days"
+    },
+    {
+      "slug": "ootb_account_count_of_emails_sent",
+      "variation_id": "ootb_account_count_of_emails_sent_last_30_days"
+    },
+    {
+      "slug": "ootb_account_percentage_emails_inbound",
+      "variation_id": "ootb_account_percentage_emails_inbound_last_90_days_last_90_days"
+    },
+    {
+      "slug": "ootb_account_total_activities_time_spent_standard",
+      "variation_id": "ootb_account_total_activities_time_spent_standard_last_90_days"
+    },
+    {
+      "slug": "ootb_account_executive_activities",
+      "variation_id": "ootb_account_executive_activities_last_30_days"
+    },
+    {
+      "slug": "ootb_account_upcoming_meetings_standard",
+      "variation_id": "ootb_account_upcoming_meetings_standard_next_14_days"
+    }
+  ],
+  "filter": {
+    "attribute": {
+      "slug": "ootb_account_original_owner"
+    },
+    "clause": {
+      "$eq": "{{owner_id_int}}"
+    }
+  }
+}

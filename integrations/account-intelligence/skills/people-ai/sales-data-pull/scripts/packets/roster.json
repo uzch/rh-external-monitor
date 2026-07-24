@@ -1,0 +1,20 @@
+{
+  "object": "user",
+  "columns": [
+    {
+      "slug": "ootb_user"
+    },
+    {
+      "slug": "ootb_user_email"
+    },
+    {
+      "slug": "ootb_user_primary_key"
+    },
+    {
+      "slug": "ootb_user_role"
+    },
+    {
+      "slug": "ootb_user_team"
+    }
+  ]
+}

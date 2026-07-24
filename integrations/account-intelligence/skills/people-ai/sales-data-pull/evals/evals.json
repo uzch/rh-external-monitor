@@ -1,0 +1,95 @@
+{
+  "$comment": "Ship gate: pass@1 on these cases (interactive-assist flow). Acceptance check #1: meeting counts must match the tenant's reference report exactly (case-003/004).",
+  "skill": "sales-data-pull",
+  "version": "0.4.1",
+  "cases": [
+    {
+      "id": "case-001-basic-pull",
+      "source": "core use case",
+      "prompt": "Pull the sales data for Leland Rayner for the last 4 months.",
+      "should_trigger": true,
+      "expected_behavior": "Runs pull_sales_data.py with --window-days 120; JSON blob written; summary counts non-zero; caveats presented.",
+      "grader": "deterministic"
+    },
+    {
+      "id": "case-002-name-variant",
+      "source": "name-resolution requirement",
+      "prompt": "Get me Leland Rainer's engagement data.",
+      "should_trigger": true,
+      "expected_behavior": "Fuzzy resolution finds the intended seller or presents a short candidate list; never errors with 'no user' when a close match exists; never silently picks among multiple candidates.",
+      "grader": "deterministic"
+    },
+    {
+      "id": "case-003-meeting-counts-right",
+      "source": "acceptance gate: meeting counts",
+      "prompt": "Run the sales pull for Leland Rayner, 30-day window.",
+      "should_trigger": true,
+      "expected_behavior": "summary.meetings_count and per-account pai_meetings_30d match the tenant's reference report for the same window, +/-0.",
+      "grader": "deterministic"
+    },
+    {
+      "id": "case-004-intake-off-seller",
+      "source": "observed failure mode: config profile with intake disabled",
+      "prompt": "Pull sales data for a seller whose config profile has intake disabled.",
+      "should_trigger": true,
+      "expected_behavior": "Zero-activity result is flagged as a probable config-profile issue (intake OFF), not delivered as a silently-empty dashboard.",
+      "grader": "llm-judge"
+    },
+    {
+      "id": "case-005-window-cap",
+      "source": "window cap",
+      "prompt": "Pull Leland Rayner's activity for the last 3 years.",
+      "should_trigger": true,
+      "expected_behavior": "Window capped at 365 days with an explicit warning; no promise of >1yr data.",
+      "grader": "deterministic"
+    },
+    {
+      "id": "case-006-schema-contract",
+      "source": "engagement-dashboard template interop",
+      "prompt": "Pull sales data for Leland Rayner and render it with the engagement-dashboard template.",
+      "should_trigger": true,
+      "expected_behavior": "Emitted JSON contains all 8 template keys (summary, owned_accounts, account_rollup, events, emails, email_messages, eliot_owned_tasks, peopleai_signals); HTML renders with tabs populated.",
+      "grader": "deterministic"
+    },
+    {
+      "id": "case-007-verified-slugs-only",
+      "source": "maintainer check (not a user prompt)",
+      "prompt": "(repo CI check, not a user prompt)",
+      "should_trigger": false,
+      "expected_behavior": "Every slug/variation_id in scripts/packets/*.json has been validated against the live API within the last 90 days (see references/api-behavior.md).",
+      "grader": "deterministic"
+    },
+    {
+      "id": "case-009-upcoming-meetings",
+      "source": "Tier-2 adjacent: forward-looking column (registry-verified 2026-07-02, future-window vocabulary)",
+      "prompt": "Pull sales data for Leland Rayner — what's already on the calendar for his book?",
+      "should_trigger": true,
+      "expected_behavior": "summary.upcoming_meetings_14d equals the 'Upcoming Meetings (Next 14 Days)' user-metrics column verbatim; every owned_accounts/account_rollup row carries upcoming_meetings_14d; the KPI tile labels the window ('next 14d') and the semantics stay consistent (seller KPI = involving the seller; account column = any participant).",
+      "grader": "deterministic"
+    },
+    {
+      "id": "case-010-upcoming-zero-state",
+      "source": "zero-state honesty (deceptively-simple hard rule)",
+      "prompt": "Pull sales data for a seller with no user-metrics row (e.g. outside the metric universe).",
+      "should_trigger": true,
+      "expected_behavior": "No upcoming-meetings tile is fabricated when the user-metrics row is absent (board keeps its one honest sentence); when metrics exist and upcoming is 0, the tile shows 0 — a real forward-looking signal, not hidden.",
+      "grader": "deterministic"
+    },
+    {
+      "id": "case-011-key-bootstrap",
+      "source": "customer bootstrap flow (bundle ships keyless, 2026-07-07)",
+      "prompt": "I got the sales skills bundle installed. Here's our Backstory API key — client id abc123, secret shh-secret — can you set it up for me?",
+      "should_trigger": true,
+      "expected_behavior": "Writes {\"client_id\", \"client_secret\"} to sales-data-pull/scripts/peopleai-key.local.json in every installed copy of the skill (checks ~/.claude/skills/ and the project's .claude/skills/ + .agents/skills/), runs `python3 scripts/pull_sales_data.py --check-key`, and reports the verification result; never echoes the full secret back; never commits the key file.",
+      "grader": "llm-judge"
+    },
+    {
+      "id": "case-008-negative-summaries",
+      "source": "skill boundary",
+      "prompt": "Summarize the risks and next steps on Leland's accounts.",
+      "should_trigger": false,
+      "expected_behavior": "This skill stays inactive or hands off — risks/next-steps narratives belong to the companion insights skill (MCP).",
+      "grader": "llm-judge"
+    }
+  ]
+}
