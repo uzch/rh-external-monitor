@@ -1,6 +1,6 @@
 # Repository instructions
 
-This repository contains the Red Hat External Monitor account-intelligence bundle. The implementation source of truth is `integrations/account-intelligence`.
+This repository contains the Red Hat External Monitor account-intelligence bundle. The root `skills/`, `docs/`, and `archive/` directories are authoritative.
 
 ## Working rules
 
@@ -13,13 +13,13 @@ This repository contains the Red Hat External Monitor account-intelligence bundl
 - Never silently merge ambiguous accounts or convert missing values to zero.
 - Never commit credentials, tokens, customer outputs, or generated intelligence.
 
-For changes within `integrations/account-intelligence`, also follow its scoped `AGENTS.md`. People.ai-provided skills remain authoritative for People.ai-specific behavior.
+The External Monitor skill governs orchestration. People.ai-provided skills under `skills/people-ai/` remain authoritative for People.ai-specific behavior. Do not rewrite connector behavior to fit this repository; adapt the orchestration layer when needed.
 
 ## Validation
 
 Before claiming completion:
 
-- Read the root README and `integrations/account-intelligence/README.md` before changing behavior or documentation.
+- Read the root README before changing behavior or documentation.
 - Compile all Python scripts and parse all JSON files.
 - Run the bundled portfolio validator and renderer for artifact checks.
 - Report unavailable API or MCP capabilities honestly.

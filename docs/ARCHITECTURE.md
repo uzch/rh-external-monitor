@@ -12,3 +12,7 @@ The agent can be Codex, Claude CLI, or another compatible runner. The contract i
 Identity is resolved in stages. Stable CRM identifiers are preferred, then exact normalized names, then explicit provider confirmation or user aliases. Ambiguous matches are marked and excluded from silent enrichment.
 
 The system is intentionally usable when MCP is unavailable: the Query API portfolio can still be produced with enrichment marked unavailable.
+
+## Source and implementation boundaries
+
+The authoritative People.ai source skills are preserved under `skills/people-ai/`. The External Monitor orchestration layer lives under `skills/external-monitor-account-intelligence/`. These skills are portable and agent-agnostic, so Codex, Claude CLI, or another compatible runner can execute the file-based workflow.

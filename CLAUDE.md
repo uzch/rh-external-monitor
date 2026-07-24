@@ -1,3 +1,3 @@
 # Claude CLI entry point
 
-Follow the repository-wide instructions in [`AGENTS.md`](AGENTS.md). For work in the account-intelligence bundle, also follow [`integrations/account-intelligence/CLAUDE.md`](integrations/account-intelligence/CLAUDE.md) and its scoped [`AGENTS.md`](integrations/account-intelligence/AGENTS.md).
+Follow the repository-wide instructions in [`AGENTS.md`](AGENTS.md). Start with [`README.md`](README.md), then read [`skills/external-monitor-account-intelligence/SKILL.md`](skills/external-monitor-account-intelligence/SKILL.md) and its output contract. Load People.ai source skills under [`skills/people-ai/`](skills/people-ai/) only for the capability being executed.
