@@ -50,7 +50,7 @@ Optional:
 
 - `lookback_days` for Query API metrics, default `120`, maximum `365`
 - `deep_enrichment_limit`, default `5`, maximum `10`
-- `external_research`: boolean, default `false`
+- `external_research`: boolean, default `true`. Set to `false` only when the user explicitly opts out of web research.
 - `research_objective`: user-specific prioritization objective
 
 ## Procedure
@@ -116,15 +116,35 @@ Never silently merge ambiguous accounts. Mark them `ambiguous` and exclude them 
 
 ### 3. Run the batch Query API pass
 
-Use `sales-data-explorer` and its validated catalog. Preserve its hard rules:
+**Always use `scripts/aggregate_activity_metrics.py`.** This script queries the `activity` object with a server-side `ootb_activity_account_name $in [...]` filter, scoped to only the accounts in your identity map. It then aggregates per-account metrics client-side.
 
-- Only validated slugs.
+```bash
+python scripts/aggregate_activity_metrics.py \
+  --territory AEROSPACE_AND_DEFENSE_ENT_POD_TERR03 \
+  --identities scoped-identities.json \
+  --out territory-metrics.json
+```
+
+> **Do not query the `account` object directly.** The `account` object has no validated server-side name filter. An unfiltered account query dumps metrics for every account in the tenant, causing multi-minute timeouts and wasted API quota. The `activity` object with `$in` filter is the only correct approach for scoped portfolio metrics.
+
+Then use `scripts/build_portfolio.py` to assemble the base portfolio from registry, identities, and metrics:
+
+```bash
+python scripts/build_portfolio.py \
+  --territory AEROSPACE_AND_DEFENSE_ENT_POD_TERR03 \
+  --identities scoped-identities.json \
+  --metrics territory-metrics.json \
+  --out portfolio-base.json
+```
+
+Preserve the hard rules from `sales-data-explorer`:
+
+- Only validated slugs from the catalog.
 - Server-side filters only where explicitly supported.
-- Batch account names with `ootb_activity_account_name $in [...]` when pulling activity records.
 - If a tenant silently drops a requested column, fail that packet rather than delivering partial data.
 - Query API output is metrics and records, not AI narrative.
 
-Default portfolio metrics should include, where tenant-enabled:
+Default portfolio metrics (aggregated by `aggregate_activity_metrics.py`):
 
 - account name
 - engagement level
@@ -136,8 +156,6 @@ Default portfolio metrics should include, where tenant-enabled:
 - open opportunity count
 - open opportunity amount this quarter
 - account owner
-
-Use the Query API for the entire selected account set. Do not issue one request per account when fields share the same object and window.
 
 ### 4. Compute deterministic portfolio priority
 
@@ -180,11 +198,13 @@ Preserve source windows:
 
 Do not claim that MCP covered all accounts. Record `accounts_enriched` separately from `accounts_in_scope`.
 
-### 6. Optional external research
+### 6. External research
 
-When `external_research=true`, follow the guidance in [`RESEARCH.md`](RESEARCH.md).
+External research runs by default (`external_research=true`). Skip only when the user explicitly opts out.
 
-Research runs only on accounts selected for deep enrichment (step 5) unless the user explicitly requests broader scope. It uses Claude's web search and fetch capabilities to find publicly available signals.
+Follow the guidance in [`RESEARCH.md`](RESEARCH.md). Research runs on accounts selected for deep enrichment (step 5) unless the user explicitly requests broader scope.
+
+**Parallelization:** When researching multiple accounts, use parallel subagents (one per account) to reduce wall-clock time. Each subagent receives the account name, identity, research objective, and the RESEARCH.md guidance, and returns signals conforming to the portfolio schema. The orchestrator merges all returned signals into the portfolio after all subagents complete.
 
 Key rules (see `RESEARCH.md` for full guidance):
 
@@ -209,15 +229,20 @@ The portfolio summary must answer:
 
 The account view must be concise and action-oriented. Avoid long narrative dumps from MCP responses.
 
-### 8. Render
+### 8. Render and export
 
-Use `scripts/render_portfolio.py` with `templates/portfolio.html`:
+A complete run produces three output files from the final `portfolio.json`:
 
 ```bash
 python scripts/render_portfolio.py portfolio.json --out external-monitor-portfolio.html
+python scripts/export_sheets.py portfolio.json --out external-monitor-portfolio.xlsx
 ```
 
-The same JSON can also be written into Google Sheets backend tabs later. Rendering must not require one page per account.
+- `portfolio.json` -- machine-readable artifact, validated against the schema.
+- `portfolio.html` -- single-file interactive HTML for browser viewing.
+- `portfolio.xlsx` -- formatted spreadsheet with Portfolio and Signals tabs.
+
+Rendering must not require one page per account. The same JSON drives all three outputs.
 
 ## Output rules
 

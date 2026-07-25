@@ -106,8 +106,8 @@ def run_query(packet, out_dir):
         suffix=".json", prefix="activity-packet-", dir=out_dir
     )
     try:
-        with os.fdopen(fd, "w") as f:
-            json.dump(packet, f, indent=2)
+        with os.fdopen(fd, "w", encoding="utf-8") as f:
+            json.dump(packet, f, indent=2, ensure_ascii=False)
         cmd = [
             sys.executable, RUNNER_SCRIPT, packet_path,
             "--title", "Activity Metrics",

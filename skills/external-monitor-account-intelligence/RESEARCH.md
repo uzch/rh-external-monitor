@@ -2,11 +2,11 @@
 
 This document guides external web research for the External Monitor portfolio. It is referenced by SKILL.md step 6.
 
-External research is optional, additive intelligence that layers on top of People.ai Query API metrics and Backstory MCP context. It uses Claude's web search and fetch capabilities to find publicly available signals relevant to account prioritization.
+External research is additive intelligence that layers on top of People.ai Query API metrics and Backstory MCP context. It uses Claude's web search and fetch capabilities to find publicly available signals relevant to account prioritization.
 
 ## When external research runs
 
-External research runs only when `external_research=true` is passed as an input. It is off by default.
+External research runs by default (`external_research=true`). It is skipped only when the user explicitly opts out.
 
 It runs AFTER:
 
@@ -119,6 +119,12 @@ External research produces signal objects that conform to the portfolio schema (
 ```
 
 Signals attach to the account's `signals` array in `portfolio.json`. They are validated by the same schema as all other signals.
+
+## Parallelization
+
+When the orchestrator researches more than one account, it should spawn one subagent per account. Each subagent receives the account name, identity record, research objective (if any), and follows this research guidance independently. The orchestrator merges all returned signals into the portfolio after all subagents complete.
+
+This reduces wall-clock time from O(N * search_time) to O(max_search_time) and is the expected execution model for multi-account research.
 
 ## Research objective
 
