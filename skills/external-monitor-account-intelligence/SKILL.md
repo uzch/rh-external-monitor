@@ -174,21 +174,64 @@ Missing fields reduce confidence; they must not be treated as zero evidence with
 
 The deterministic score is for triage only. It is not the final External Monitor signal score.
 
-### 5. Select accounts for Backstory MCP enrichment
+### 5. Backstory MCP enrichment
 
-Default: top `5` accounts by deterministic priority, maximum `10`.
+Default: top `5` accounts by deterministic priority, maximum `10`. Also include any account explicitly requested by the user. Only enrich accounts with `identity.match_status == "matched"`.
 
-Also include any account explicitly requested by the user.
+#### 5a. Collect MCP data
 
-For each selected account:
+For each selected account, call MCP tools:
 
-1. `find_account(account_name)` or `find_record_by_crm_id(crm_id)`.
-2. Free calls first:
-   - `get_account_status`
-   - `get_recent_account_activity`
-   - `get_engaged_people`
-   - `account_company_news` when relevant
-3. Use `ask_sales_ai_about_account` only when the requested question cannot be answered from free calls and only within the documented credit rules of `sales-insights`.
+1. `get_account_status(peopleai_account_id)` -- returns risks, next steps, topics (30-day window, unstructured prose).
+2. `get_recent_account_activity(peopleai_account_id)` -- returns summarized emails and meetings (30-day window, unstructured prose).
+3. `account_company_news(peopleai_account_id)` -- for publicly traded companies only. Returns categorized filings and news (structured array).
+4. `ask_sales_ai_about_account(question, peopleai_account_id)` -- only when the question cannot be answered from free calls, and only within the credit rules of `sales-insights`.
+
+#### 5b. Synthesize into structured enrichment
+
+MCP responses are unstructured prose. The orchestrator must synthesize each account's responses into structured enrichment data and write `mcp-enrichment.json`:
+
+```json
+{
+  "<peopleai_account_id>": {
+    "status": {
+      "risks": ["risk statement 1", "..."],
+      "next_steps": ["action item 1", "..."],
+      "topics": ["topic 1", "..."]
+    },
+    "raw_status": "optional: raw get_account_status text",
+    "raw_activity": "optional: raw get_recent_account_activity text",
+    "summary": "1-3 sentence account narrative combining MCP and metrics context",
+    "recommended_next_move": "single actionable next step for the account team",
+    "signals": [
+      {
+        "disposition": "KEEP",
+        "score": 80,
+        "headline": "concise factual headline",
+        "what_changed": "what happened",
+        "why_it_matters": "business impact",
+        "red_hat_relevance": "specific Red Hat relevance",
+        "recommended_action": "what to do",
+        "source_type": "backstory_mcp",
+        "confidence": "high"
+      }
+    ]
+  }
+}
+```
+
+#### 5c. Merge enrichment into portfolio
+
+Use `scripts/enrich_portfolio.py` to merge the synthesized MCP data into the base portfolio:
+
+```bash
+python scripts/enrich_portfolio.py \
+  --portfolio portfolio-base.json \
+  --mcp-data mcp-enrichment.json \
+  --out portfolio.json
+```
+
+The script fills each enriched account's `internal.risks`, `internal.next_steps`, `internal.topics`, `summary`, `recommended_next_move`, and `signals`. It updates the envelope metadata (`accounts_enriched`, `mcp_status`, signal counts, caveats).
 
 Preserve source windows:
 
