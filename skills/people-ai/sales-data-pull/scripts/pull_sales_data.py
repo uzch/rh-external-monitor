@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 """sales-data-pull — seller-centric 360 from the Backstory (formerly People.ai) Query API.
 
 Resolves a seller by (fuzzy) name or email, runs four validated Query API
@@ -12,10 +12,10 @@ or a peopleai-key.local.json / peopleai-key.json file next to this script:
 Verify a freshly wired-in key with --check-key (auth-only, then exit).
 
 Usage:
-    python3 pull_sales_data.py "<seller name or email>"
+    python pull_sales_data.py "<seller name or email>"
         [--window-days 120] [--out DIR] [--template template.html]
         [--include-future-meetings] [--base https://api.people.ai]
-    python3 pull_sales_data.py --check-key
+    python pull_sales_data.py --check-key
 """
 import argparse
 import csv
@@ -40,7 +40,25 @@ UTC = dt.timezone.utc
 
 # ---------- API plumbing ----------
 
+def _load_dotenv():
+    """Load .env from repo root into os.environ (stdlib only, no overwrite)."""
+    root = os.path.normpath(os.path.join(HERE, "..", "..", "..", ".."))
+    dotenv = os.path.join(root, ".env")
+    if not os.path.isfile(dotenv):
+        return
+    with open(dotenv, encoding="utf-8") as f:
+        for line in f:
+            line = line.strip()
+            if not line or line.startswith("#") or "=" not in line:
+                continue
+            key, _, value = line.partition("=")
+            key, value = key.strip(), value.strip()
+            if key and key not in os.environ:
+                os.environ[key] = value
+
+
 def load_credentials():
+    _load_dotenv()
     cid, sec = os.environ.get("PEOPLEAI_CLIENT_ID"), os.environ.get("PEOPLEAI_CLIENT_SECRET")
     if cid and sec:
         return cid, sec
@@ -173,7 +191,7 @@ def main():
 
     if args.check_key:
         Api(args.base)
-        print(f"✓ API key works — authenticated against {args.base}")
+        print(f"OK - API key works - authenticated against {args.base}")
         return
     if not args.seller:
         ap.error("seller is required (or use --check-key)")

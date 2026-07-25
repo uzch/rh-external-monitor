@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 """Validate an External Monitor portfolio JSON against the bundled schema."""
 from __future__ import annotations
 

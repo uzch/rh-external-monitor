@@ -1,14 +1,30 @@
+# Credentials and secrets
 .env
 .env.*
 !.env.example
 credentials.json
 token.json
 *.token.json
+*.local.json
+peopleai-key.local.json
+
+# Pipeline output (contains real account data and PII)
 output/
 outputs/
+
+# Local data (Enterprise Accounts registry, generated artifacts)
+data/local/
 data/generated/
 data/runs/
+
+# Temp and build artifacts
 *.log
 __pycache__/
 *.py[cod]
+*.xlsx
+*.csv
+!.env.example
+
+# OS
 .DS_Store
+Thumbs.db

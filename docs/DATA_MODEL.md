@@ -1,15 +1,36 @@
 # Data model
 
-The primary artifact is `portfolio.json`, validated by [`portfolio-output.schema.json`](../skills/external-monitor-account-intelligence/schemas/portfolio-output.schema.json).
+Everything flows through a single `portfolio.json`, validated by [`portfolio-output.schema.json`](../skills/external-monitor-account-intelligence/schemas/portfolio-output.schema.json). The same file drives both the HTML view and the spreadsheet export.
 
-At the top level it records scope, summary, accounts, run metadata, and caveats. Each account retains:
+## What's in the portfolio
 
-- stable local identity and match status;
-- GEO, region, pod, territory, and segment;
-- People.ai identifiers and metrics;
-- deterministic internal priority and reasons;
-- Backstory status, risks, next steps, topics, and engaged people when enriched;
-- optional external signals;
-- provenance and time windows.
+At the top level: scope, summary, accounts, run metadata, and caveats.
 
-Use `null` for unavailable values. `0` means the source explicitly returned zero. `KEEP`, `WATCH`, and `REJECT` are output dispositions, not claims about customer intent.
+Each account carries:
+
+- **Identity** — People.ai account ID, match status, canonical query name
+- **Hierarchy** — GEO, region, territory, segment (from the registry)
+- **Internal metrics** — activity counts, meetings, emails, opportunities, trend (from People.ai Query API)
+- **Priority score** — deterministic 0-100 score with reasons
+- **MCP context** — risks, next steps, topics, engaged people (when enriched)
+- **Signals** — scored and dispositioned findings from MCP, web research, or derived analysis
+- **Summary and next move** — model-generated briefing and recommended action
+
+## Conventions
+
+- `null` means unavailable. `0` means the source explicitly returned zero. Never convert missing data to zero without a caveat.
+- `KEEP`, `WATCH`, and `REJECT` are output dispositions, not claims about customer intent.
+
+## Nested field paths
+
+Account data is grouped by domain. Code that reads portfolio.json must use the correct nesting:
+
+| Data | Correct path | Wrong (will return null) |
+|------|-------------|--------------------------|
+| GEO / Region / Territory | `account.hierarchy.geo` | `account.geo` |
+| Match status | `account.identity.match_status` | `account.match_status` |
+| Priority score | `account.internal_priority_score` | `account.internal.priority_score` |
+| Activity metrics | `account.internal.metrics.total_activities` | `account.total_activities` |
+| Signal publish date | `signal.published_at` | `signal.published` |
+
+`hierarchy`, `identity`, and `internal` are always objects, never null. Use safe access (e.g., `acct.get("hierarchy", {}).get("geo")`) to handle malformed input gracefully.

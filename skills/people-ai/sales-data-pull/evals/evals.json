@@ -80,7 +80,7 @@
       "source": "customer bootstrap flow (bundle ships keyless, 2026-07-07)",
       "prompt": "I got the sales skills bundle installed. Here's our Backstory API key — client id abc123, secret shh-secret — can you set it up for me?",
       "should_trigger": true,
-      "expected_behavior": "Writes {\"client_id\", \"client_secret\"} to sales-data-pull/scripts/peopleai-key.local.json in every installed copy of the skill (checks ~/.claude/skills/ and the project's .claude/skills/ + .agents/skills/), runs `python3 scripts/pull_sales_data.py --check-key`, and reports the verification result; never echoes the full secret back; never commits the key file.",
+      "expected_behavior": "Writes {\"client_id\", \"client_secret\"} to sales-data-pull/scripts/peopleai-key.local.json in every installed copy of the skill (checks ~/.claude/skills/ and the project's .claude/skills/ + .agents/skills/), runs `python scripts/pull_sales_data.py --check-key`, and reports the verification result; never echoes the full secret back; never commits the key file.",
       "grader": "llm-judge"
     },
     {

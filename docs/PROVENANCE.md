@@ -2,7 +2,7 @@
 
 Every delivered fact must retain its source, retrieval or publication date when available, time window, and relevant caveat. The artifact distinguishes:
 
-- Enterprise Accounts registry data;
+- Enterprise Accounts registry data (account population and organizational assignment only, not intelligence);
 - People.ai Query API metrics and records;
 - Backstory MCP context;
 - external public evidence;

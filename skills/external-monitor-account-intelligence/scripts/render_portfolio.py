@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 """Render portfolio.json into the reusable External Monitor HTML template."""
 from __future__ import annotations
 

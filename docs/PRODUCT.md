@@ -18,6 +18,6 @@ Internal facts, external public evidence, and agent interpretation are separate.
 
 ## Implemented versus planned
 
-Implemented in this repository: scope resolution logic, batch-query orchestration guidance, deterministic prioritization guidance, bounded MCP enrichment guidance, JSON schema, example artifact, validator, and HTML renderer.
+Implemented in this repository: Enterprise Accounts registry loader, scope resolution logic, batch-query orchestration guidance, deterministic prioritization guidance, bounded MCP enrichment guidance, JSON schema, example artifact, validator, and HTML renderer.
 
-Planned or integration-dependent: a live account registry, a Sheets writer, a public-signal connector, and a hosted interactive application.
+Planned or integration-dependent: a Sheets writer, a public-signal connector, and a hosted interactive application.

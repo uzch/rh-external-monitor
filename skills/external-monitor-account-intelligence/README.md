@@ -10,31 +10,27 @@ It intentionally leaves the vendor-authored skills intact and adds an orchestrat
 - portfolio prioritization
 - one reusable Portfolio View and Account View
 
-## Install
+## Setup
 
-Copy this folder alongside the three uploaded People.ai skills:
+The authoritative skill lives at `skills/external-monitor-account-intelligence/`. Claude CLI discovers it through the shim at `.claude/skills/external-monitor-account-intelligence/SKILL.md`.
 
-```text
-.claude/skills/external-monitor-account-intelligence/
-```
-
-Keep credentials outside source control:
+Keep credentials outside source control. Set in `.env` or as environment variables:
 
 ```text
 PEOPLEAI_CLIENT_ID=
 PEOPLEAI_CLIENT_SECRET=
 ```
 
-Backstory MCP requires the user's interactive OAuth connection at `https://mcp.people.ai/mcp`.
+Backstory MCP requires the user's interactive OAuth connection at `https://mcp.backstory.ai/mcp`.
 
 ## Validate the example
 
 ```bash
-python3 scripts/validate_portfolio.py examples/portfolio-output.example.json
+python scripts/validate_portfolio.py examples/portfolio-output.example.json
 ```
 
 ## Render the example
 
 ```bash
-python3 scripts/render_portfolio.py examples/portfolio-output.example.json --out demo.html
+python scripts/render_portfolio.py examples/portfolio-output.example.json --out demo.html
 ```

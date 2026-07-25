@@ -71,7 +71,7 @@ Beyond 90 days there is no narrative source: offer the data pull, never fabricat
    a tool response), then **top themes across the book** (recurring topics, exec-engagement
    signals). Close with a **Caveats** block: windows used, accounts analyzed vs owned, credits
    consumed, generated-by-AI provenance note.
-6. **Optional — feed the dashboard.** `python3 scripts/merge_signals.py <blob.json> <signals.json>
+6. **Optional — feed the dashboard.** `python scripts/merge_signals.py <blob.json> <signals.json>
    [--template template.html]` writes the collected `{account_name, peopleai_id, engaged_people,
    account_status}` records into the blob's `peopleai_signals` and re-renders the HTML — the same
    dashboard, now with the insight layer filled in. See `references/mcp-behavior.md` §Signals.

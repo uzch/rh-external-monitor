@@ -59,11 +59,12 @@ PEOPLEAI_CLIENT_SECRET=
 
 Backstory MCP uses interactive OAuth and is not configured through `.env`.
 
-Add to `.gitignore`:
+Already in `.gitignore`:
 
 ```text
 .env
 *.local.json
 peopleai-key.local.json
+output/
 data/runs/
 ```

@@ -19,7 +19,7 @@ Produces a seller's 360 directly from the Backstory (formerly People.ai) Query A
 
 1. Run the pull (from this skill's directory):
    ```bash
-   python3 scripts/pull_sales_data.py "<seller name or email>" \
+   python scripts/pull_sales_data.py "<seller name or email>" \
        --window-days 120 --out ~/Desktop
    ```
    HTML renders automatically with the bundled dashboard template (adaptive: sections without
@@ -42,7 +42,7 @@ When the user hands over a key ("wire in my API key", "set this up for me"): it 
    ```
 2. Verify, then report the result to the user:
    ```bash
-   python3 scripts/pull_sales_data.py --check-key
+   python scripts/pull_sales_data.py --check-key
    ```
    `✓ API key works` on success; auth failures name the HTTP error and the server's reason.
 3. One key serves the whole bundle — sales-data-explorer finds this file automatically. Never echo the secret back in full; never commit the key file to git.

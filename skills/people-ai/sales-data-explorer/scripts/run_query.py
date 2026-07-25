@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 """sales-data-explorer — run a validated Query API packet and deliver the result.
 
 Gate order: (1) every slug/variation in the packet must appear in references/catalog.json
@@ -12,7 +12,7 @@ peopleai-key.local.json next to this script, or the sales-data-pull copy of the 
 (one pilot key serves the whole bundle).
 
 Usage:
-    python3 run_query.py <packet.json> [--title "Open opps by engagement"]
+    python run_query.py <packet.json> [--title "Open opps by engagement"]
         [--out DIR] [--html] [--base https://api.people.ai]
 """
 import argparse
@@ -33,7 +33,25 @@ CATALOG = os.path.join(HERE, "..", "references", "catalog.json")
 HTML_ROW_CAP = 500
 
 
+def _load_dotenv():
+    """Load .env from repo root into os.environ (stdlib only, no overwrite)."""
+    root = os.path.normpath(os.path.join(HERE, "..", "..", "..", ".."))
+    dotenv = os.path.join(root, ".env")
+    if not os.path.isfile(dotenv):
+        return
+    with open(dotenv, encoding="utf-8") as f:
+        for line in f:
+            line = line.strip()
+            if not line or line.startswith("#") or "=" not in line:
+                continue
+            key, _, value = line.partition("=")
+            key, value = key.strip(), value.strip()
+            if key and key not in os.environ:
+                os.environ[key] = value
+
+
 def load_credentials():
+    _load_dotenv()
     cid, sec = os.environ.get("PEOPLEAI_CLIENT_ID"), os.environ.get("PEOPLEAI_CLIENT_SECRET")
     if cid and sec:
         return cid, sec

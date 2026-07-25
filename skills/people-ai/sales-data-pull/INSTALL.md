@@ -34,7 +34,7 @@ yourself:
 {"client_id": "…", "client_secret": "…"}
 ```
 
-Check it with `python3 scripts/pull_sales_data.py --check-key`.
+Check it with `python scripts/pull_sales_data.py --check-key`.
 
 It is deliberately a separate file: swap it without touching the skill, grep for it in
 security review, and it never belongs in git. `PEOPLEAI_CLIENT_ID`/`PEOPLEAI_CLIENT_SECRET`
@@ -52,7 +52,7 @@ Optional but recommended — confirms every validated field is enabled in this t
 drops unknown fields silently — see `references/api-behavior.md`):
 
 ```bash
-export PEOPLEAI_CLIENT_ID=$(python3 -c "import json;print(json.load(open('scripts/peopleai-key.local.json'))['client_id'])")
-export PEOPLEAI_CLIENT_SECRET=$(python3 -c "import json;print(json.load(open('scripts/peopleai-key.local.json'))['client_secret'])")
+export PEOPLEAI_CLIENT_ID=$(python -c "import json;print(json.load(open('scripts/peopleai-key.local.json'))['client_id'])")
+export PEOPLEAI_CLIENT_SECRET=$(python -c "import json;print(json.load(open('scripts/peopleai-key.local.json'))['client_secret'])")
 bash scripts/verify-packet.sh scripts/packets/user-metrics.json
 ```

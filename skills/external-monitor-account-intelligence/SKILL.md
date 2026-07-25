@@ -1,6 +1,6 @@
 ---
 name: external-monitor-account-intelligence
-description: Build External Monitor portfolio and account intelligence for a selected GEO, region, pod, territory, or account. Resolve the account population from the Enterprise Accounts dataset, batch-pull validated People.ai/Backstory Query API metrics, selectively enrich priority accounts through Backstory MCP, and produce a strict JSON artifact for the External Monitor Portfolio View and Account View. Use when the user asks to research a scope of enterprise accounts, generate a portfolio briefing, identify accounts needing attention, or refresh the External Monitor interface.
+description: Build External Monitor portfolio and account intelligence for a selected GEO, region, pod, territory, or account. Resolve the account population from the Enterprise Accounts registry, batch-pull validated People.ai Query API metrics, selectively enrich priority accounts through Backstory MCP, and produce a strict JSON artifact for the External Monitor Portfolio View and Account View. Use when the user asks to research enterprise accounts, generate a portfolio briefing, identify accounts needing attention, or refresh the External Monitor interface.
 license: Internal
 metadata:
   version: 0.1.0
@@ -35,16 +35,16 @@ Never create one tab or one HTML page per account. The same reusable interface f
 
 Required:
 
-- `scope_type`: `geo | region | pod | territory | account`
-- `scope_value`: exact value from the Enterprise Accounts dataset
-- Enterprise Accounts records containing at minimum:
-  - `account_id`
-  - `account_name`
+- `scope_type`: `geo | region | territory | account`
+- `scope_value`: exact value from the Enterprise Accounts registry
+- Enterprise Accounts registry at `data/local/Enterprise Accounts.csv` containing:
+  - `account_sales_group_name` (canonical account name)
   - `geo`
   - `region`
-  - `pod` when available
-  - `territory_name`
   - `segment`
+  - `ACCOUNT_TERRITORY_NAME`
+
+The registry establishes the account population and organizational assignment. It is not an intelligence source. It provides no activity, engagement, risks, opportunities, next steps, or external signals.
 
 Optional:
 
@@ -57,37 +57,59 @@ Optional:
 
 ### 1. Resolve the account population
 
-Read the Enterprise Accounts dataset and select only records matching the requested scope.
+Load the Enterprise Accounts registry using `scripts/load_registry.py`:
 
-- GEO → `geo == scope_value`
-- Region → `region == scope_value`
-- Pod → `pod == scope_value`
-- Territory → `territory_name == scope_value`
-- Account → exact `account_name` or stable `account_id`
+```bash
+python scripts/load_registry.py --geo NAPS --region CIVILIAN --out scoped-accounts.json
+```
 
-Do not infer hierarchy values. Preserve blank pod/region values as source limitations.
+Or load it directly from `data/local/Enterprise Accounts.csv` and filter by scope:
+
+- GEO -> `geo == scope_value`
+- Region -> `region == scope_value`
+- Territory -> `territory_name == scope_value`
+- Account -> exact or substring match on `account_name`
+
+The registry provides five fields per account: `account_name`, `geo`, `region`, `segment`, `territory_name`. These are organizational assignments, not intelligence. Do not infer values not present in the registry.
+
+To list available scopes:
+
+```bash
+python scripts/load_registry.py --list-geos
+python scripts/load_registry.py --list-regions --geo NAPS
+python scripts/load_registry.py --list-territories --geo NAPS --region CIVILIAN
+```
 
 If no accounts match, stop and report the exact scope used.
 
 ### 2. Normalize account identity
 
-Create an identity record per account:
+For each account in scope, call `find_account` (or `find_record_by_crm_id` when a CRM ID is available) to resolve the People.ai identity. Create an identity record per account:
 
 ```json
 {
-  "account_id": "local stable id",
-  "account_name": "source account name",
-  "crm_id": null,
-  "peopleai_account_id": null,
-  "match_status": "unresolved"
+  "registry_account_name": "ALL-CAPS name from registry",
+  "query_account_name": "People.ai canonical name from find_account",
+  "peopleai_account_id": 12345678,
+  "identity_status": "confirmed",
+  "identity_notes": "matched via find_account"
 }
 ```
 
-Preferred matching order:
+**Critical: `query_account_name` must be the `name` field returned by People.ai `find_account`, not the registry name.** The People.ai Query API uses case-sensitive account name matching. The registry stores names in ALL CAPS (e.g., `DEFENSE INTELLIGENCE AGENCY`) but People.ai stores them in title case (e.g., `Defense Intelligence Agency`). Using the registry name in queries returns zero results.
+
+Identity status values:
+
+- `confirmed` — exact match found in People.ai
+- `resolved_alias` — matched under a different name (e.g., subsidiary or trade name)
+- `ambiguous` — multiple possible matches; do not enrich until resolved
+- `not_found` — no match in People.ai
+
+Preferred matching order for People.ai reconciliation:
 
 1. Salesforce/CRM ID when available.
-2. Exact normalized account name.
-3. Backstory `find_account` confirmation.
+2. Backstory `find_account` with the registry account name.
+3. `find_account` with variations (drop parenthetical abbreviations, try common aliases).
 4. Explicit alias supplied by the user.
 
 Never silently merge ambiguous accounts. Mark them `ambiguous` and exclude them from deep enrichment until resolved.
@@ -160,13 +182,18 @@ Do not claim that MCP covered all accounts. Record `accounts_enriched` separatel
 
 ### 6. Optional external research
 
-When `external_research=true`, research only the accounts selected for deep enrichment unless the user explicitly requests full-scope external research.
+When `external_research=true`, follow the guidance in [`RESEARCH.md`](RESEARCH.md).
 
-External research must remain distinguishable from People.ai/Backstory content:
+Research runs only on accounts selected for deep enrichment (step 5) unless the user explicitly requests broader scope. It uses Claude's web search and fetch capabilities to find publicly available signals.
+
+Key rules (see `RESEARCH.md` for full guidance):
 
 - `source_type = external_public`
-- preserve URL, publisher, and published date
-- separate evidence from model inference
+- Every signal must have a non-null `source_url`
+- Preserve URL, publisher, and published date
+- Separate evidence from model inference
+- Check Backstory `account_company_news` results before searching for the same financial events
+- Stop when searches yield nothing relevant; zero signals is a valid outcome
 
 ### 7. Synthesize External Monitor outputs
 
@@ -187,7 +214,7 @@ The account view must be concise and action-oriented. Avoid long narrative dumps
 Use `scripts/render_portfolio.py` with `templates/portfolio.html`:
 
 ```bash
-python3 scripts/render_portfolio.py portfolio.json --out external-monitor-portfolio.html
+python scripts/render_portfolio.py portfolio.json --out external-monitor-portfolio.html
 ```
 
 The same JSON can also be written into Google Sheets backend tabs later. Rendering must not require one page per account.

@@ -20,11 +20,11 @@ TOKEN=$(curl -sS -X POST "$BASE/v3/auth/tokens" \
   --data-urlencode grant_type=client_credentials \
   --data-urlencode "client_id=$PEOPLEAI_CLIENT_ID" \
   --data-urlencode "client_secret=$PEOPLEAI_CLIENT_SECRET" \
-  | python3 -c 'import sys,json;print(json.load(sys.stdin)["access_token"])') \
+  | python -c 'import sys,json;print(json.load(sys.stdin)["access_token"])') \
   || { echo "auth failed" >&2; exit 1; }
 
 echo "== Requested slugs (from $PACKET) =="
-python3 - "$PACKET" <<'PY'
+python - "$PACKET" <<'PY'
 import json, sys
 for c in json.load(open(sys.argv[1])).get("columns", []):
     print("  -", c["slug"] + (f"  [{c['variation_id']}]" if c.get("variation_id") else ""))

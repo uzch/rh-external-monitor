@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 """sales-data-explorer REST lane — validated raw-record reads from the Backstory
 (formerly People.ai) Public REST API: activities + participants, CRM entity reads,
 contact engagement history. Endpoint vocabulary: references/rest-catalog.json
@@ -7,7 +7,7 @@ contact engagement history. Endpoint vocabulary: references/rest-catalog.json
 Stdlib only. Same credentials as the export lane (peopleai-key.local.json /
 PEOPLEAI_CLIENT_ID+SECRET) — the REST token endpoint differs and is handled here.
 
-Usage: python3 rest_query.py activities --param activity-uid=... --html --out ~/Desktop
+Usage: python rest_query.py activities --param activity-uid=... --html --out ~/Desktop
 """
 import argparse, csv, json, os, re, sys, urllib.parse, urllib.request, urllib.error
 from run_query import load_credentials, render_html

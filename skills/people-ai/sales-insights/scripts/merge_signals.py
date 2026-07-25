@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 """merge_signals — inject collected Backstory MCP insights into a sales-data-pull blob.
 
 Fills the blob's reserved `peopleai_signals` key with records shaped per the
@@ -9,7 +9,7 @@ the offline HTML dashboard.
 Stdlib only.
 
 Usage:
-    python3 merge_signals.py "<Seller> — Sales Data.json" signals.json
+    python merge_signals.py "<Seller> — Sales Data.json" signals.json
         [--template template.html] [--out DIR]
 """
 import argparse

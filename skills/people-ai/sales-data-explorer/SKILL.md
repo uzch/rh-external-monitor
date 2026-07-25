@@ -37,7 +37,7 @@ fails loudly if the tenant drops one after.
    activity/opportunity objects are silently ignored by the API.
 4. **Write the packet** (`{"object": …, "columns": [...], "filter": …}`) to a file and run:
    ```bash
-   python3 scripts/run_query.py packet.json --title "Accounts with no upcoming meetings" \
+   python scripts/run_query.py packet.json --title "Accounts with no upcoming meetings" \
        --out ~/Desktop --html
    ```
    Credentials are found automatically (same key as sales-data-pull; if none is wired in yet, that skill's Key setup section covers it). `--html` renders the
@@ -51,7 +51,7 @@ fails loudly if the tenant drops one after.
 
 For record-level questions the metric export can't answer — "list the meetings and who
 attended", "this contact's engagement trend", "lead records" — use the REST runner over the
-same key: `python3 scripts/rest_query.py <endpoint> --param k=v --html`. Vocabulary =
+same key: `python scripts/rest_query.py <endpoint> --param k=v --html`. Vocabulary =
 `references/rest-catalog.json` (live-validated; runner refuses anything outside it, and
 FIELD DROP aborts delivery — same honesty rule as the export lane). Join meetings to
 attendees on activities `uid` ↔ participants `activity_uid`; id params take the long
