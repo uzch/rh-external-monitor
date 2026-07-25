@@ -83,6 +83,7 @@
           },
           "additionalProperties": true
         },
+        "signal_score": {"type": ["integer", "null"], "minimum": 0, "maximum": 100},
         "internal_priority_score": {"type": ["number", "null"], "minimum": 0, "maximum": 100},
         "priority_reasons": {"type": "array", "items": {"type": "string"}},
         "internal": {

@@ -18,9 +18,8 @@ One `portfolio.json` drives both Portfolio View and Account View.
 Each account row exposes:
 
 - hierarchy fields
-- deterministic internal priority score
+- signal score (average of per-signal scores, rounded integer — the user-facing metric)
 - engagement and activity metrics
-- highest signal score
 - KEEP/WATCH counts
 - top reason for attention
 - enrichment status

@@ -11,7 +11,8 @@ Each account carries:
 - **Identity** — People.ai account ID, match status, canonical query name
 - **Hierarchy** — GEO, region, territory, segment (from the registry)
 - **Internal metrics** — activity counts, meetings, emails, opportunities, trend (from People.ai Query API)
-- **Priority score** — deterministic 0-100 score with reasons
+- **Signal score** — user-facing 0-100 score (average of per-signal scores, rounded integer, or null)
+- **Internal priority score** — deterministic 0-100 triage score with reasons (backend only)
 - **MCP context** — risks, next steps, topics, engaged people (when enriched)
 - **Signals** — scored and dispositioned findings from MCP, web research, or derived analysis
 - **Summary and next move** — model-generated briefing and recommended action
@@ -29,7 +30,8 @@ Account data is grouped by domain. Code that reads portfolio.json must use the c
 |------|-------------|--------------------------|
 | GEO / Region / Territory | `account.hierarchy.geo` | `account.geo` |
 | Match status | `account.identity.match_status` | `account.match_status` |
-| Priority score | `account.internal_priority_score` | `account.internal.priority_score` |
+| Signal score (user-facing) | `account.signal_score` | `account.internal.signal_score` |
+| Internal priority score (triage) | `account.internal_priority_score` | `account.internal.priority_score` |
 | Activity metrics | `account.internal.metrics.total_activities` | `account.total_activities` |
 | Signal publish date | `signal.published_at` | `signal.published` |
 

@@ -172,7 +172,9 @@ Default components:
 
 Missing fields reduce confidence; they must not be treated as zero evidence without a caveat.
 
-The deterministic score is for triage only. It is not the final External Monitor signal score.
+The deterministic score is for internal triage only. It determines which accounts receive deep enrichment and in what order. It is **not** the user-facing score.
+
+The user-facing metric is `signal_score`, computed by `enrich_portfolio.py` as the average of all per-signal scores for each account (or `null` if no signals). This is the score shown in the spreadsheet, HTML view, and any summary KPIs.
 
 ### 5. Backstory MCP enrichment
 

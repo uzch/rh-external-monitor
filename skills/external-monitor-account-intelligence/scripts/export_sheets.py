@@ -45,7 +45,7 @@ PORTFOLIO_COLUMNS = [
     ("Name", 35),
     ("Parent", 25),
     ("Accounts", 10),
-    ("Priority Score", 14),
+    ("Signal Score", 14),
     ("Total Activities", 16),
     ("Meetings 30d", 14),
     ("Emails 30d", 13),
@@ -152,10 +152,16 @@ def aggregate_accounts(accounts):
             elif disp == "WATCH":
                 watch_count += 1
 
+    signal_scores = [a.get("signal_score") for a in accounts
+                     if a.get("signal_score") is not None]
+    avg_signal_score = (round(sum(signal_scores) / len(signal_scores))
+                        if signal_scores else None)
+
     ts = top_signal(accounts)
 
     return {
         "account_count": account_count,
+        "signal_score": avg_signal_score,
         "total_activities": total_activities,
         "meetings_30d": meetings_30d,
         "emails_30d": emails_30d,
@@ -224,7 +230,7 @@ def write_portfolio_tab(ws, hierarchy, all_accounts):
                 geo_accounts.extend(hierarchy[geo][region][territory])
         agg = aggregate_accounts(geo_accounts)
         values = [
-            "GEO", geo, "", agg["account_count"], None,
+            "GEO", geo, "", agg["account_count"], agg["signal_score"],
             agg["total_activities"], agg["meetings_30d"], agg["emails_30d"],
             agg["opportunities"], None, agg["keep_count"], agg["watch_count"],
             agg["top_signal_headline"], agg["top_action"],
@@ -241,7 +247,7 @@ def write_portfolio_tab(ws, hierarchy, all_accounts):
                 region_accounts.extend(hierarchy[geo][region][territory])
             agg = aggregate_accounts(region_accounts)
             values = [
-                "REGION", region, geo, agg["account_count"], None,
+                "REGION", region, geo, agg["account_count"], agg["signal_score"],
                 agg["total_activities"], agg["meetings_30d"], agg["emails_30d"],
                 agg["opportunities"], None, agg["keep_count"], agg["watch_count"],
                 agg["top_signal_headline"], agg["top_action"],
@@ -257,7 +263,7 @@ def write_portfolio_tab(ws, hierarchy, all_accounts):
                 territory_accounts = hierarchy[geo][region][territory]
                 agg = aggregate_accounts(territory_accounts)
                 values = [
-                    "TERRITORY", territory, region, agg["account_count"], None,
+                    "TERRITORY", territory, region, agg["account_count"], agg["signal_score"],
                     agg["total_activities"], agg["meetings_30d"], agg["emails_30d"],
                     agg["opportunities"], None, agg["keep_count"], agg["watch_count"],
                     agg["top_signal_headline"], agg["top_action"],
@@ -269,7 +275,7 @@ def write_portfolio_tab(ws, hierarchy, all_accounts):
     # --- ACCOUNT rows (sorted by priority descending) ---
     sorted_accounts = sorted(
         all_accounts,
-        key=lambda a: (a.get("internal_priority_score") or 0),
+        key=lambda a: (a.get("signal_score") or 0),
         reverse=True,
     )
     for acct in sorted_accounts:
@@ -282,7 +288,7 @@ def write_portfolio_tab(ws, hierarchy, all_accounts):
             acct.get("account_name"),
             acct.get("hierarchy", {}).get("territory_name"),
             None,
-            acct.get("internal_priority_score"),
+            acct.get("signal_score"),
             extract_metric(acct, "total_activities"),
             extract_metric(acct, "meeting_count_30d"),
             extract_metric(acct, "email_count_30d"),

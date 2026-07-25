@@ -1,5 +1,7 @@
 # Implementation Plan
 
+> Historical planning artifact from initial project setup. The authoritative procedure is in [SKILL.md](../SKILL.md).
+
 ## Keep unchanged
 
 Preserve the uploaded People.ai skills as vendor-authored source behavior:

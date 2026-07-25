@@ -25,7 +25,7 @@ scope request
   -> batch People.ai Query API metrics
   -> compute deterministic internal priority
   -> enrich selected accounts through Backstory MCP
-  -> optionally attach external public signals
+  -> attach external public signals (default on)
   -> validate portfolio.json
   -> render HTML or write the same data to Sheets
 ```
@@ -49,8 +49,7 @@ The sources remain separate in output. Missing data stays null with a caveat. Am
 - Backstory MCP requires the user's interactive OAuth connection. Query API calls require the People.ai credentials described in the source skill installation files.
 - MCP cannot enumerate accounts; the registry or Query API must establish scope first.
 - Backstory narrative windows are limited by the authoritative skill guidance. Query API metrics can use a requested window up to 365 days.
-- External public-signal collection is an optional workflow boundary, not an implemented connector in this repository.
-- Google Sheets writing is an output target, not an included Sheets client.
+- External public-signal collection runs by default but can be opted out of per-run.
 - Portfolio prioritization is deterministic triage. It is not proof of opportunity, intent, fit, demand, renewal, deployment, or ownership.
 
 ## Start here
@@ -71,7 +70,7 @@ The sources remain separate in output. Missing data stays null with a caveat. Am
 2. Install the one external Python dependency:
 
    ```bash
-   python -m pip install jsonschema
+   python -m pip install jsonschema openpyxl
    ```
 
 3. Connect Backstory MCP for the `sales-insights` skill (interactive OAuth, once per user):

@@ -149,6 +149,13 @@ def main():
             file=sys.stderr,
         )
 
+    for acct in portfolio.get("accounts", []):
+        scores = [s.get("score", 0) for s in acct.get("signals", [])]
+        if scores:
+            acct["signal_score"] = round(sum(scores) / len(scores))
+        else:
+            acct["signal_score"] = None
+
     update_envelope(portfolio, enriched_count)
 
     print(

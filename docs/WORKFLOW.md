@@ -14,11 +14,11 @@ A pipeline run takes a scope (GEO, region, territory, or account name), pulls in
 
 5. **Base portfolio** — Run `build_portfolio.py` with registry, identity, and metrics inputs. This produces a schema-valid portfolio with deterministic priority scores and empty signals. No model reasoning needed — runs in seconds.
 
-6. **MCP enrichment** — Enrich the highest-priority accounts (default 5, max 10) through Backstory MCP: account status, recent activity, and optionally engaged people and company news.
+6. **MCP enrichment** — Enrich the highest-priority accounts (default 5, max 10) through Backstory MCP: account status, recent activity, and optionally engaged people and company news. The orchestrator synthesizes MCP responses into `mcp-enrichment.json`, then runs `enrich_portfolio.py` to merge into the base portfolio and compute `signal_score` (average of per-signal scores, rounded integer).
 
-7. **External research** — If requested, search for public signals (contracts, earnings, leadership changes) and attach them with source URLs, publish dates, and a distinct source type.
+7. **External research** — Runs by default. Search for public signals (contracts, earnings, leadership changes) and attach them with source URLs, publish dates, and a distinct source type. Skipped only when the user explicitly opts out.
 
-8. **Merge and validate** — Merge enrichment into the base portfolio, update summary counts, set status to `completed`, and validate against the schema.
+8. **Validate** — Validate the enriched portfolio against the schema. Status is `completed` when all matched accounts are enriched, `partial` otherwise.
 
 9. **Render** — Run `render_portfolio.py` for the interactive HTML view and `export_sheets.py` for a formatted `.xlsx` workbook. Both consume the same `portfolio.json`.
 

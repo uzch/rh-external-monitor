@@ -11,9 +11,13 @@ load_registry.py → identity resolution → aggregate_activity_metrics.py
        \                  |                          /
         +--------→  build_portfolio.py  ←-----------+
                           |
-                  base portfolio.json (status: "partial")
+                  portfolio-base.json (status: "partial")
                           |
-                [MODEL: MCP + research + signals]
+                [MODEL: MCP calls + synthesis → mcp-enrichment.json]
+                          |
+                  enrich_portfolio.py  (deterministic merge + signal_score)
+                          |
+                [MODEL: external web research → signals]
                           |
                   enriched portfolio.json (status: "completed")
                           |
@@ -33,6 +37,7 @@ This split keeps pipeline runs fast. A 9-account region completes in about 6 min
 | `load_registry.py` | Filters the Enterprise Accounts CSV by GEO, region, or territory |
 | `aggregate_activity_metrics.py` | Queries People.ai for activity records and computes per-account metrics |
 | `build_portfolio.py` | Assembles a schema-valid base portfolio with deterministic priority scoring |
+| `enrich_portfolio.py` | Merges MCP enrichment data into the base portfolio and computes signal scores |
 | `render_portfolio.py` | Embeds portfolio JSON into the HTML template |
 | `export_sheets.py` | Produces a formatted `.xlsx` with Portfolio and Signals tabs |
 
@@ -53,16 +58,15 @@ The authoritative People.ai source skills live under `skills/people-ai/`. The Ex
 
 ## Technical details
 
-### Priority scoring
+### Scoring
 
-`build_portfolio.py` computes a transparent 0-100 score from four components, each worth 0-25:
+There are two independent scores:
 
-- **Volume** — activity count relative to the busiest account in scope
-- **Opportunities** — tiered by count (0→0, 1→10, 2-5→15, 6-20→20, 21+→25)
-- **Momentum** — increasing/stable/declining activity trend over the last 60 days
-- **Recency** — days since the most recent activity (0-7d→25, 8-14→20, etc.)
+- **`internal_priority_score`** — deterministic 0-100 score computed by `build_portfolio.py` from four activity-metric components (volume, opportunities, momentum, recency), each worth 0-25. Used for backend triage: determines which accounts receive deep enrichment and in what order. Not shown to the end user.
 
-Accounts with no available metrics get score 0 with an explicit reason. The score is for triage, not a quality judgment.
+- **`signal_score`** — the user-facing metric. Computed by `enrich_portfolio.py` as the average of all per-signal scores for an account, rounded to an integer. Shown in the spreadsheet, HTML view, and summary KPIs. `null` if no signals exist.
+
+In the spreadsheet, signal score appears at every hierarchy level (GEO, region, territory, account) as the average of child account signal scores.
 
 ### Identity resolution and case sensitivity
 
@@ -74,5 +78,5 @@ Identity resolution must call `find_account` and store the returned canonical `n
 
 `export_sheets.py` produces a single `.xlsx` workbook with two tabs:
 
-- **Portfolio** — hierarchical rows at GEO, Region, Territory, and Account levels. Filter the Level column to drill down. Parent rows aggregate metrics from their children.
+- **Portfolio** — hierarchical rows at GEO, Region, Territory, and Account levels. Filter the Level column to drill down. Parent rows aggregate metrics and signal scores from their children.
 - **Signals** — one row per signal across all accounts, sorted by account then score. KEEP signals get green fill, WATCH gets amber. Source URLs are clickable hyperlinks.
