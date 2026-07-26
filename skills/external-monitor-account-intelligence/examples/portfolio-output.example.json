@@ -1,18 +1,18 @@
 {
   "run": {
-    "run_id": "demo-001",
+    "run_id": "demo-region-001",
     "status": "completed",
-    "generated_at": "2026-07-23T22:00:00-04:00"
+    "generated_at": "2026-07-25T14:30:00-04:00"
   },
-  "scope": {"type": "pod", "value": "Healthcare"},
+  "scope": {"type": "region", "value": "Federal Civilian"},
   "summary": {
-    "account_count": 2,
-    "accounts_with_internal_data": 2,
-    "accounts_enriched": 1,
-    "keep_count": 1,
-    "watch_count": 1,
+    "account_count": 6,
+    "accounts_with_internal_data": 5,
+    "accounts_enriched": 4,
+    "keep_count": 5,
+    "watch_count": 3,
     "highest_signal_score": 91,
-    "text": "Two accounts are in scope. One has an immediate engagement gap and one should remain on watch."
+    "text": "Federal Civilian region has 6 accounts across 2 territories. Healthcare shows the strongest engagement signals with two accounts requiring immediate follow-up. Defense IT has steady engagement but lower urgency. Two accounts have immediate engagement gaps, and three show emerging public signals around platform modernization."
   },
   "accounts": [
     {
@@ -21,25 +21,44 @@
       "hierarchy": {
         "geo": "NAPS",
         "region": "Federal Civilian",
-        "pod": "Healthcare",
-        "territory_name": "EXAMPLE_TERRITORY",
+        "pod": null,
+        "territory_name": "Healthcare",
         "segment": "Enterprise"
       },
       "identity": {
-        "crm_id": null,
-        "peopleai_account_id": 123,
+        "crm_id": "CRM-1001",
+        "peopleai_account_id": 12345,
         "match_status": "matched"
       },
+      "signal_score": 91,
       "internal_priority_score": 88,
       "priority_reasons": ["High engagement with no upcoming meeting", "Open opportunity activity"],
       "internal": {
-        "metrics": {"engagement_level": 82, "upcoming_meetings_14d": 0},
-        "risks": ["No agreed next meeting"],
-        "next_steps": ["Confirm executive sponsor and schedule architecture follow-up"],
-        "topics": ["platform modernization"]
+        "metrics": {
+          "total_activities": 47,
+          "meeting_count_30d": 6,
+          "meeting_count_90d": 14,
+          "meeting_count_all": 18,
+          "email_count_30d": 15,
+          "email_count_90d": 28,
+          "email_count_all": 29,
+          "outbound_count": 22,
+          "inbound_count": 25,
+          "external_count": 30,
+          "internal_count": 17,
+          "most_recent_activity_date": "2026-07-22",
+          "most_recent_activity_type": "meeting",
+          "activity_types": {"meeting": 18, "email": 29},
+          "linked_opportunity_names": ["RHEL Platform Migration", "OpenShift Pilot"],
+          "activity_trend": "increasing",
+          "metrics_status": "available"
+        },
+        "risks": ["No agreed next meeting", "Executive sponsor recently changed"],
+        "next_steps": ["Confirm executive sponsor and schedule architecture follow-up", "Align with open opportunity timeline"],
+        "topics": ["platform modernization", "hybrid cloud"]
       },
-      "summary": "The account is active but lacks a scheduled next engagement.",
-      "recommended_next_move": "Schedule an architecture follow-up tied to the active modernization topic.",
+      "summary": "The account is active but lacks a scheduled next engagement. Recent activity remains high while the upcoming-meeting count is zero. Momentum may decay without a concrete next step.",
+      "recommended_next_move": "Schedule an architecture follow-up tied to the active modernization topic. Confirm executive sponsor and align with the open opportunity timeline.",
       "signals": [
         {
           "signal_id": "sig-001",
@@ -47,22 +66,335 @@
           "score": 91,
           "headline": "Strong engagement without a next meeting",
           "what_changed": "Recent activity remains high while the upcoming-meeting count is zero.",
-          "why_it_matters": "Momentum may decay without a concrete next step.",
-          "red_hat_relevance": "The active topic aligns with platform modernization.",
-          "recommended_action": "Secure a next meeting and confirm ownership.",
+          "why_it_matters": "Momentum may decay without a concrete next step. The account has had 15 activities in 30 days but zero upcoming meetings scheduled.",
+          "red_hat_relevance": "The active topic aligns with platform modernization, a core Red Hat capability area.",
+          "recommended_action": "Secure a next meeting and confirm ownership. Align the meeting agenda with the active modernization topic.",
           "source_type": "derived",
+          "source_url": null,
+          "published_at": null,
+          "confidence": "high"
+        },
+        {
+          "signal_id": "sig-002",
+          "disposition": "KEEP",
+          "score": 85,
+          "headline": "Agency announces $200M cloud modernization initiative",
+          "what_changed": "FY2027 budget request published with explicit cloud modernization line item.",
+          "why_it_matters": "A large-scale modernization initiative signals demand for enterprise platform solutions. The budget specifically mentions hybrid cloud and containerization.",
+          "red_hat_relevance": "Hybrid cloud and containerization align directly with OpenShift and RHEL capabilities.",
+          "recommended_action": "Prepare a brief on Red Hat's public sector modernization references and request an introductory meeting with the agency's CTO office.",
+          "source_type": "external_public",
+          "source_url": "https://federalnewsnetwork.com/example-article",
+          "published_at": "2026-07-20T12:00:00Z",
+          "confidence": "high"
+        },
+        {
+          "signal_id": "sig-003",
+          "disposition": "WATCH",
+          "score": 62,
+          "headline": "Executive sponsor change noted in recent account activity",
+          "what_changed": "New VP of IT appointed, previous sponsor moved to advisory role.",
+          "why_it_matters": "Changes in executive sponsorship can disrupt relationships and alter project priorities.",
+          "red_hat_relevance": "New leadership may re-evaluate vendor relationships and platform decisions.",
+          "recommended_action": "Identify the new sponsor and schedule an introductory meeting.",
+          "source_type": "backstory_mcp",
+          "source_url": null,
+          "published_at": null,
+          "confidence": "medium"
+        }
+      ]
+    },
+    {
+      "account_id": "A-002",
+      "account_name": "Veterans Health Corp",
+      "hierarchy": {
+        "geo": "NAPS",
+        "region": "Federal Civilian",
+        "pod": null,
+        "territory_name": "Healthcare",
+        "segment": "Enterprise"
+      },
+      "identity": {
+        "crm_id": "CRM-1002",
+        "peopleai_account_id": 12346,
+        "match_status": "matched"
+      },
+      "signal_score": 68,
+      "internal_priority_score": 72,
+      "priority_reasons": ["Container platform exploration", "Recent increase in email activity"],
+      "internal": {
+        "metrics": {
+          "total_activities": 38,
+          "meeting_count_30d": 5,
+          "meeting_count_90d": 10,
+          "meeting_count_all": 12,
+          "email_count_30d": 12,
+          "email_count_90d": 20,
+          "email_count_all": 26,
+          "outbound_count": 18,
+          "inbound_count": 20,
+          "external_count": 24,
+          "internal_count": 14,
+          "most_recent_activity_date": "2026-07-21",
+          "most_recent_activity_type": "email",
+          "activity_types": {"meeting": 12, "email": 26},
+          "linked_opportunity_names": ["Container Platform POC"],
+          "activity_trend": "stable",
+          "metrics_status": "available"
+        },
+        "risks": ["POC timeline at risk due to procurement delays"],
+        "next_steps": ["Follow up on POC scope document", "Schedule technical deep-dive with DevOps team"],
+        "topics": ["container platform", "DevOps transformation"]
+      },
+      "summary": "Veterans Health Corp is in early-stage evaluation of container platforms. The POC is progressing but faces procurement timeline risks. Technical engagement is steady.",
+      "recommended_next_move": "Follow up on the POC scope document and schedule a technical deep-dive with their DevOps team to keep momentum.",
+      "signals": [
+        {
+          "signal_id": "sig-004",
+          "disposition": "KEEP",
+          "score": 68,
+          "headline": "Container platform POC progressing with active technical engagement",
+          "what_changed": "Three technical meetings held in the past 30 days focused on container architecture.",
+          "why_it_matters": "Active technical evaluation indicates genuine buying intent beyond exploratory interest.",
+          "red_hat_relevance": "OpenShift is well-positioned for federal container platform requirements.",
+          "recommended_action": "Provide reference architectures for similar federal healthcare deployments.",
+          "source_type": "derived",
+          "source_url": null,
+          "published_at": null,
+          "confidence": "high"
+        },
+        {
+          "signal_id": "sig-005",
+          "disposition": "WATCH",
+          "score": 45,
+          "headline": "Procurement timeline may slip to next fiscal year",
+          "what_changed": "Internal budget review pushed decision to Q1 FY2028.",
+          "why_it_matters": "Delayed procurement means the POC could lose organizational priority.",
+          "red_hat_relevance": "Need to maintain technical relationship during procurement pause.",
+          "recommended_action": "Offer a no-cost extended evaluation and maintain monthly check-ins.",
+          "source_type": "backstory_mcp",
+          "source_url": null,
+          "published_at": null,
+          "confidence": "medium"
+        }
+      ]
+    },
+    {
+      "account_id": "A-003",
+      "account_name": "National Health Institute",
+      "hierarchy": {
+        "geo": "NAPS",
+        "region": "Federal Civilian",
+        "pod": null,
+        "territory_name": "Healthcare",
+        "segment": "Enterprise"
+      },
+      "identity": {
+        "crm_id": null,
+        "peopleai_account_id": null,
+        "match_status": "not_found"
+      },
+      "signal_score": null,
+      "internal_priority_score": null,
+      "priority_reasons": [],
+      "internal": {
+        "metrics": {
+          "metrics_status": "unavailable_identity",
+          "total_activities": null,
+          "meeting_count_30d": null,
+          "email_count_30d": null,
+          "activity_trend": null,
+          "linked_opportunity_names": null
+        },
+        "risks": [],
+        "next_steps": [],
+        "topics": []
+      },
+      "summary": null,
+      "recommended_next_move": null,
+      "signals": []
+    },
+    {
+      "account_id": "A-004",
+      "account_name": "Northrop Defense Systems",
+      "hierarchy": {
+        "geo": "NAPS",
+        "region": "Federal Civilian",
+        "pod": null,
+        "territory_name": "Defense IT",
+        "segment": "Enterprise"
+      },
+      "identity": {
+        "crm_id": "CRM-2001",
+        "peopleai_account_id": 22001,
+        "match_status": "matched"
+      },
+      "signal_score": 74,
+      "internal_priority_score": 80,
+      "priority_reasons": ["Active RHEL migration", "Multiple open opportunities"],
+      "internal": {
+        "metrics": {
+          "total_activities": 62,
+          "meeting_count_30d": 8,
+          "meeting_count_90d": 18,
+          "meeting_count_all": 24,
+          "email_count_30d": 20,
+          "email_count_90d": 30,
+          "email_count_all": 38,
+          "outbound_count": 30,
+          "inbound_count": 32,
+          "external_count": 40,
+          "internal_count": 22,
+          "most_recent_activity_date": "2026-07-24",
+          "most_recent_activity_type": "meeting",
+          "activity_types": {"meeting": 24, "email": 38},
+          "linked_opportunity_names": ["RHEL Migration Phase 2", "Ansible Automation Platform", "OpenShift Dedicated"],
+          "activity_trend": "increasing",
+          "metrics_status": "available"
+        },
+        "risks": ["Competing vendor (VMware) has existing relationship"],
+        "next_steps": ["Present migration ROI analysis", "Schedule C-level briefing"],
+        "topics": ["RHEL migration", "automation", "hybrid cloud"]
+      },
+      "summary": "Northrop is in active RHEL migration with strong executive support. Multiple opportunities are open and progressing. The main risk is an incumbent VMware relationship.",
+      "recommended_next_move": "Present the migration ROI analysis at the upcoming C-level briefing. Emphasize cost savings over VMware licensing.",
+      "signals": [
+        {
+          "signal_id": "sig-006",
+          "disposition": "KEEP",
+          "score": 74,
+          "headline": "RHEL migration phase 2 accelerating with executive backing",
+          "what_changed": "CTO signed off on Phase 2 expansion to 2,000 additional nodes.",
+          "why_it_matters": "Executive sign-off de-risks the migration and signals long-term commitment to Red Hat stack.",
+          "red_hat_relevance": "Direct RHEL revenue expansion opportunity with cross-sell potential into Ansible and OpenShift.",
+          "recommended_action": "Ensure professional services are lined up for Phase 2 deployment support.",
+          "source_type": "derived",
+          "source_url": null,
+          "published_at": null,
+          "confidence": "high"
+        },
+        {
+          "signal_id": "sig-007",
+          "disposition": "WATCH",
+          "score": 55,
+          "headline": "VMware contract renewal approaching in Q4",
+          "what_changed": "Current VMware ELA expires October 2026.",
+          "why_it_matters": "Contract renewal is a natural decision point where Red Hat alternatives can be positioned.",
+          "red_hat_relevance": "OpenShift Virtualization could replace VMware workloads at lower TCO.",
+          "recommended_action": "Prepare a TCO comparison and OpenShift Virtualization migration assessment.",
+          "source_type": "external_public",
+          "source_url": "https://example.com/vmware-renewal",
+          "published_at": "2026-07-15T10:00:00Z",
+          "confidence": "medium"
+        }
+      ]
+    },
+    {
+      "account_id": "A-005",
+      "account_name": "General Dynamics IT",
+      "hierarchy": {
+        "geo": "NAPS",
+        "region": "Federal Civilian",
+        "pod": null,
+        "territory_name": "Defense IT",
+        "segment": "Enterprise"
+      },
+      "identity": {
+        "crm_id": "CRM-2002",
+        "peopleai_account_id": 22002,
+        "match_status": "matched"
+      },
+      "signal_score": 52,
+      "internal_priority_score": 60,
+      "priority_reasons": ["Declining engagement trend"],
+      "internal": {
+        "metrics": {
+          "total_activities": 24,
+          "meeting_count_30d": 2,
+          "meeting_count_90d": 8,
+          "meeting_count_all": 10,
+          "email_count_30d": 6,
+          "email_count_90d": 10,
+          "email_count_all": 14,
+          "outbound_count": 12,
+          "inbound_count": 12,
+          "external_count": 16,
+          "internal_count": 8,
+          "most_recent_activity_date": "2026-07-10",
+          "most_recent_activity_type": "email",
+          "activity_types": {"meeting": 10, "email": 14},
+          "linked_opportunity_names": [],
+          "activity_trend": "declining",
+          "metrics_status": "available"
+        },
+        "risks": ["Engagement declining month-over-month", "No open opportunities"],
+        "next_steps": ["Re-engage with technical team on automation use cases"],
+        "topics": ["automation"]
+      },
+      "summary": "Engagement with General Dynamics IT has been declining. No open opportunities exist. The previous automation discussion has stalled.",
+      "recommended_next_move": "Re-engage the technical team with a new Ansible use case workshop to restart the conversation.",
+      "signals": [
+        {
+          "signal_id": "sig-008",
+          "disposition": "KEEP",
+          "score": 52,
+          "headline": "Engagement declining but automation interest was previously strong",
+          "what_changed": "Monthly activity dropped 40% compared to previous period.",
+          "why_it_matters": "Losing momentum with an account that previously showed genuine automation interest.",
+          "red_hat_relevance": "Ansible Automation Platform was the primary topic of past engagement.",
+          "recommended_action": "Propose a focused automation workshop to re-engage technical contacts.",
+          "source_type": "peopleai_query",
           "source_url": null,
           "published_at": null,
           "confidence": "high"
         }
       ]
+    },
+    {
+      "account_id": "A-006",
+      "account_name": "Raytheon Intelligence",
+      "hierarchy": {
+        "geo": "NAPS",
+        "region": "Federal Civilian",
+        "pod": null,
+        "territory_name": "Defense IT",
+        "segment": "Enterprise"
+      },
+      "identity": {
+        "crm_id": "CRM-2003",
+        "peopleai_account_id": null,
+        "match_status": "ambiguous"
+      },
+      "signal_score": null,
+      "internal_priority_score": null,
+      "priority_reasons": [],
+      "internal": {
+        "metrics": {
+          "metrics_status": "unavailable_identity",
+          "total_activities": null,
+          "meeting_count_30d": null,
+          "email_count_30d": null,
+          "activity_trend": null,
+          "linked_opportunity_names": null
+        },
+        "risks": [],
+        "next_steps": [],
+        "topics": []
+      },
+      "summary": null,
+      "recommended_next_move": null,
+      "signals": []
     }
   ],
   "_meta": {
     "query_window_days": 120,
-    "accounts_in_scope": 2,
-    "accounts_enriched": 1,
+    "accounts_in_scope": 6,
+    "accounts_enriched": 4,
     "mcp_status": "connected",
-    "caveats": ["Backstory narrative tools cover the last 30 days unless otherwise labeled."]
+    "caveats": [
+      "Backstory narrative tools cover the last 30 days unless otherwise labeled.",
+      "External research uses only public sources. It cannot see paywalled or internal content.",
+      "Scores reflect relative importance within this portfolio, not absolute importance across all accounts."
+    ]
   }
 }

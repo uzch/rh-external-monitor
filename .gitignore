@@ -17,6 +17,14 @@ data/local/
 data/generated/
 data/runs/
 
+# Node (Playwright UI tests)
+node_modules/
+package-lock.json
+
+# Generated test artifacts
+**/tests/test-output.html
+**/examples/portfolio-geo-test.json
+
 # Temp and build artifacts
 *.log
 __pycache__/

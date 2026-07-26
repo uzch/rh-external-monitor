@@ -1,12 +1,864 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>External Monitor Portfolio</title>
 <style>
-:root{--red:#e00;--ink:#151515;--muted:#667085;--line:#e5e7eb;--bg:#f4f5f7}*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:var(--bg);color:var(--ink)}header{background:#151515;color:#fff;padding:18px 28px}header h1{margin:0;font-size:22px}nav{background:#fff;border-bottom:1px solid var(--line);padding:0 28px;display:flex;gap:22px}nav button{border:0;background:none;padding:16px 2px;font-weight:700;color:#667085;cursor:pointer;border-bottom:3px solid transparent}nav button.active{color:#151515;border-color:var(--red)}main{max-width:1400px;margin:24px auto;padding:0 24px}.view{display:none}.view.active{display:block}.toolbar,.panel{background:#fff;border:1px solid var(--line);border-radius:12px;padding:18px;margin-bottom:18px}.toolbar{display:flex;gap:16px;align-items:end}.field{display:flex;flex-direction:column;gap:6px}.field label{font-size:12px;font-weight:700;color:var(--muted)}select{min-width:250px;padding:10px;border:1px solid #d0d5dd;border-radius:8px}.kpis{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:18px}.kpi{background:#fff;border:1px solid var(--line);border-radius:12px;padding:16px}.kpi small{display:block;color:var(--muted);font-weight:700;margin-bottom:8px}.kpi strong{font-size:28px}.summary{background:#fff7ed;border:1px solid #fdba74;color:#7c2d12;border-radius:12px;padding:16px;margin-bottom:18px;font-weight:650}table{width:100%;border-collapse:collapse;background:#fff}th{background:#2b2b2b;color:#fff;text-align:left;padding:12px;font-size:12px}td{padding:13px;border-bottom:1px solid var(--line);vertical-align:top}.open{color:#0563c1;font-weight:800;cursor:pointer;text-decoration:underline}.pill{padding:4px 8px;border-radius:999px;font-size:11px;font-weight:800}.keep{background:#dcfce7;color:#166534}.watch{background:#fef3c7;color:#92400e}.account-head{display:grid;grid-template-columns:2fr repeat(4,1fr);gap:12px}.meta{background:#fff;border:1px solid var(--line);border-radius:10px;padding:14px}.meta small{display:block;color:var(--muted);font-weight:700}.meta strong{display:block;margin-top:6px}.section-title{background:var(--red);color:#fff;padding:10px 14px;font-weight:800;border-radius:8px 8px 0 0}.section-body{background:#fff;border:1px solid var(--line);border-top:0;padding:18px;border-radius:0 0 8px 8px;margin-bottom:18px;line-height:1.5}
-</style></head><body>
-<header><h1>External Monitor</h1></header><nav><button id="portfolioTab" class="active" onclick="showView('portfolio')">Portfolio View</button><button id="accountTab" onclick="showView('account')">Account View</button></nav>
-<main><section id="portfolio" class="view active"><div class="toolbar"><div class="field"><label>Scope</label><select id="scope"><option></option></select></div></div><div class="kpis"><div class="kpi"><small>Accounts</small><strong id="accounts"></strong></div><div class="kpi"><small>Internal Data</small><strong id="internal"></strong></div><div class="kpi"><small>Enriched</small><strong id="enriched"></strong></div><div class="kpi"><small>KEEP / WATCH</small><strong id="dispositions"></strong></div><div class="kpi"><small>Highest Score</small><strong id="highest"></strong></div></div><div id="summary" class="summary"></div><div class="panel"><table><thead><tr><th>Account</th><th>Region</th><th>Pod</th><th>Signal Score</th><th>Signals</th><th>Top Reason</th><th>Enrichment</th><th></th></tr></thead><tbody id="portfolioRows"></tbody></table></div></section>
-<section id="account" class="view"><div class="toolbar"><div class="field"><label>Selected Account</label><select id="accountSelect" onchange="renderAccount()"></select></div></div><div class="account-head" id="accountMeta"></div><div class="section-title">30-Second Summary</div><div class="section-body" id="accountSummary"></div><div class="section-title">Recommended Next Move</div><div class="section-body" id="accountMove"></div><div class="panel"><table><thead><tr><th>Disposition</th><th>Score</th><th>Headline</th><th>Why It Matters</th><th>Recommended Action</th><th>Source</th></tr></thead><tbody id="signalRows"></tbody></table></div></section></main>
-<script id="portfolio-data" type="application/json">__PORTFOLIO_JSON__</script><script>
-const data=JSON.parse(document.getElementById('portfolio-data').textContent);const accounts=data.accounts||[];function showView(v){document.querySelectorAll('.view').forEach(x=>x.classList.remove('active'));document.getElementById(v).classList.add('active');document.querySelectorAll('nav button').forEach(x=>x.classList.remove('active'));document.getElementById(v+'Tab').classList.add('active')}function openAccount(id){document.getElementById('accountSelect').value=id;renderAccount();showView('account')}function renderPortfolio(){document.getElementById('scope').innerHTML=`<option>${data.scope.type}: ${data.scope.value}</option>`;document.getElementById('accounts').textContent=data.summary.account_count;document.getElementById('internal').textContent=data.summary.accounts_with_internal_data;document.getElementById('enriched').textContent=data.summary.accounts_enriched;document.getElementById('dispositions').textContent=`${data.summary.keep_count} / ${data.summary.watch_count}`;document.getElementById('highest').textContent=data.summary.highest_signal_score??'—';document.getElementById('summary').textContent=data.summary.text;const body=document.getElementById('portfolioRows');body.innerHTML='';accounts.forEach(a=>{const tr=document.createElement('tr');tr.innerHTML=`<td><strong>${a.account_name}</strong></td><td>${a.hierarchy.region??''}</td><td>${a.hierarchy.pod??''}</td><td>${a.signal_score??'—'}</td><td>${a.signals.length}</td><td>${(a.priority_reasons||[])[0]??''}</td><td>${a.identity.match_status}</td><td class="open" onclick="openAccount('${a.account_id}')">Open</td>`;body.appendChild(tr)})}function renderAccount(){const a=accounts.find(x=>x.account_id===document.getElementById('accountSelect').value)||accounts[0];if(!a)return;document.getElementById('accountMeta').innerHTML=`<div class="meta"><small>Account</small><strong>${a.account_name}</strong></div><div class="meta"><small>Region</small><strong>${a.hierarchy.region??''}</strong></div><div class="meta"><small>Pod</small><strong>${a.hierarchy.pod??''}</strong></div><div class="meta"><small>Signal Score</small><strong>${a.signal_score??'—'}</strong></div><div class="meta"><small>Match</small><strong>${a.identity.match_status}</strong></div>`;document.getElementById('accountSummary').textContent=a.summary??'';document.getElementById('accountMove').textContent=a.recommended_next_move??'';const body=document.getElementById('signalRows');body.innerHTML='';(a.signals||[]).forEach(s=>{const tr=document.createElement('tr');tr.innerHTML=`<td><span class="pill ${s.disposition.toLowerCase()}">${s.disposition}</span></td><td>${s.score}</td><td><strong>${s.headline}</strong></td><td>${s.why_it_matters??''}</td><td>${s.recommended_action??''}</td><td>${s.source_url?`<a href="${s.source_url}" target="_blank">Open</a>`:s.source_type}</td>`;body.appendChild(tr)})}const select=document.getElementById('accountSelect');accounts.forEach(a=>{const o=document.createElement('option');o.value=a.account_id;o.textContent=a.account_name;select.appendChild(o)});renderPortfolio();renderAccount();
-</script></body></html>
+@import url('https://fonts.googleapis.com/css2?family=Red+Hat+Display:wght@400;500;600;700;800;900&family=Red+Hat+Text:wght@400;500;600;700&display=swap');
+
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Red Hat Text',sans-serif;background:#f2f2f2;color:#1f1f1f;line-height:1.5;-webkit-font-smoothing:antialiased}
+
+/* Global header */
+.global-header{background:#151515;padding:0 clamp(16px,4vw,48px);display:flex;align-items:center;height:60px;gap:16px}
+.global-header .logo{color:#EE0000;font-family:'Red Hat Display',sans-serif;font-weight:700;font-size:18px;display:flex;align-items:center;gap:10px}
+.global-header .logo .hat{width:36px;height:24px;background:#EE0000;border-radius:4px 12px 0 0;display:inline-block}
+.global-header .divider{width:1px;height:28px;background:#383838}
+.global-header .app-name{color:#fff;font-family:'Red Hat Display',sans-serif;font-size:16px;font-weight:500}
+
+/* Page header */
+.page-header{background:#fff;border-bottom:1px solid #c7c7c7;padding:24px clamp(16px,4vw,48px) 20px}
+.page-header-inner{max-width:1200px;margin:0 auto}
+.breadcrumb{display:flex;gap:6px;align-items:center;color:#707070;font-size:13px;margin-bottom:10px;flex-wrap:wrap}
+.breadcrumb a{color:#0066cc;text-decoration:none;font-weight:500;cursor:pointer}
+.breadcrumb a:hover{text-decoration:underline}
+.breadcrumb .sep{color:#a3a3a3}
+.page-header h1{font-family:'Red Hat Display',sans-serif;font-size:36px;font-weight:500;line-height:1.3;color:#151515}
+.page-header .subtitle{display:flex;flex-wrap:wrap;gap:10px;color:#4d4d4d;font-size:14px;margin-top:6px;align-items:center}
+.page-header .subtitle .dot::before{content:"\2022";color:#a3a3a3;margin-right:10px}
+
+/* Navigation tabs */
+.tab-bar{background:#fff;border-bottom:1px solid #c7c7c7;padding:0 clamp(16px,4vw,48px)}
+.tab-bar-inner{max-width:1200px;margin:0 auto;display:flex;gap:0;flex-wrap:wrap}
+.tab-bar button{background:none;border:none;border-bottom:3px solid transparent;padding:14px 20px;font-family:'Red Hat Text',sans-serif;font-size:14px;font-weight:600;color:#4d4d4d;cursor:pointer}
+.tab-bar button:hover{color:#151515;background:#f2f2f2}
+.tab-bar button.active{color:#151515;border-bottom-color:#EE0000}
+
+/* Main content */
+.main{max-width:1200px;margin:24px auto;padding:0 clamp(16px,4vw,48px)}
+
+/* KPI cards */
+.kpi-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:16px;margin-bottom:24px}
+.kpi-card{background:#fff;border:1px solid #e0e0e0;border-left:4px solid #EE0000;border-radius:0 8px 8px 0;padding:20px;display:flex;flex-direction:column;gap:4px}
+.kpi-card .kpi-value{font-family:'Red Hat Display',sans-serif;font-size:36px;font-weight:500;color:#EE0000;line-height:1.2}
+.kpi-card .kpi-label{font-size:14px;color:#4d4d4d;font-weight:500}
+.kpi-card.neutral{border-left-color:#c7c7c7}
+.kpi-card.neutral .kpi-value{color:#151515}
+
+/* Summary card */
+.summary-card{background:#fff;border:1px solid #e0e0e0;border-top:4px solid #EE0000;border-radius:0 0 8px 8px;padding:24px;margin-bottom:24px}
+.summary-card h2{font-family:'Red Hat Display',sans-serif;font-size:24px;font-weight:500;color:#151515;margin-bottom:12px}
+.summary-card p{color:#383838;line-height:1.6;max-width:900px}
+
+/* Data table */
+.table-card{background:#fff;border:1px solid #e0e0e0;border-radius:8px;overflow:hidden;margin-bottom:24px}
+.table-card .table-header{padding:16px 20px;border-bottom:1px solid #e0e0e0;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px}
+.table-card .table-header h2{font-family:'Red Hat Display',sans-serif;font-size:20px;font-weight:500;color:#151515}
+.data-table{width:100%;border-collapse:collapse}
+.data-table th{text-align:left;padding:12px 20px;font-size:12px;font-weight:700;color:#4d4d4d;text-transform:uppercase;letter-spacing:.03em;background:#f2f2f2;border-bottom:1px solid #e0e0e0}
+.data-table td{padding:14px 20px;border-bottom:1px solid #e0e0e0;vertical-align:top;font-size:14px}
+.data-table td:first-child{max-width:280px;word-break:break-word}
+.data-table tr:last-child td{border-bottom:none}
+.data-table tr:hover{background:#f9f9f9}
+.drill-link{color:#0066cc;font-weight:600;cursor:pointer;text-decoration:none;white-space:nowrap}
+.drill-link:hover{text-decoration:underline}
+
+/* Status pills */
+.status-pill{display:inline-block;border-radius:999px;padding:3px 12px;font-size:12px;font-weight:700;letter-spacing:.02em;text-transform:uppercase;white-space:nowrap}
+.status-pill.keep{background:#e9f7df;color:#3d7317}
+.status-pill.watch{background:#ffe8cc;color:#9e4a06}
+.status-pill.reject{background:#ffe3d9;color:#b1380b}
+
+/* Match badge */
+.match-badge{display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600;white-space:nowrap}
+.match-badge.matched{background:#e9f7df;color:#3d7317}
+.match-badge.not_found{background:#ffe3d9;color:#b1380b}
+.match-badge.ambiguous{background:#ffe8cc;color:#9e4a06}
+.match-badge.unresolved{background:#f2f2f2;color:#707070}
+
+/* Trend */
+.trend-up{color:#3d7317;font-weight:600;white-space:nowrap}
+.trend-stable{color:#9e4a06;font-weight:600;white-space:nowrap}
+.trend-down{color:#b1380b;font-weight:600;white-space:nowrap}
+
+/* Account detail layout */
+.account-layout{display:grid;gap:24px;grid-template-columns:minmax(0,1fr) 300px}
+
+/* Sidebar cards */
+.sidebar-card{background:#fff;border:1px solid #e0e0e0;border-radius:8px;padding:20px}
+.account-sidebar{display:flex;flex-direction:column;gap:16px}
+.sidebar-card h3{font-family:'Red Hat Display',sans-serif;font-size:16px;font-weight:600;color:#151515;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid #e0e0e0}
+.sidebar-card .meta-row{display:flex;justify-content:space-between;padding:6px 0;font-size:13px;border-bottom:1px solid #f2f2f2}
+.sidebar-card .meta-row:last-child{border-bottom:none}
+.sidebar-card .meta-label{color:#707070}
+.sidebar-card .meta-value{color:#151515;font-weight:500}
+.sidebar-card ul{padding-left:18px;color:#383838;font-size:13px}
+.sidebar-card li{margin-bottom:4px}
+
+/* Signal cards */
+.signal-card{background:#fff;border:1px solid #e0e0e0;border-radius:8px;padding:20px;margin-bottom:16px}
+.signal-card-header{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:10px}
+.signal-card h3{font-family:'Red Hat Display',sans-serif;font-size:20px;font-weight:500;line-height:1.3;color:#151515;margin-bottom:14px}
+.signal-score{font-family:'Red Hat Display',sans-serif;font-size:14px;font-weight:700;color:#151515;background:#f2f2f2;border-radius:4px;padding:2px 8px}
+.signal-meta{font-size:12px;color:#707070}
+.signal-body{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.signal-body .col-label{font-size:12px;font-weight:700;color:#4d4d4d;text-transform:uppercase;letter-spacing:.03em;margin-bottom:6px}
+.signal-body p{color:#383838;line-height:1.55;font-size:14px}
+
+/* Collapsible details */
+details{margin-top:16px}
+summary{color:#0066cc;font-size:13px;font-weight:600;cursor:pointer;list-style:none}
+summary::before{content:"\25B6\00a0";font-size:10px}
+details[open] summary::before{content:"\25BC\00a0"}
+.detail-grid{border-left:3px solid #EE0000;padding-left:16px;margin-top:10px;display:grid;gap:10px}
+.detail-row{display:grid;grid-template-columns:140px 1fr;gap:8px;font-size:13px}
+.detail-label{color:#707070;font-weight:600}
+.detail-value{color:#383838}
+
+/* Recommended next move */
+.next-move{background:#fff;border:1px solid #e0e0e0;border-left:4px solid #EE0000;border-radius:0 8px 8px 0;padding:20px;margin-bottom:24px}
+.next-move h2{font-family:'Red Hat Display',sans-serif;font-size:18px;font-weight:600;color:#151515;margin-bottom:8px}
+.next-move p{color:#383838;line-height:1.6}
+
+/* Guide page */
+.guide{max-width:820px}
+.guide h2{font-family:'Red Hat Display',sans-serif;font-size:28px;font-weight:500;color:#151515;margin:0 0 8px}
+.guide > p{color:#4d4d4d;font-size:15px;line-height:1.6;margin-bottom:32px}
+.guide-section{background:#fff;border:1px solid #e0e0e0;border-radius:8px;padding:24px;margin-bottom:16px}
+.guide-section h3{font-family:'Red Hat Display',sans-serif;font-size:18px;font-weight:600;color:#151515;margin-bottom:12px}
+.guide-section p{color:#383838;font-size:14px;line-height:1.6;margin-bottom:10px}
+.guide-section p:last-child{margin-bottom:0}
+.def-table{width:100%;border-collapse:collapse;margin-top:12px}
+.def-table th{text-align:left;padding:10px 14px;font-size:12px;font-weight:700;color:#4d4d4d;text-transform:uppercase;letter-spacing:.03em;background:#f2f2f2;border-bottom:1px solid #e0e0e0}
+.def-table td{padding:10px 14px;border-bottom:1px solid #f2f2f2;font-size:14px;vertical-align:top}
+.def-table tr:last-child td{border-bottom:none}
+.def-table .term{font-weight:600;color:#151515;white-space:nowrap}
+
+/* Activity bar */
+.activity-bar{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px;margin-bottom:24px}
+.activity-stat{background:#fff;border:1px solid #e0e0e0;border-radius:8px;padding:16px;text-align:center}
+.activity-stat .stat-value{font-family:'Red Hat Display',sans-serif;font-size:28px;font-weight:500;color:#151515;line-height:1.2}
+.activity-stat .stat-label{font-size:12px;color:#707070;font-weight:600;text-transform:uppercase;letter-spacing:.03em;margin-top:4px}
+
+/* Responsive */
+@media(max-width:920px){
+  .account-layout{grid-template-columns:1fr}
+  .signal-body{grid-template-columns:1fr}
+}
+@media(max-width:620px){
+  .page-header h1{font-size:28px}
+}
+</style>
+</head>
+<body>
+
+<div class="global-header">
+  <div class="logo"><span class="hat"></span>Red Hat</div>
+  <div class="divider"></div>
+  <div class="app-name">External Monitor</div>
+</div>
+<div class="tab-bar"><div class="tab-bar-inner" id="tabBar"></div></div>
+<div id="app"></div>
+
+<script id="portfolio-data" type="application/json">__PORTFOLIO_JSON__</script>
+<script>
+(function(){
+const data = JSON.parse(document.getElementById('portfolio-data').textContent);
+const accounts = data.accounts || [];
+const scopeType = data.scope.type;
+const scopeValue = data.scope.value;
+
+// ── Helpers ──
+
+function esc(s) {
+  if (s == null) return '';
+  var d = document.createElement('div');
+  d.textContent = String(s);
+  return d.innerHTML;
+}
+
+function metric(acct, key) {
+  var m = acct && acct.internal && acct.internal.metrics;
+  return m ? m[key] : null;
+}
+
+function oppCount(acct) {
+  var names = metric(acct, 'linked_opportunity_names');
+  if (Array.isArray(names)) return names.length;
+  var c = metric(acct, 'linked_opportunity_count');
+  return (typeof c === 'number') ? c : 0;
+}
+
+function trendHTML(trend, long) {
+  if (!trend) return '<span style="color:#707070">—</span>';
+  if (trend === 'increasing') return '<span class="trend-up">↑' + (long ? ' increasing' : '') + '</span>';
+  if (trend === 'stable') return '<span class="trend-stable">→' + (long ? ' stable' : '') + '</span>';
+  if (trend === 'declining') return '<span class="trend-down">↓' + (long ? ' declining' : '') + '</span>';
+  return esc(trend);
+}
+
+function accountScore(a) {
+  if (a.signal_score != null) return a.signal_score;
+  var sigs = (a.signals || []).filter(function(s){ return s.score != null; });
+  if (!sigs.length) return null;
+  var sum = 0;
+  for (var i = 0; i < sigs.length; i++) sum += sigs[i].score;
+  return Math.round(sum / sigs.length);
+}
+
+function pillHTML(disposition, count) {
+  var cls = disposition.toLowerCase();
+  var label = count != null ? count + ' ' + disposition : disposition;
+  return '<span class="status-pill ' + cls + '">' + esc(label) + '</span>';
+}
+
+function matchBadgeHTML(status) {
+  return '<span class="match-badge ' + esc(status) + '">' + esc(status.replace('_', ' ')) + '</span>';
+}
+
+function fmtDate(iso) {
+  if (!iso) return '—';
+  var d = new Date(iso);
+  var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  return months[d.getMonth()] + ' ' + d.getDate() + ', ' + d.getFullYear();
+}
+
+function avg(arr) {
+  var nums = arr.filter(function(v){ return v != null && typeof v === 'number'; });
+  if (!nums.length) return null;
+  var s = 0;
+  for (var i = 0; i < nums.length; i++) s += nums[i];
+  return Math.round(s / nums.length);
+}
+
+function modeTrend(accts) {
+  var counts = {};
+  accts.forEach(function(a) {
+    var t = metric(a, 'activity_trend');
+    if (t) counts[t] = (counts[t] || 0) + 1;
+  });
+  var best = null, bestN = 0;
+  for (var k in counts) {
+    if (counts[k] > bestN) { best = k; bestN = counts[k]; }
+  }
+  return best;
+}
+
+// ── Aggregate a group of accounts ──
+
+function aggregate(accts) {
+  var totalAct = 0, meetings = 0, emails = 0, opps = 0;
+  var keepCount = 0, watchCount = 0, rejectCount = 0;
+  var scores = [];
+  accts.forEach(function(a) {
+    totalAct += (metric(a, 'total_activities') || 0);
+    meetings += (metric(a, 'meeting_count_30d') || 0);
+    emails += (metric(a, 'email_count_30d') || 0);
+    opps += oppCount(a);
+    var sc = accountScore(a);
+    if (sc != null) scores.push(sc);
+    (a.signals || []).forEach(function(s) {
+      if (s.disposition === 'KEEP') keepCount++;
+      else if (s.disposition === 'WATCH') watchCount++;
+      else if (s.disposition === 'REJECT') rejectCount++;
+    });
+  });
+  return {
+    count: accts.length,
+    withData: accts.filter(function(a){ var m = a && a.internal && a.internal.metrics; return m && Object.keys(m).length > 0; }).length,
+    enriched: accts.filter(function(a){ return (a.signals||[]).length > 0; }).length,
+    keepCount: keepCount,
+    watchCount: watchCount,
+    rejectCount: rejectCount,
+    highestScore: scores.length ? Math.max.apply(null, scores) : null,
+    avgScore: avg(scores),
+    totalActivities: totalAct,
+    meetings30d: meetings,
+    emails30d: emails,
+    opportunities: opps,
+    overallTrend: modeTrend(accts)
+  };
+}
+
+// ── Build hierarchy tree ──
+
+function groupBy(accts, field) {
+  var map = {};
+  accts.forEach(function(a) {
+    var key = (a.hierarchy && a.hierarchy[field]) || '(unassigned)';
+    if (!map[key]) map[key] = [];
+    map[key].push(a);
+  });
+  return map;
+}
+
+// ── Determine hierarchy levels based on scope ──
+
+var LEVELS = {
+  geo:       ['region', 'territory_name'],
+  region:    ['territory_name'],
+  pod:       ['territory_name'],
+  territory: [],
+  account:   []
+};
+
+var levelLabels = {
+  geo: 'GEO',
+  region: 'Region',
+  territory_name: 'Territory',
+  pod: 'Pod'
+};
+
+var hierarchyLevels = LEVELS[scopeType] || [];
+
+// ── Navigation state ──
+
+var navStack = [];
+var currentView = 'top';
+
+function navigateTo(level, key, accts) {
+  navStack.push({ level: level, key: key, accounts: accts });
+  renderCurrentView();
+}
+
+function navigateBack(index) {
+  navStack = navStack.slice(0, index);
+  renderCurrentView();
+}
+
+function showGuide() {
+  currentView = 'guide';
+  renderTabs();
+  document.getElementById('app').innerHTML = renderGuideView();
+  window.scrollTo(0, 0);
+}
+
+function showMain() {
+  currentView = 'top';
+  navStack = [];
+  renderCurrentView();
+}
+
+// ── Render tabs ──
+
+function renderTabs() {
+  var bar = document.getElementById('tabBar');
+  var html = '';
+
+  if (scopeType === 'account') {
+    html += '<button' + (currentView !== 'guide' ? ' class="active"' : '') + ' onclick="EM.showMain()">' + esc(scopeValue) + '</button>';
+  } else {
+    var topLabel = scopeType.charAt(0).toUpperCase() + scopeType.slice(1);
+    html += '<button' + (currentView !== 'guide' && navStack.length === 0 ? ' class="active"' : '') + ' onclick="EM.showMain()">' + esc(topLabel) + ' Overview</button>';
+    navStack.forEach(function(frame, i) {
+      var isActive = currentView !== 'guide' && i === navStack.length - 1;
+      html += '<button' + (isActive ? ' class="active"' : '') + ' onclick="EM.navigateBack(' + (i + 1) + ')">' + esc(frame.key) + '</button>';
+    });
+  }
+
+  html += '<button' + (currentView === 'guide' ? ' class="active"' : '') + ' onclick="EM.showGuide()">Guide</button>';
+  bar.innerHTML = html;
+}
+
+// ── Determine what to render ──
+
+function renderCurrentView() {
+  currentView = 'top';
+  renderTabs();
+
+  if (scopeType === 'account') {
+    document.getElementById('app').innerHTML = renderAccountDetail(accounts[0]);
+    window.scrollTo(0, 0);
+    return;
+  }
+
+  var currentAccounts, drillField, depth;
+
+  if (navStack.length === 0) {
+    currentAccounts = accounts;
+    depth = 0;
+  } else {
+    var last = navStack[navStack.length - 1];
+    currentAccounts = last.accounts;
+    depth = navStack.length;
+  }
+
+  var remainingLevels = hierarchyLevels.slice(depth);
+
+  if (remainingLevels.length === 0) {
+    if (currentAccounts.length === 1) {
+      document.getElementById('app').innerHTML = renderAccountDetail(currentAccounts[0]);
+    } else {
+      document.getElementById('app').innerHTML = renderAccountListView(currentAccounts);
+    }
+  } else {
+    drillField = remainingLevels[0];
+    document.getElementById('app').innerHTML = renderGroupView(currentAccounts, drillField, remainingLevels);
+  }
+  window.scrollTo(0, 0);
+}
+
+// ── Breadcrumb ──
+
+function buildBreadcrumb() {
+  var parts = [];
+  parts.push('<a onclick="EM.showMain()">' + esc(scopeValue) + '</a>');
+  navStack.forEach(function(frame, i) {
+    if (i < navStack.length - 1) {
+      parts.push('<a onclick="EM.navigateBack(' + (i + 1) + ')">' + esc(frame.key) + '</a>');
+    } else {
+      parts.push('<span>' + esc(frame.key) + '</span>');
+    }
+  });
+  return parts.join(' <span class="sep">/</span> ');
+}
+
+// ── KPI row HTML ──
+
+function summaryKPI() {
+  var s = data.summary;
+  return {
+    count: s.account_count,
+    withData: s.accounts_with_internal_data,
+    enriched: s.accounts_enriched,
+    keepCount: s.keep_count,
+    watchCount: s.watch_count,
+    highestScore: s.highest_signal_score
+  };
+}
+
+function kpiRowHTML(agg) {
+  return '<div class="kpi-row">' +
+    '<div class="kpi-card"><div class="kpi-value">' + agg.count + '</div><div class="kpi-label">Accounts</div></div>' +
+    '<div class="kpi-card"><div class="kpi-value">' + agg.withData + '</div><div class="kpi-label">Internal Data</div></div>' +
+    '<div class="kpi-card"><div class="kpi-value">' + agg.enriched + '</div><div class="kpi-label">Enriched</div></div>' +
+    '<div class="kpi-card"><div class="kpi-value">' + agg.keepCount + ' / ' + agg.watchCount + '</div><div class="kpi-label">Keep / Watch</div></div>' +
+    '<div class="kpi-card"><div class="kpi-value">' + (agg.highestScore != null ? agg.highestScore : '—') + '</div><div class="kpi-label">Highest Score</div></div>' +
+  '</div>';
+}
+
+// ── Activity bar HTML ──
+
+function activityBarHTML(agg) {
+  return '<div class="activity-bar">' +
+    '<div class="activity-stat"><div class="stat-value">' + agg.totalActivities + '</div><div class="stat-label">Total Activities</div></div>' +
+    '<div class="activity-stat"><div class="stat-value">' + agg.meetings30d + '</div><div class="stat-label">Meetings (30d)</div></div>' +
+    '<div class="activity-stat"><div class="stat-value">' + agg.emails30d + '</div><div class="stat-label">Emails (30d)</div></div>' +
+    '<div class="activity-stat"><div class="stat-value">' + agg.opportunities + '</div><div class="stat-label">Opportunities</div></div>' +
+    '<div class="activity-stat"><div class="stat-value">' + trendHTML(agg.overallTrend, false) + '</div><div class="stat-label">Overall Trend</div></div>' +
+  '</div>';
+}
+
+// ── Group view (e.g. Region showing Territories) ──
+
+function renderGroupView(accts, drillField, remainingLevels) {
+  var groups = groupBy(accts, drillField);
+  var agg = aggregate(accts);
+  var isTopLevel = navStack.length === 0;
+  var kpi = isTopLevel ? summaryKPI() : agg;
+  var childLabel = levelLabels[drillField] || drillField;
+
+  var title = isTopLevel ? scopeValue : navStack[navStack.length - 1].key;
+  var scopeLabel = scopeType.charAt(0).toUpperCase() + scopeType.slice(1);
+  var subtitle = isTopLevel ? scopeLabel : childLabel;
+
+  var html = '<div class="page-header"><div class="page-header-inner">';
+  html += '<div class="breadcrumb">' + buildBreadcrumb() + '</div>';
+  html += '<h1>' + esc(title) + '</h1>';
+  html += '<div class="subtitle"><span>' + esc(subtitle) + '</span>';
+  var groupCount = Object.keys(groups).length;
+  var childPlural = childLabel.toLowerCase().replace(/y$/, 'ie') + 's';
+  var childSingular = childLabel.toLowerCase();
+  html += '<span class="dot">' + groupCount + ' ' + (groupCount !== 1 ? childPlural : childSingular) + '</span>';
+  if (remainingLevels.length > 1) {
+    var subGroups = {};
+    accts.forEach(function(a){ var v = (a.hierarchy && a.hierarchy[remainingLevels[1]]) || '(unassigned)'; subGroups[v] = true; });
+    var subCount = Object.keys(subGroups).length;
+    var subLabel = levelLabels[remainingLevels[1]] || remainingLevels[1];
+    var subPlural = subLabel.toLowerCase().replace(/y$/, 'ie') + 's';
+    html += '<span class="dot">' + subCount + ' ' + (subCount !== 1 ? subPlural : subLabel.toLowerCase()) + '</span>';
+  }
+  html += '<span class="dot">' + kpi.count + ' account' + (kpi.count !== 1 ? 's' : '') + '</span>';
+  html += '<span class="dot">Generated ' + fmtDate(data.run.generated_at) + '</span>';
+  html += '</div></div></div>';
+
+  html += '<div class="main">';
+  html += kpiRowHTML(kpi);
+
+  html += '<div class="summary-card"><h2>Executive Summary</h2><p>' + esc(data.summary.text) + '</p></div>';
+
+  html += activityBarHTML(agg);
+
+  // Table of child groups
+  html += '<div class="table-card"><div class="table-header"><h2>' + esc(childLabel.replace(/y$/, 'ie') + 's') + '</h2></div>';
+  html += '<table class="data-table"><thead><tr>';
+  html += '<th>' + esc(childLabel) + '</th><th>Accounts</th><th>Avg Score</th><th>Activities</th><th>Meetings (30d)</th><th>Trend</th><th>Keep</th><th>Watch</th><th></th>';
+  html += '</tr></thead><tbody>';
+
+  var keys = Object.keys(groups).sort();
+  keys.forEach(function(key, idx) {
+    var gAccts = groups[key];
+    var gAgg = aggregate(gAccts);
+    html += '<tr>';
+    html += '<td><strong>' + esc(key) + '</strong></td>';
+    html += '<td>' + gAgg.count + '</td>';
+    html += '<td>' + (gAgg.avgScore != null ? gAgg.avgScore : '—') + '</td>';
+    html += '<td>' + gAgg.totalActivities + '</td>';
+    html += '<td>' + gAgg.meetings30d + '</td>';
+    html += '<td>' + trendHTML(gAgg.overallTrend, true) + '</td>';
+    html += '<td>' + gAgg.keepCount + '</td>';
+    html += '<td>' + gAgg.watchCount + '</td>';
+    html += '<td><a class="drill-link" onclick="EM.drillGroup(' + idx + ')">Open &rarr;</a></td>';
+    html += '</tr>';
+  });
+
+  html += '</tbody></table></div>';
+  html += '</div>';
+
+  // Store keys for drill-down
+  window._groupKeys = keys;
+  window._groupMap = groups;
+
+  return html;
+}
+
+// ── Account list view (Territory level showing accounts) ──
+
+function renderAccountListView(accts) {
+  var agg = aggregate(accts);
+  var isTopLevel = navStack.length === 0;
+  var kpi = isTopLevel ? summaryKPI() : agg;
+  var title = isTopLevel ? scopeValue : navStack[navStack.length - 1].key;
+  var scopeLabel = scopeType.charAt(0).toUpperCase() + scopeType.slice(1);
+  var viewLabel = isTopLevel ? scopeLabel : (navStack.length > 0 ? (levelLabels[navStack[navStack.length - 1].level] || scopeLabel) : scopeLabel);
+
+  var html = '<div class="page-header"><div class="page-header-inner">';
+  html += '<div class="breadcrumb">' + buildBreadcrumb() + '</div>';
+  html += '<h1>' + esc(title) + '</h1>';
+  html += '<div class="subtitle"><span>' + esc(viewLabel) + '</span>';
+  html += '<span class="dot">' + kpi.count + ' account' + (kpi.count !== 1 ? 's' : '') + '</span>';
+  html += '</div></div></div>';
+
+  html += '<div class="main">';
+  html += kpiRowHTML(kpi);
+
+  html += '<div class="summary-card"><h2>Executive Summary</h2><p>' + esc(data.summary.text) + '</p></div>';
+
+  html += activityBarHTML(agg);
+
+  html += '<div class="table-card"><div class="table-header"><h2>Accounts</h2></div>';
+  html += '<table class="data-table"><thead><tr>';
+  html += '<th>Account</th><th>Score</th><th>Signals</th><th>Activities</th><th>Meetings (30d)</th><th>Trend</th><th>Top Reason</th><th>Match</th><th></th>';
+  html += '</tr></thead><tbody>';
+
+  accts.forEach(function(a, idx) {
+    var signals = a.signals || [];
+    var keepN = signals.filter(function(s){ return s.disposition === 'KEEP'; }).length;
+    var watchN = signals.filter(function(s){ return s.disposition === 'WATCH'; }).length;
+    var sc = accountScore(a);
+
+    var signalCell = '';
+    if (keepN > 0) signalCell += pillHTML('KEEP', keepN) + ' ';
+    if (watchN > 0) signalCell += pillHTML('WATCH', watchN);
+    if (!keepN && !watchN) signalCell = signals.length ? String(signals.length) : '0';
+
+    html += '<tr>';
+    html += '<td><strong>' + esc(a.account_name) + '</strong></td>';
+    html += '<td>' + (sc != null ? sc : '—') + '</td>';
+    html += '<td>' + signalCell + '</td>';
+    html += '<td>' + (metric(a, 'total_activities') || 0) + '</td>';
+    html += '<td>' + (metric(a, 'meeting_count_30d') || 0) + '</td>';
+    html += '<td>' + trendHTML(metric(a, 'activity_trend'), false) + '</td>';
+    html += '<td>' + esc((a.priority_reasons || [])[0] || '') + '</td>';
+    html += '<td>' + matchBadgeHTML(a.identity.match_status) + '</td>';
+    html += '<td><a class="drill-link" onclick="EM.openAccount(\'' + esc(a.account_id) + '\')">Open &rarr;</a></td>';
+    html += '</tr>';
+  });
+
+  html += '</tbody></table></div>';
+  html += '</div>';
+
+  return html;
+}
+
+// ── Account detail view ──
+
+function renderAccountDetail(a) {
+  if (!a) return '<div class="main"><p>No account data available.</p></div>';
+
+  var signals = (a.signals || []).slice().sort(function(x, y) {
+    return (y.score || 0) - (x.score || 0);
+  });
+
+  var keepN = signals.filter(function(s){ return s.disposition === 'KEEP'; }).length;
+  var watchN = signals.filter(function(s){ return s.disposition === 'WATCH'; }).length;
+
+  var html = '<div class="page-header"><div class="page-header-inner">';
+  html += '<div class="breadcrumb">' + buildBreadcrumb() + '</div>';
+  html += '<h1>' + esc(a.account_name) + '</h1>';
+  html += '<div class="subtitle"><span>Account</span>';
+  if (a.hierarchy.territory_name) html += '<span class="dot">' + esc(a.hierarchy.territory_name) + '</span>';
+  html += '<span class="dot">Signal Score: ' + (accountScore(a) != null ? accountScore(a) : '—') + '</span>';
+  html += '<span class="dot">' + esc(a.identity.match_status.replace('_', ' ').charAt(0).toUpperCase() + a.identity.match_status.replace('_', ' ').slice(1)) + '</span>';
+  html += '</div></div></div>';
+
+  html += '<div class="main"><div class="account-layout"><div class="account-main">';
+
+  // Summary
+  if (a.summary) {
+    html += '<div class="summary-card"><h2>30-Second Summary</h2><p>' + esc(a.summary) + '</p></div>';
+  }
+
+  // Recommended next move
+  if (a.recommended_next_move) {
+    html += '<div class="next-move"><h2>Recommended Next Move</h2><p>' + esc(a.recommended_next_move) + '</p></div>';
+  }
+
+  // Signals
+  if (signals.length > 0) {
+    html += '<div class="table-card" style="overflow:visible"><div class="table-header"><h2>Signals</h2><div style="display:flex;gap:8px">';
+    if (keepN) html += pillHTML('KEEP', keepN) + ' ';
+    if (watchN) html += pillHTML('WATCH', watchN);
+    html += '</div></div>';
+
+    signals.forEach(function(s, i) {
+      var isLast = i === signals.length - 1;
+      html += '<div class="signal-card" style="border-radius:0;border:none;' + (isLast ? '' : 'border-bottom:1px solid #e0e0e0') + '">';
+      html += '<div class="signal-card-header">';
+      html += pillHTML(s.disposition);
+      html += ' <span class="signal-score">' + s.score + '</span>';
+      html += ' <span class="signal-meta">' + esc(s.confidence) + ' confidence &bull; ' + esc(s.source_type) + '</span>';
+      html += '</div>';
+      html += '<h3>' + esc(s.headline) + '</h3>';
+
+      if (s.why_it_matters || s.recommended_action) {
+        html += '<div class="signal-body">';
+        if (s.why_it_matters) {
+          html += '<div><div class="col-label">Why it matters</div><p>' + esc(s.why_it_matters) + '</p></div>';
+        }
+        if (s.recommended_action) {
+          html += '<div><div class="col-label">Recommended action</div><p>' + esc(s.recommended_action) + '</p></div>';
+        }
+        html += '</div>';
+      }
+
+      // Collapsible details
+      var hasDetails = s.what_changed || s.red_hat_relevance || s.source_url || s.published_at;
+      if (hasDetails) {
+        html += '<details><summary>View details</summary><div class="detail-grid">';
+        if (s.what_changed) html += '<div class="detail-row"><span class="detail-label">What changed</span><span class="detail-value">' + esc(s.what_changed) + '</span></div>';
+        if (s.red_hat_relevance) html += '<div class="detail-row"><span class="detail-label">Red Hat relevance</span><span class="detail-value">' + esc(s.red_hat_relevance) + '</span></div>';
+        if (s.source_url) html += '<div class="detail-row"><span class="detail-label">Source</span><span class="detail-value"><a href="' + esc(s.source_url) + '" target="_blank" rel="noopener" style="color:#0066cc">' + esc(s.source_url) + '</a></span></div>';
+        if (s.published_at) html += '<div class="detail-row"><span class="detail-label">Published</span><span class="detail-value">' + esc(fmtDate(s.published_at)) + '</span></div>';
+        if (!s.what_changed && !s.red_hat_relevance) {
+          html += '<div class="detail-row"><span class="detail-label">Source type</span><span class="detail-value">' + esc(s.source_type) + '</span></div>';
+          html += '<div class="detail-row"><span class="detail-label">Confidence</span><span class="detail-value">' + esc(s.confidence) + '</span></div>';
+        }
+        html += '</div></details>';
+      }
+
+      html += '</div>';
+    });
+
+    html += '</div>';
+  }
+
+  html += '</div>'; // end account-main
+
+  // ── Sidebar ──
+  html += '<div class="account-sidebar">';
+
+  // Account Details card
+  html += '<div class="sidebar-card"><h3>Account Details</h3>';
+  var hier = a.hierarchy || {};
+  if (hier.geo) html += '<div class="meta-row"><span class="meta-label">GEO</span><span class="meta-value">' + esc(hier.geo) + '</span></div>';
+  if (hier.region) html += '<div class="meta-row"><span class="meta-label">Region</span><span class="meta-value">' + esc(hier.region) + '</span></div>';
+  if (hier.pod) html += '<div class="meta-row"><span class="meta-label">Pod</span><span class="meta-value">' + esc(hier.pod) + '</span></div>';
+  if (hier.territory_name) html += '<div class="meta-row"><span class="meta-label">Territory</span><span class="meta-value">' + esc(hier.territory_name) + '</span></div>';
+  if (hier.segment) html += '<div class="meta-row"><span class="meta-label">Segment</span><span class="meta-value">' + esc(hier.segment) + '</span></div>';
+  html += '<div class="meta-row"><span class="meta-label">Match</span><span class="meta-value">' + matchBadgeHTML(a.identity.match_status) + '</span></div>';
+  if (a.internal_priority_score != null) html += '<div class="meta-row"><span class="meta-label">Priority Score</span><span class="meta-value">' + a.internal_priority_score + '</span></div>';
+  html += '</div>';
+
+  // Activity card
+  html += '<div class="sidebar-card"><h3>Activity (' + (data._meta.query_window_days || 120) + ' days)</h3>';
+  html += '<div class="meta-row"><span class="meta-label">Total Activities</span><span class="meta-value">' + (metric(a, 'total_activities') ?? '—') + '</span></div>';
+  html += '<div class="meta-row"><span class="meta-label">Meetings (30d)</span><span class="meta-value">' + (metric(a, 'meeting_count_30d') ?? '—') + '</span></div>';
+  html += '<div class="meta-row"><span class="meta-label">Emails (30d)</span><span class="meta-value">' + (metric(a, 'email_count_30d') ?? '—') + '</span></div>';
+  html += '<div class="meta-row"><span class="meta-label">Trend</span><span class="meta-value">' + trendHTML(metric(a, 'activity_trend'), true) + '</span></div>';
+  html += '<div class="meta-row"><span class="meta-label">Opportunities</span><span class="meta-value">' + oppCount(a) + '</span></div>';
+  html += '</div>';
+
+  // MCP Insights card
+  var risks = (a.internal && a.internal.risks) || [];
+  var nextSteps = (a.internal && a.internal.next_steps) || [];
+  var topics = (a.internal && a.internal.topics) || [];
+  if (risks.length || nextSteps.length || topics.length) {
+    html += '<div class="sidebar-card"><h3>MCP Insights</h3><div style="font-size:13px;color:#383838">';
+    if (risks.length) {
+      html += '<div style="margin-bottom:8px"><strong style="color:#707070;font-size:12px;text-transform:uppercase">Risks</strong></div><ul>';
+      risks.forEach(function(r){ html += '<li>' + esc(r) + '</li>'; });
+      html += '</ul>';
+    }
+    if (nextSteps.length) {
+      html += '<div style="margin-top:12px;margin-bottom:8px"><strong style="color:#707070;font-size:12px;text-transform:uppercase">Next Steps</strong></div><ul>';
+      nextSteps.forEach(function(r){ html += '<li>' + esc(r) + '</li>'; });
+      html += '</ul>';
+    }
+    if (topics.length) {
+      html += '<div style="margin-top:12px;margin-bottom:8px"><strong style="color:#707070;font-size:12px;text-transform:uppercase">Topics</strong></div><ul>';
+      topics.forEach(function(r){ html += '<li>' + esc(r) + '</li>'; });
+      html += '</ul>';
+    }
+    html += '</div></div>';
+  }
+
+  // Caveats card
+  var caveats = (data._meta && data._meta.caveats) || [];
+  html += '<div class="sidebar-card"><h3>Caveats</h3>';
+  if (caveats.length) {
+    html += '<ul style="font-size:13px;color:#4d4d4d">';
+    caveats.forEach(function(c){ html += '<li>' + esc(c) + '</li>'; });
+    html += '</ul>';
+  }
+  html += '<div style="margin-top:12px;font-size:12px;color:#707070">';
+  html += 'Window: ' + (data._meta.query_window_days || 120) + ' days';
+  if (data._meta.mcp_status) html += ' &bull; MCP: ' + esc(data._meta.mcp_status);
+  html += '<br>Generated: ' + fmtDate(data.run.generated_at);
+  html += '</div></div>';
+
+  html += '</div>'; // end sidebar
+  html += '</div>'; // end account-layout
+  html += '</div>'; // end main
+
+  return html;
+}
+
+// ── Guide view ──
+
+function renderGuideView() {
+  return '<div class="page-header"><div class="page-header-inner">' +
+    '<h1>Guide</h1><div class="subtitle"><span>How to read this report</span></div>' +
+    '</div></div><div class="main"><div class="guide">' +
+    '<h2>What this report is</h2>' +
+    '<p>This report shows which accounts need your attention and why. It pulls data from three places: your team’s activity in People.ai, AI-generated insights from Backstory, and public web sources. It then scores and ranks each account so you can focus on what matters most.</p>' +
+
+    '<div class="guide-section"><h3>How to navigate</h3>' +
+    '<p>The report works like a drill-down. You start at the broadest level of your scope and click into narrower views:</p>' +
+    '<table class="def-table">' +
+    '<tr><td class="term">GEO</td><td>The broadest grouping. Contains regions.</td></tr>' +
+    '<tr><td class="term">Region</td><td>A group of territories. Click a territory row to go deeper.</td></tr>' +
+    '<tr><td class="term">Territory</td><td>A group of accounts. Click an account row to see its full detail.</td></tr>' +
+    '<tr><td class="term">Account</td><td>A single customer. Shows the summary, recommended action, and all signals.</td></tr>' +
+    '</table>' +
+    '<p style="margin-top:12px">Numbers at each level (activities, meetings, scores) are sums or averages of the accounts below. The breadcrumb at the top lets you move back up.</p></div>' +
+
+    '<div class="guide-section"><h3>Signal score</h3>' +
+    '<p>A number from 0 to 100. It answers: “how urgently does this account need attention?” Higher means more urgent. The score is the average of all individual signal scores for that account. Accounts with no signals show a dash.</p></div>' +
+
+    '<div class="guide-section"><h3>Signals: Keep, Watch, Reject</h3>' +
+    '<p>Each signal is a piece of intelligence about an account. The system sorts every signal into one of three buckets:</p>' +
+    '<table class="def-table"><thead><tr><th>Label</th><th>Meaning</th></tr></thead><tbody>' +
+    '<tr><td><span class="status-pill keep">KEEP</span></td><td>Act on this. The signal is strong, relevant, and worth your time now.</td></tr>' +
+    '<tr><td><span class="status-pill watch">WATCH</span></td><td>Worth knowing, but not urgent. Check back later or gather more information.</td></tr>' +
+    '<tr><td><span class="status-pill reject">REJECT</span></td><td>Noise. The system found it but decided it is not relevant or useful. Rejected signals are hidden by default.</td></tr>' +
+    '</tbody></table></div>' +
+
+    '<div class="guide-section"><h3>Where signals come from</h3>' +
+    '<p>Every signal lists its source. There are four types:</p>' +
+    '<table class="def-table"><thead><tr><th>Source</th><th>What it means</th></tr></thead><tbody>' +
+    '<tr><td class="term">derived</td><td>Calculated from your team’s own activity data in People.ai. Example: “high engagement but no next meeting.”</td></tr>' +
+    '<tr><td class="term">backstory_mcp</td><td>Generated by Backstory AI from your CRM and activity history. Example: “executive sponsor changed.”</td></tr>' +
+    '<tr><td class="term">external_public</td><td>Found on the public web: news articles, press releases, budget documents, SEC filings. Always includes a link.</td></tr>' +
+    '<tr><td class="term">peopleai_query</td><td>A direct query result from People.ai data. Example: “activity dropped 40% month over month.”</td></tr>' +
+    '</tbody></table></div>' +
+
+    '<div class="guide-section"><h3>Confidence</h3>' +
+    '<p>How certain the system is about a signal. Three levels:</p>' +
+    '<table class="def-table"><tbody>' +
+    '<tr><td class="term">High</td><td>Based on clear, direct evidence. Likely accurate.</td></tr>' +
+    '<tr><td class="term">Medium</td><td>Based on partial evidence or inference. Probably right, worth checking.</td></tr>' +
+    '<tr><td class="term">Low</td><td>Weak evidence. Treat as a lead, not a fact.</td></tr>' +
+    '</tbody></table></div>' +
+
+    '<div class="guide-section"><h3>Match status</h3>' +
+    '<p>Whether the system could find this account in People.ai. This matters because unmatched accounts have no activity data.</p>' +
+    '<table class="def-table"><tbody>' +
+    '<tr><td><span class="match-badge matched">matched</span></td><td>Found. Activity data is available.</td></tr>' +
+    '<tr><td><span class="match-badge ambiguous">ambiguous</span></td><td>Multiple possible matches. Data may be incomplete or mixed.</td></tr>' +
+    '<tr><td><span class="match-badge not_found">not found</span></td><td>Not found in People.ai. No activity data available.</td></tr>' +
+    '<tr><td><span class="match-badge unresolved">unresolved</span></td><td>Not yet looked up. The system has not tried to match this account.</td></tr>' +
+    '</tbody></table></div>' +
+
+    '<div class="guide-section"><h3>Activity trend</h3>' +
+    '<p>Compares recent activity to past activity for an account. Three values:</p>' +
+    '<table class="def-table"><tbody>' +
+    '<tr><td class="trend-up" style="width:100px">↑ increasing</td><td>More activity recently than before. Engagement is growing.</td></tr>' +
+    '<tr><td class="trend-stable">→ stable</td><td>About the same level. No change.</td></tr>' +
+    '<tr><td class="trend-down">↓ declining</td><td>Less activity recently. Engagement is dropping.</td></tr>' +
+    '</tbody></table></div>' +
+
+    '<div class="guide-section"><h3>Activity numbers</h3>' +
+    '<p>All activity counts come from People.ai. They include meetings, emails, and other tracked interactions between your team and the account.</p>' +
+    '<table class="def-table"><tbody>' +
+    '<tr><td class="term">Total Activities</td><td>All tracked interactions within the query window (shown in the sidebar).</td></tr>' +
+    '<tr><td class="term">Meetings (30d)</td><td>Meetings in the last 30 days.</td></tr>' +
+    '<tr><td class="term">Emails (30d)</td><td>Emails in the last 30 days.</td></tr>' +
+    '<tr><td class="term">Opportunities</td><td>Open opportunities tied to this account.</td></tr>' +
+    '</tbody></table></div>' +
+
+    '<div class="guide-section"><h3>Enrichment</h3>' +
+    '<p>“Enriched” means the system went beyond basic activity data and pulled deeper insights from Backstory AI: risks, next steps, topics, and company news. Only the top accounts (by priority score) get enriched. Unenriched accounts still have activity data and scores, but lack AI-generated narrative.</p></div>' +
+
+    '<div class="guide-section"><h3>Priority score vs. signal score</h3>' +
+    '<p>Two different numbers. Do not confuse them.</p>' +
+    '<table class="def-table"><tbody>' +
+    '<tr><td class="term">Priority Score</td><td>Used internally to decide which accounts to enrich. Based on activity volume, opportunities, momentum, and recency. You see it in the account sidebar. You do not need to act on it.</td></tr>' +
+    '<tr><td class="term">Signal Score</td><td>The main number you see everywhere. It tells you how urgently an account needs your attention based on its signals. This is the one that matters for your work.</td></tr>' +
+    '</tbody></table></div>' +
+
+    '<div class="guide-section"><h3>Caveats</h3>' +
+    '<p>Every report lists its limits at the bottom of the account view. Common ones:</p>' +
+    '<ul style="padding-left:18px;margin-top:8px;color:#383838;font-size:14px;line-height:1.6">' +
+    '<li>Backstory AI insights cover the last 30 days unless noted otherwise.</li>' +
+    '<li>External research uses only public sources. It cannot see paywalled or internal content.</li>' +
+    '<li>Scores reflect relative importance within this portfolio, not absolute importance across all accounts.</li>' +
+    '<li>Not every account gets enriched. The query window and enrichment limit are shown in each report’s metadata.</li>' +
+    '</ul></div>' +
+
+    '</div></div>';
+}
+
+// ── Drill handlers (exposed globally) ──
+
+window.EM = {
+  showMain: showMain,
+  showGuide: showGuide,
+  navigateBack: navigateBack,
+  drillGroup: function(idx) {
+    var key = window._groupKeys[idx];
+    var accts = window._groupMap[key];
+    var depth = navStack.length;
+    var remainingLevels = hierarchyLevels.slice(depth);
+    navigateTo(remainingLevels[0], key, accts);
+  },
+  openAccount: function(accountId) {
+    var a = accounts.find(function(x){ return x.account_id === accountId; });
+    if (!a) return;
+    navStack.push({ level: 'account', key: a.account_name, accounts: [a] });
+    currentView = 'top';
+    renderTabs();
+    document.getElementById('app').innerHTML = renderAccountDetail(a);
+    window.scrollTo(0, 0);
+  }
+};
+
+// ── Initial render ──
+
+renderCurrentView();
+
+})();
+</script>
+</body>
+</html>

@@ -74,6 +74,12 @@ The Enterprise Accounts registry stores account names in ALL CAPS (e.g., `DEFENS
 
 Identity resolution must call `find_account` and store the returned canonical `name` as `query_account_name`. The metrics script uses this field for the API filter. It also emits a warning when it detects ALL CAPS query names, catching the problem before a silent zero-result query goes unnoticed.
 
+### HTML template
+
+`render_portfolio.py` embeds the portfolio JSON into `templates/portfolio.html`, producing a self-contained HTML file. The template uses Red Hat Design System styling and supports scope-aware drill-down navigation — a GEO-scope portfolio lets you click from GEO → Region → Territory → Account, while a territory-scope portfolio shows accounts directly. See [Template Design](TEMPLATE_DESIGN.md) for the full specification.
+
+The template is tested with an automated Playwright click-through that verifies all navigation paths, KPI rendering, responsive breakpoints, and edge cases. See [UI Testing](UI_TESTING.md) for the test procedure.
+
 ### Spreadsheet output
 
 `export_sheets.py` produces a single `.xlsx` workbook with two tabs:
