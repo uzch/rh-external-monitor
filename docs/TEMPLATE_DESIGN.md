@@ -2,6 +2,8 @@
 
 The portfolio HTML template (`templates/portfolio.html`) is a single self-contained file that renders the portfolio JSON into an interactive drill-down report. It uses inline CSS and JavaScript with no external dependencies beyond two Google Fonts.
 
+The template is a presentation consumer of the canonical artifact. For the upstream workflow and contract boundary, see [`ARCHITECTURE.md`](ARCHITECTURE.md) and [`WORKFLOW.md`](WORKFLOW.md).
+
 ## Visual direction
 
 The template follows the **Red Hat Design System** visual language:
@@ -38,6 +40,8 @@ The template supports five scope types, each producing a different number of dri
 | `pod` | `territory_name` | Pod overview → Territories → Accounts |
 | `territory` | *(none)* | Account list directly |
 | `account` | *(none)* | Account detail directly |
+
+The current registry scripts implement GEO, region, territory, and account selection. `pod` remains supported by the schema and template, but is not yet an implemented registry-loader scope.
 
 When a group at any level contains only one child, the template skips that level and navigates directly to the child. This removes redundant clicks — a territory with one account goes straight to the account detail.
 

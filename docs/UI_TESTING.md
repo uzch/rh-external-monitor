@@ -2,6 +2,8 @@
 
 The portfolio HTML template is tested with an automated headless browser click-through using [Playwright](https://playwright.dev/). The test simulates a real user navigating every view in the interface and verifies that the output renders correctly.
 
+This is presentation regression coverage for the file-based workflow described in [`ARCHITECTURE.md`](ARCHITECTURE.md). It uses generated or committed fixtures and does not exercise live People.ai, Backstory MCP, or public-research connections.
+
 ## Why automated
 
 The template supports multiple scope types (GEO, region, territory, account), each producing different drill-down paths. A single GEO portfolio can have dozens of click paths — regions, territories, accounts, breadcrumbs, tabs, edge cases. Manual verification misses regressions. The automated test covers all paths in under 10 seconds.
