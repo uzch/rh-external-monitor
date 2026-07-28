@@ -1,6 +1,6 @@
 # Repository instructions
 
-This repository contains the Red Hat External Monitor account-intelligence bundle. The root `skills/`, `docs/`, and `archive/` directories are authoritative.
+This repository contains the Red Hat External Monitor account-intelligence bundle. The root `skills/` and `docs/` directories describe the current implementation. `archive/` preserves historical planning and PoC material and must not be used as a description of the current architecture.
 
 ## Working rules
 
@@ -20,7 +20,7 @@ The External Monitor skill governs orchestration. People.ai-provided skills unde
 
 Before claiming completion:
 
-- Read the root README before changing behavior or documentation.
+- Read the root README before changing behavior or documentation. For architecture work, also read `docs/ARCHITECTURE.md` and `docs/WORKFLOW.md`.
 - Compile all Python scripts and parse all JSON files.
 - Run the bundled portfolio validator and renderer for artifact checks.
 - Report unavailable API or MCP capabilities honestly.
@@ -29,7 +29,7 @@ When fixing a bug, reproduce it in an end-to-end flow close to the user experien
 
 ## MCP tool availability
 
-Backstory MCP tools (`find_account`, `get_account_status`, `get_recent_account_activity`, `account_company_news`, `ask_sales_ai_about_account`) require an authenticated OAuth session bound to the main Claude Code process.
+Backstory MCP tools (`find_account`, `get_account_status`, `get_recent_account_activity`, `account_company_news`, `ask_sales_ai_about_account`) require an authenticated OAuth session bound to the main Claude Code process. The canonical MCP endpoint is `https://mcp.backstory.ai/mcp`.
 
 Constraints:
 

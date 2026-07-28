@@ -12,6 +12,8 @@ The People.ai skills under `skills/people-ai/` are preserved as authoritative ve
 
 Never silently merge ambiguous accounts. Never present missing data as negative behavior. Never claim MCP coverage beyond the accounts actually enriched. Never commit credentials, raw customer responses, or generated customer intelligence.
 
+[`ARCHITECTURE.md`](ARCHITECTURE.md) shows where each source enters the workflow. [`WORKFLOW.md`](WORKFLOW.md) explains the deterministic merges that preserve these source distinctions.
+
 ## Modification policy
 
 The People.ai directories under `skills/people-ai/` should be updated independently when People.ai provides newer versions. Avoid editing them merely to fit the External Monitor workflow; adapt behavior in `skills/external-monitor-account-intelligence/` instead.

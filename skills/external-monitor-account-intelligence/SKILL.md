@@ -114,20 +114,11 @@ Preferred matching order for People.ai reconciliation:
 
 Never silently merge ambiguous accounts. Mark them `ambiguous` and exclude them from deep enrichment until resolved.
 
-#### Parallelization for large scopes
+#### Large scopes and MCP access
 
-For territory scope (typically < 20 accounts), resolve identities sequentially -- no subagents needed.
+For every scope, resolve cached identities first. `find_account` requires the OAuth session in the main agent process, so subagents must not make identity-resolution MCP calls. The main agent resolves uncached accounts sequentially, using the `name_variations` emitted by `resolve_identities.py` to minimize attempts.
 
-For region or GEO scope (20+ accounts), parallelize identity resolution:
-
-1. Split the account list into chunks of ~20 accounts each.
-2. Spawn one subagent per chunk. Each subagent receives:
-   - Its chunk of registry account records (`account_name`, `geo`, `region`, `segment`, `territory_name`).
-   - The matching instructions above (try `find_account` with the registry name, try name variations if no match, mark `ambiguous` or `not_found`).
-3. Each subagent calls `find_account` for each of its accounts and returns an array of identity records in the same structure shown above (`registry_account_name`, `query_account_name`, `peopleai_account_id`, `identity_status`, `identity_notes`).
-4. The orchestrator concatenates all subagent arrays into one identities JSON file (e.g., `west-identities.json`). No deduplication is needed -- each account appears in exactly one chunk.
-
-The chunk size of ~20 is a practical default, not an API constraint. It keeps each subagent's runtime under ~2 minutes and keeps the number of concurrent subagents manageable. Adjust if needed, but smaller chunks (< 10) create unnecessary subagent overhead and larger chunks (> 30) lose parallelization benefit.
+For a large region or GEO, divide the unresolved account list into review batches of about 20 so progress and failures are easy to track. This is an operational grouping only, not permission to parallelize MCP calls. If MCP is unavailable, a runner may use a supported People.ai REST or Query API fallback and parallelize only work that does not rely on the session-bound MCP connection.
 
 #### Identity cache
 
@@ -229,17 +220,13 @@ The user-facing metric is `signal_score`, computed as the integer average of all
 
 Default: top `5` accounts by deterministic priority, maximum `10`. Also include any account explicitly requested by the user. Only enrich accounts with `identity.match_status == "matched"`.
 
-#### Parallel enrichment
+#### MCP collection and synthesis
 
-Spawn one subagent per enrichment account. Each subagent receives:
+The main authenticated agent collects all MCP data. For each selected account, it receives the account identity record, base-portfolio metrics, and any research objective, then makes the free MCP calls below. OAuth does not propagate to subagents, so they must not make these calls.
 
-- The account's identity record (`registry_account_name`, `query_account_name`, `peopleai_account_id`).
-- The account's metrics from the base portfolio (for synthesis context).
-- The research objective, if the user provided one.
+After the main agent has collected raw responses, it may delegate only the offline synthesis of those responses into the structured format in 5b. The orchestrator combines those records into one `mcp-enrichment.json`, then runs `enrich_portfolio.py` in 5c.
 
-Each subagent runs the 3 free MCP calls below (5a), synthesizes the prose into the structured format (5b), and returns its portion of the enrichment keyed by `peopleai_account_id`. The orchestrator merges all subagent results into one `mcp-enrichment.json`, then runs `enrich_portfolio.py` (5c).
-
-Credit calls (`ask_sales_ai_about_account`) are never delegated to subagents. The orchestrator reviews the free-tier results, decides whether credit calls are needed, announces the cost to the user, and runs them directly. Maximum 10 credit calls per run (see `sales-insights` credit rules).
+Credit calls (`ask_sales_ai_about_account`) are never delegated. The orchestrator reviews the free-tier results, decides whether credit calls are needed, announces the cost to the user, and runs them directly. Maximum 10 credit calls per run (see `sales-insights` credit rules).
 
 #### 5a. Collect MCP data
 

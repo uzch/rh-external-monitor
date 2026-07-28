@@ -23,15 +23,13 @@ uploaded directly (it lands in `.agents/skills/`).
 
 ## Backstory MCP connection (required, once per user)
 
-Connect the Backstory (formerly People.ai) MCP server with URL **`https://mcp.people.ai/mcp`** —
-the MCP endpoint stays on the people.ai domain — and sign in with your own Backstory login when
-the browser opens.
+Connect the Backstory (formerly People.ai) MCP server with URL
+**`https://mcp.backstory.ai/mcp`** and sign in with your own Backstory login when the browser
+opens.
 
-> ⚠️ **Use the `people.ai` URL, not `backstory.ai`.** In Claude Code the `mcp.backstory.ai/mcp`
-> address appears to complete the login but never stores a token — the connection stays dead with
-> no error (verified 2026-07-02). claude.ai's built-in People.ai connector is unaffected.
+> Use the `backstory.ai` URL above. Older `people.ai` endpoint guidance no longer applies.
 
-- Claude Code: `claude mcp add --transport http peopleai https://mcp.people.ai/mcp`, then `/mcp`
+- Claude Code: `claude mcp add --transport http backstory https://mcp.backstory.ai/mcp`, then `/mcp`
   to authenticate.
 - claude.ai / Claude Desktop: Settings → Connectors → People.ai (or add custom connector with the
   URL above).

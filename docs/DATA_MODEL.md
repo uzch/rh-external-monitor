@@ -1,6 +1,6 @@
 # Data model
 
-Everything flows through a single `portfolio.json`, validated by [`portfolio-output.schema.json`](../skills/external-monitor-account-intelligence/schemas/portfolio-output.schema.json). The same file drives both the HTML view and the spreadsheet export.
+Everything flows through a single `portfolio.json`, validated by [`portfolio-output.schema.json`](../skills/external-monitor-account-intelligence/schemas/portfolio-output.schema.json). The same file drives both the HTML view and the spreadsheet export. See [`ARCHITECTURE.md`](ARCHITECTURE.md) for the system boundaries and [`WORKFLOW.md`](WORKFLOW.md) for the artifact flow.
 
 ## What's in the portfolio
 
@@ -12,8 +12,8 @@ Each account carries:
 - **Hierarchy** — GEO, region, territory, segment (from the registry)
 - **Internal metrics** — activity counts, meetings, emails, opportunities, trend (from People.ai Query API)
 - **Signal score** — user-facing 0-100 score (average of per-signal scores, rounded integer, or null)
-- **Internal priority score** — deterministic 0-100 triage score with reasons (backend only)
-- **MCP context** — risks, next steps, topics, engaged people (when enriched)
+- **Internal priority score:** deterministic 0-100 triage score with reasons. It selects enrichment order and is displayed in the account view for transparency; it is not the user-facing signal score.
+- **MCP context:** risks, next steps, topics, and other account context when supplied by enrichment
 - **Signals** — scored and dispositioned findings from MCP, web research, or derived analysis
 - **Summary and next move** — model-generated briefing and recommended action
 
