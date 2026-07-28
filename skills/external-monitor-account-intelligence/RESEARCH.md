@@ -72,11 +72,65 @@ Set `confidence` based on source reliability:
 
 Do not fabricate URLs. If you cannot find a working source URL for a claim, do not create a signal for it.
 
+**URL verification rules:**
+
+- The `source_url` must be the URL of a specific article, press release, filing, or post -- not a topic index, tag archive, search results page, or site homepage. A URL like `example.com/guides/topic/` that lists hundreds of articles is not a source for any specific claim.
+- You must have actually loaded the page (via WebFetch or equivalent) and confirmed it contains the claim before citing it. Constructing a URL from a search snippet without visiting it produces 404s and fabricated citations.
+- If a search result describes a real event but the linked page is a 404, a paywall with no content, or an archive/index page, do not create a signal for that event. The information may be real but you cannot cite it.
+- Never reuse the same URL across multiple signals unless the page genuinely contains both claims.
+
 Preserve the distinction between evidence and interpretation:
 
 - `headline` and `what_changed`: factual description of the event
 - `why_it_matters` and `red_hat_relevance`: your assessment of impact and relevance
 - `recommended_action`: what the account team should consider doing
+
+## Internal relationship context
+
+Research subagents receive internal metrics context alongside the account name. This context comes from the portfolio base (People.ai Query API data) and represents Red Hat's existing relationship with the account. **Use it to ground every signal's `red_hat_relevance` and `recommended_action` in the actual relationship, not generic advice.**
+
+The orchestrator provides:
+
+- **Product footprint** -- linked opportunity names showing which Red Hat products the account uses or is evaluating (Ansible, OpenShift, RHEL, Lightwell, etc.)
+- **Renewal pipeline** -- opportunities starting with "Renewal -" that represent upcoming contract renewals
+- **Activity volumes** -- total activities, meetings last 30d, emails last 30d
+- **Engagement direction** -- outbound vs inbound counts. High outbound with low inbound means Red Hat is chasing; high inbound means the account is engaged
+- **Activity trend** -- "increasing", "stable", or "declining"
+- **Opportunity count** -- total open opportunities
+
+### How to use internal context
+
+The internal data should shape your thinking, not be the content. The reader can already see the activity numbers and opportunity count in the sidebar. Do not restate them. Instead, use them to arrive at a sharper insight that the reader could not reach on their own.
+
+**The anti-pattern (do not do this):**
+
+> `why_it_matters`: "With 24 open opportunities, 7 approaching renewals, and a declining/outbound-heavy engagement pattern, this transition creates both risk and opportunity."
+
+This restates the metrics with the event bolted on. It tells the reader nothing new.
+
+> `recommended_action`: "Prepare renewal defense briefs for all 7 approaching renewals before the Sept 1 transition."
+
+This is generic account management advice. You would say this regardless of the external signal.
+
+**The correct pattern:**
+
+> `why_it_matters`: "Ternus comes from hardware engineering with no public track record on enterprise IT vendor strategy. Apple's IS&T organization -- where the OpenShift Virtualization and Ansible deals live -- may lose whatever executive air cover it had under Cook."
+
+> `recommended_action`: "The Crypto Services renewal (Chait/Noll) is the most exposed -- it's a niche engagement unlikely to survive a vendor consolidation review. Get it signed before Sept 1. For the IS&T deals, identify who in Ternus's new org inherits infrastructure vendor decisions."
+
+The difference: internal data was used to reason about which specific deals are at risk and why, not to recite the numbers.
+
+**Rules:**
+
+- Never quote activity counts, opportunity counts, or outbound/inbound ratios in signal text. The reader sees these in the sidebar. Restating them is noise.
+- Never write "with X opportunities and Y renewals" as a framing clause. Get to the insight.
+- Use opportunity names to identify *which* deals are specifically affected by the external event, not to list them.
+- Use engagement direction and trend to shape the *type* of recommended action (e.g., change approach vs. capitalize on momentum), not to describe the current state.
+- If the recommended action would be the same without the external signal, it is not signal-driven. Rewrite it to explain what the external event specifically changes about what the team should do.
+
+### When internal context is absent
+
+If the orchestrator does not provide internal metrics context (e.g., the account has `metrics_status: unavailable_identity`), fall back to generic assessments. Mark these with lower confidence when the signal's relevance depends on knowing the existing relationship.
 
 ## Relevance judgment
 
@@ -86,6 +140,7 @@ A signal is worth including if it would change how the account team prioritizes 
 - Does this affect the account's IT strategy, budget, or organizational structure?
 - Does this change who Red Hat should be talking to at the account?
 - Would the account team want to know this before their next meeting?
+- **Does this event interact with the account's existing Red Hat product footprint or renewal pipeline?**
 
 If the answer to all of these is no, do not include it.
 

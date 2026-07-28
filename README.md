@@ -14,7 +14,7 @@ The current direction is organized around an enterprise account registry and the
 
 - **Portfolio View** summarizes a selected hierarchy scope, ranks accounts with explainable internal metrics, and shows coverage and enrichment status.
 - **Account View** drills into one account's identity, hierarchy, People.ai metrics, Backstory context, optional external signals, provenance, and recommended next move.
-- **Google Sheets and generated HTML** are current output surfaces. The shared `portfolio.json` artifact is the contract for both views. A future application may consume the same artifact.
+- **XLSX spreadsheets and generated HTML** are current output surfaces. The shared `portfolio.json` artifact is the contract for both views. A future application may consume the same artifact.
 
 The workflow is:
 
@@ -67,10 +67,10 @@ The sources remain separate in output. Missing data stays null with a caveat. Am
    PEOPLEAI_CLIENT_SECRET=your_client_secret
    ```
 
-2. Install the one external Python dependency:
+2. Install Python dependencies:
 
    ```bash
-   python -m pip install jsonschema openpyxl
+   pip install -r requirements.txt
    ```
 
 3. Connect Backstory MCP for the `sales-insights` skill (interactive OAuth, once per user):

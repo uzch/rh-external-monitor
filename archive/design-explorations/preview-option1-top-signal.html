@@ -1,0 +1,2759 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>External Monitor Portfolio</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Red+Hat+Display:wght@400;500;600;700;800;900&family=Red+Hat+Text:wght@400;500;600;700&display=swap');
+
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Red Hat Text',sans-serif;background:#f2f2f2;color:#1f1f1f;line-height:1.5;-webkit-font-smoothing:antialiased}
+
+/* Global header */
+.global-header{background:#151515;padding:0 clamp(16px,4vw,48px);display:flex;align-items:center;height:60px;gap:16px}
+.global-header .logo{color:#EE0000;font-family:'Red Hat Display',sans-serif;font-weight:700;font-size:18px;display:flex;align-items:center;gap:10px}
+.global-header .logo .hat{width:36px;height:24px;background:#EE0000;border-radius:4px 12px 0 0;display:inline-block}
+.global-header .divider{width:1px;height:28px;background:#383838}
+.global-header .app-name{color:#fff;font-family:'Red Hat Display',sans-serif;font-size:16px;font-weight:500}
+
+/* Page header */
+.page-header{background:#fff;border-bottom:1px solid #c7c7c7;padding:24px clamp(16px,4vw,48px) 20px}
+.page-header-inner{max-width:1200px;margin:0 auto}
+.breadcrumb{display:flex;gap:6px;align-items:center;color:#707070;font-size:13px;margin-bottom:10px;flex-wrap:wrap}
+.breadcrumb a{color:#0066cc;text-decoration:none;font-weight:500;cursor:pointer}
+.breadcrumb a:hover{text-decoration:underline}
+.breadcrumb .sep{color:#a3a3a3}
+.page-header h1{font-family:'Red Hat Display',sans-serif;font-size:36px;font-weight:500;line-height:1.3;color:#151515}
+.page-header .subtitle{display:flex;flex-wrap:wrap;gap:10px;color:#4d4d4d;font-size:14px;margin-top:6px;align-items:center}
+.page-header .subtitle .dot::before{content:"\2022";color:#a3a3a3;margin-right:10px}
+
+/* Navigation tabs */
+.tab-bar{background:#fff;border-bottom:1px solid #c7c7c7;padding:0 clamp(16px,4vw,48px)}
+.tab-bar-inner{max-width:1200px;margin:0 auto;display:flex;gap:0;flex-wrap:wrap}
+.tab-bar button{background:none;border:none;border-bottom:3px solid transparent;padding:14px 20px;font-family:'Red Hat Text',sans-serif;font-size:14px;font-weight:600;color:#4d4d4d;cursor:pointer}
+.tab-bar button:hover{color:#151515;background:#f2f2f2}
+.tab-bar button.active{color:#151515;border-bottom-color:#EE0000}
+
+/* Main content */
+.main{max-width:1200px;margin:24px auto;padding:0 clamp(16px,4vw,48px)}
+
+/* KPI cards */
+.kpi-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:16px;margin-bottom:24px}
+.kpi-card{background:#fff;border:1px solid #e0e0e0;border-left:4px solid #EE0000;border-radius:0 8px 8px 0;padding:20px;display:flex;flex-direction:column;gap:4px}
+.kpi-card .kpi-value{font-family:'Red Hat Display',sans-serif;font-size:36px;font-weight:500;color:#EE0000;line-height:1.2}
+.kpi-card .kpi-label{font-size:14px;color:#4d4d4d;font-weight:500}
+.kpi-card.neutral{border-left-color:#c7c7c7}
+.kpi-card.neutral .kpi-value{color:#151515}
+
+/* Summary card */
+.summary-card{background:#fff;border:1px solid #e0e0e0;border-top:4px solid #EE0000;border-radius:0 0 8px 8px;padding:24px;margin-bottom:24px}
+.summary-card h2{font-family:'Red Hat Display',sans-serif;font-size:24px;font-weight:500;color:#151515;margin-bottom:12px}
+.summary-card p{color:#383838;line-height:1.6;max-width:900px}
+
+/* Data table */
+.table-card{background:#fff;border:1px solid #e0e0e0;border-radius:8px;overflow:hidden;margin-bottom:24px}
+.table-card .table-header{padding:16px 20px;border-bottom:1px solid #e0e0e0;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px}
+.table-card .table-header h2{font-family:'Red Hat Display',sans-serif;font-size:20px;font-weight:500;color:#151515}
+.data-table{width:100%;border-collapse:collapse}
+.data-table th{text-align:left;padding:12px 20px;font-size:12px;font-weight:700;color:#4d4d4d;text-transform:uppercase;letter-spacing:.03em;background:#f2f2f2;border-bottom:1px solid #e0e0e0}
+.data-table td{padding:14px 20px;border-bottom:1px solid #e0e0e0;vertical-align:top;font-size:14px}
+.data-table td:first-child{max-width:280px;word-break:break-word}
+.data-table tr:last-child td{border-bottom:none}
+.data-table tr:hover{background:#f9f9f9}
+.drill-link{color:#0066cc;font-weight:600;cursor:pointer;text-decoration:none;white-space:nowrap}
+.drill-link:hover{text-decoration:underline}
+
+/* Status pills */
+.status-pill{display:inline-block;border-radius:999px;padding:3px 12px;font-size:12px;font-weight:700;letter-spacing:.02em;text-transform:uppercase;white-space:nowrap}
+.status-pill.keep{background:#e9f7df;color:#3d7317}
+.status-pill.watch{background:#ffe8cc;color:#9e4a06}
+.status-pill.reject{background:#ffe3d9;color:#b1380b}
+
+/* Match badge */
+.match-badge{display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600;white-space:nowrap}
+.match-badge.matched{background:#e9f7df;color:#3d7317}
+.match-badge.not_found{background:#ffe3d9;color:#b1380b}
+.match-badge.ambiguous{background:#ffe8cc;color:#9e4a06}
+.match-badge.unresolved{background:#f2f2f2;color:#707070}
+
+/* Trend */
+.trend-up{color:#3d7317;font-weight:600;white-space:nowrap}
+.trend-stable{color:#9e4a06;font-weight:600;white-space:nowrap}
+.trend-down{color:#b1380b;font-weight:600;white-space:nowrap}
+
+/* Account detail layout */
+.account-layout{display:grid;gap:24px;grid-template-columns:minmax(0,1fr) 300px}
+
+/* Sidebar cards */
+.sidebar-card{background:#fff;border:1px solid #e0e0e0;border-radius:8px;padding:20px}
+.account-sidebar{display:flex;flex-direction:column;gap:16px}
+.sidebar-card h3{font-family:'Red Hat Display',sans-serif;font-size:16px;font-weight:600;color:#151515;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid #e0e0e0}
+.sidebar-card .meta-row{display:flex;justify-content:space-between;padding:6px 0;font-size:13px;border-bottom:1px solid #f2f2f2}
+.sidebar-card .meta-row:last-child{border-bottom:none}
+.sidebar-card .meta-label{color:#707070}
+.sidebar-card .meta-value{color:#151515;font-weight:500}
+.sidebar-card ul{padding-left:18px;color:#383838;font-size:13px}
+.sidebar-card li{margin-bottom:4px}
+
+/* Signal cards */
+.signal-card{background:#fff;border:1px solid #e0e0e0;border-radius:8px;padding:20px;margin-bottom:16px}
+.signal-card-header{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:10px}
+.signal-card h3{font-family:'Red Hat Display',sans-serif;font-size:20px;font-weight:500;line-height:1.3;color:#151515;margin-bottom:14px}
+.signal-score{font-family:'Red Hat Display',sans-serif;font-size:14px;font-weight:700;color:#151515;background:#f2f2f2;border-radius:4px;padding:2px 8px}
+.signal-meta{font-size:12px;color:#707070}
+.signal-body{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.signal-body .col-label{font-size:12px;font-weight:700;color:#4d4d4d;text-transform:uppercase;letter-spacing:.03em;margin-bottom:6px}
+.signal-body p{color:#383838;line-height:1.55;font-size:14px}
+
+/* Collapsible details */
+details{margin-top:16px}
+summary{color:#0066cc;font-size:13px;font-weight:600;cursor:pointer;list-style:none}
+summary::before{content:"\25B6\00a0";font-size:10px}
+details[open] summary::before{content:"\25BC\00a0"}
+.detail-grid{border-left:3px solid #EE0000;padding-left:16px;margin-top:10px;display:grid;gap:10px}
+.detail-row{display:grid;grid-template-columns:140px 1fr;gap:8px;font-size:13px}
+.detail-label{color:#707070;font-weight:600}
+.detail-value{color:#383838}
+
+/* Recommended next move */
+.next-move{background:#fff;border:1px solid #e0e0e0;border-left:4px solid #EE0000;border-radius:0 8px 8px 0;padding:20px;margin-bottom:24px}
+.next-move h2{font-family:'Red Hat Display',sans-serif;font-size:18px;font-weight:600;color:#151515;margin-bottom:8px}
+.next-move p{color:#383838;line-height:1.6}
+
+/* Guide page */
+.guide{max-width:820px}
+.guide h2{font-family:'Red Hat Display',sans-serif;font-size:28px;font-weight:500;color:#151515;margin:0 0 8px}
+.guide > p{color:#4d4d4d;font-size:15px;line-height:1.6;margin-bottom:32px}
+.guide-section{background:#fff;border:1px solid #e0e0e0;border-radius:8px;padding:24px;margin-bottom:16px}
+.guide-section h3{font-family:'Red Hat Display',sans-serif;font-size:18px;font-weight:600;color:#151515;margin-bottom:12px}
+.guide-section p{color:#383838;font-size:14px;line-height:1.6;margin-bottom:10px}
+.guide-section p:last-child{margin-bottom:0}
+.def-table{width:100%;border-collapse:collapse;margin-top:12px}
+.def-table th{text-align:left;padding:10px 14px;font-size:12px;font-weight:700;color:#4d4d4d;text-transform:uppercase;letter-spacing:.03em;background:#f2f2f2;border-bottom:1px solid #e0e0e0}
+.def-table td{padding:10px 14px;border-bottom:1px solid #f2f2f2;font-size:14px;vertical-align:top}
+.def-table tr:last-child td{border-bottom:none}
+.def-table .term{font-weight:600;color:#151515;white-space:nowrap}
+
+/* Activity bar */
+.activity-bar{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px;margin-bottom:24px}
+.activity-stat{background:#fff;border:1px solid #e0e0e0;border-radius:8px;padding:16px;text-align:center}
+.activity-stat .stat-value{font-family:'Red Hat Display',sans-serif;font-size:28px;font-weight:500;color:#151515;line-height:1.2}
+.activity-stat .stat-label{font-size:12px;color:#707070;font-weight:600;text-transform:uppercase;letter-spacing:.03em;margin-top:4px}
+
+/* Responsive */
+@media(max-width:920px){
+  .account-layout{grid-template-columns:1fr}
+  .signal-body{grid-template-columns:1fr}
+}
+@media(max-width:620px){
+  .page-header h1{font-size:28px}
+}
+</style>
+</head>
+<body>
+
+<div class="global-header">
+  <div class="logo"><span class="hat"></span>Red Hat</div>
+  <div class="divider"></div>
+  <div class="app-name">External Monitor</div>
+</div>
+<div class="tab-bar"><div class="tab-bar-inner" id="tabBar"></div></div>
+<div id="app"></div>
+
+<script id="portfolio-data" type="application/json">{
+  "run": {
+    "run_id": "intel-20260724-base",
+    "status": "completed",
+    "generated_at": "2026-07-24T17:37:14.970091+00:00"
+  },
+  "scope": {
+    "type": "region",
+    "value": "INTEL"
+  },
+  "summary": {
+    "account_count": 9,
+    "accounts_with_internal_data": 9,
+    "text": "Region INTEL contains 9 accounts. 9 enriched with MCP and external research. 46 KEEP and 22 WATCH signals across the portfolio.",
+    "accounts_enriched": 9,
+    "keep_count": 46,
+    "watch_count": 22,
+    "highest_signal_score": 90
+  },
+  "accounts": [
+    {
+      "account_id": "maryland-procurement-office-mpo",
+      "account_name": "MARYLAND PROCUREMENT OFFICE (MPO)",
+      "hierarchy": {
+        "geo": "NAPS",
+        "region": "INTEL",
+        "pod": null,
+        "territory_name": "FED_INTEL_ENT_POD_TERR03",
+        "segment": "Enterprise"
+      },
+      "identity": {
+        "crm_id": null,
+        "peopleai_account_id": 19219386505,
+        "match_status": "matched",
+        "query_account_name": "Maryland Procurement Office",
+        "identity_status": "confirmed",
+        "identity_notes": "Exact match as 'Maryland Procurement Office'; 30 open opportunities owned primarily by Gary Monroe"
+      },
+      "internal_priority_score": 72,
+      "priority_reasons": [
+        "volume=2 (activities=181)",
+        "opportunities=20 (count=13)",
+        "momentum=25 (trend=increasing)",
+        "recency=25 (date=2026-07-24)",
+        "caveat: 5 field(s) unavailable"
+      ],
+      "internal": {
+        "metrics": {
+          "registry_account_name": "MARYLAND PROCUREMENT OFFICE (MPO)",
+          "query_account_name": "Maryland Procurement Office",
+          "identity_status": "confirmed",
+          "identity_notes": "Exact match as 'Maryland Procurement Office'; 30 open opportunities owned primarily by Gary Monroe",
+          "metrics_status": "available",
+          "source": "peopleai_query_activity",
+          "query_window_days": 120,
+          "query_timestamp": "2026-07-24T17:36:53.034643+00:00",
+          "total_activities": 181,
+          "meeting_count_30d": 0,
+          "meeting_count_90d": 1,
+          "meeting_count_all": 1,
+          "email_count_30d": 61,
+          "email_count_90d": 159,
+          "email_count_all": 180,
+          "outbound_count": 86,
+          "inbound_count": 95,
+          "external_count": 181,
+          "internal_count": 0,
+          "most_recent_activity_date": "2026-07-24",
+          "most_recent_activity_type": "email",
+          "activity_types": {
+            "email": 180,
+            "meeting": 1
+          },
+          "linked_opportunity_names": [
+            "(GM)(BD)-MPO-RoyalBrew",
+            "(GM)-MPO-(BD)-Nachokeys-OSE",
+            "(GM)-MPO-NZTC-Platform Services-2026",
+            "(GM)-MPO-Take5-OPP growth",
+            "(RG)-MPO-IBM-Vela_Research-2",
+            "MPO NetOps services",
+            "New - MPO - Mindcraft - Maryland - RH124 - 6/1/2026 - UMBC",
+            "New - MPO - Mindcraft - Maryland - RH124 - 7/20/2026 - UMBC",
+            "New - RHLS - MPO - Jessica/LOS",
+            "New - Training (RHLS) - Jennifer Stroeh/MPO - UMBC DR",
+            "Renewal - MPO 00456113 - Take5 Subs",
+            "Renewal - MPO 00477889 - 600 ELS",
+            "Renewal - Maryland Procurement Office - 00671425"
+          ],
+          "activity_trend": "increasing",
+          "timestamp_warnings": null,
+          "engagement_level": null,
+          "opportunity_amount": null,
+          "opportunity_stage": null,
+          "executive_activity": null,
+          "account_owner": null,
+          "unavailable_fields": [
+            "engagement_level",
+            "opportunity_amount",
+            "opportunity_stage",
+            "executive_activity",
+            "account_owner"
+          ],
+          "linked_opportunity_count": 13
+        },
+        "risks": [
+          "Competitive Preference: Josh Schell indicates preference for purchasing directly from Carahsoft even if another partner offers cheaper option",
+          "Organizational Change: Ted has retired; current support funded only until 11/30/2026",
+          "Budget Constraints: Customer will not be renewing due to budget constraints, although they intend to renew the contract",
+          "Pricing Extension Request: Homer Minnick requests short extension of contract pricing due to MPO's request to extend courses"
+        ],
+        "next_steps": [
+          "Katrina Thompson: Submit renewal request as soon as possible",
+          "Katrina Thompson: Contact Aqil Assalil to discuss support contract funding",
+          "Jackson Reco: Finalize and send updated Special Bid Order Form to Stephen Smith",
+          "Emily Branchaw: Review and adjust pricing for additional Red Hat classes for MPO"
+        ],
+        "topics": [
+          "Deal modification adding $320K and extending PoP from 8/7/26 to 8/21/26",
+          "Full award for Red Hat Professional Services contract renewal to avoid shutdown windows",
+          "Communication challenges due to Ted's retirement; engaging Melinda for support",
+          "Pricing adjustments for MPO courses in July and August to match previous pricing"
+        ]
+      },
+      "summary": "MPO (Fort Meade/NSA) has an active deal modification adding $320K with a PoP extension to 8/21/26, and a critical Red Hat Professional Services contract renewal that Katrina Thompson is driving to meet the August deadline. However, Ted's retirement has created communication gaps with support funded only until 11/30/2026, and budget constraints threaten some renewal activity.",
+      "recommended_next_move": "Expedite the Professional Services contract renewal submission before the August deadline, and establish direct communication with Melinda (Ted's successor contact) to prevent the support contract gap from widening past the 11/30/2026 funding horizon.",
+      "signals": [
+        {
+          "signal_id": "sig-mpo-1",
+          "disposition": "KEEP",
+          "score": 75,
+          "headline": "Deal modification adding $320K with PoP extension through 8/21/26",
+          "what_changed": "Collins Alt and Jackson Reco are modifying the deal to add $320K and extend the Period of Performance from 8/7/26 to 8/21/26, aligning with the previous $1.175M deal.",
+          "why_it_matters": "Incremental $320K represents significant expansion of current contract value and signals continued customer investment in Red Hat capabilities.",
+          "red_hat_relevance": "Direct revenue growth on an existing MPO contract; strengthens Red Hat's position in NSA/Fort Meade environment.",
+          "recommended_action": "Ensure Jackson Reco finalizes the updated Special Bid Order Form for Stephen Smith promptly; track through CACI internal processing.",
+          "source_type": "backstory_mcp",
+          "source_url": null,
+          "published_at": null,
+          "confidence": "high"
+        },
+        {
+          "signal_id": "sig-mpo-2",
+          "disposition": "KEEP",
+          "score": 70,
+          "headline": "Red Hat Professional Services contract renewal critical for August deadline",
+          "what_changed": "Katrina Thompson is pushing to ensure the full award for Red Hat Professional Services is received again this year to avoid shutdown windows and reduce administrative workload.",
+          "why_it_matters": "Missing the August deadline risks a service gap, increased administrative burden, and potential loss of the full award structure.",
+          "red_hat_relevance": "Professional Services contract provides ongoing revenue and maintains Red Hat's operational presence at MPO.",
+          "recommended_action": "Katrina Thompson should submit the renewal request immediately and escalate any blockers to ensure August deadline is met.",
+          "source_type": "backstory_mcp",
+          "source_url": null,
+          "published_at": null,
+          "confidence": "high"
+        },
+        {
+          "signal_id": "sig-mpo-3",
+          "disposition": "KEEP",
+          "score": 65,
+          "headline": "NSA MCP compliance deadline creates infrastructure urgency across Fort Meade",
+          "what_changed": "NSA requires contractors to apply MCP security design controls (context labeling, cryptographic isolation, least privilege interfaces, audit logging) by September 30, 2026.",
+          "why_it_matters": "Compliance deadline drives infrastructure refresh and security hardening investments across all MPO-supported programs.",
+          "red_hat_relevance": "RHEL, OpenShift, and Ansible Automation Platform support zero-trust and security compliance requirements aligned with NSA MCP controls.",
+          "recommended_action": "Position Red Hat security and compliance capabilities with MPO program managers facing the Sept 30 deadline; prepare compliance-focused messaging.",
+          "source_type": "external_public",
+          "source_url": "https://govcontractfinder.com/find-government-contracts/mcp-nsa-compliance-2026",
+          "published_at": "2026-06-01",
+          "confidence": "medium"
+        },
+        {
+          "signal_id": "sig-mpo-4",
+          "disposition": "KEEP",
+          "score": 65,
+          "headline": "Ted's retirement creates communication gap; support funded only through 11/30/2026",
+          "what_changed": "Ted has retired, leaving a gap in the support contract communication chain. Aqil Assalil confirmed support is funded only until 11/30/2026 with no new contract until FY2027 funds become available.",
+          "why_it_matters": "Post-November support gap risks service discontinuity and could require re-justification of Red Hat support when FY2027 funds arrive.",
+          "red_hat_relevance": "Support contract revenue at risk after November 2026; relationship continuity threatened by organizational change.",
+          "recommended_action": "Katrina Thompson should establish communication with Melinda immediately; begin FY2027 support contract planning to prevent a gap.",
+          "source_type": "backstory_mcp",
+          "source_url": null,
+          "published_at": null,
+          "confidence": "high"
+        },
+        {
+          "signal_id": "sig-mpo-5",
+          "disposition": "KEEP",
+          "score": 60,
+          "headline": "LAVACAKE contract requires urgent DD254 documentation with all primes",
+          "what_changed": "Katrina Thompson emphasized urgency of having DD254 security classification documents in place with all primes on the LAVACAKE contract.",
+          "why_it_matters": "Missing DD254s can block personnel access and work execution on classified programs, stalling revenue recognition.",
+          "red_hat_relevance": "Red Hat Professional Services delivery on LAVACAKE depends on security documentation being current.",
+          "recommended_action": "Verify DD254 status with each prime contractor on LAVACAKE; escalate any gaps immediately.",
+          "source_type": "backstory_mcp",
+          "source_url": null,
+          "published_at": null,
+          "confidence": "high"
+        },
+        {
+          "signal_id": "sig-mpo-6",
+          "disposition": "WATCH",
+          "score": 55,
+          "headline": "MPO course pricing extension request due to July/August schedule changes",
+          "what_changed": "Homer Minnick requested a short extension of contract pricing because MPO asked to extend Red Hat training courses into July and August.",
+          "why_it_matters": "Pricing extension indicates continued training demand but may compress margins if not managed carefully against new PTD SKU pricing model.",
+          "red_hat_relevance": "Training revenue opportunity; also a chance to transition MPO to the new Private Training Day SKU model.",
+          "recommended_action": "Emily Branchaw should finalize the pricing adjustment approval and use the extension as a bridge to onboard MPO onto new PTD SKUs.",
+          "source_type": "backstory_mcp",
+          "source_url": null,
+          "published_at": null,
+          "confidence": "high"
+        },
+        {
+          "signal_id": "sig-mpo-7",
+          "disposition": "WATCH",
+          "score": 50,
+          "headline": "Budget constraints threatening renewal despite customer intent to continue",
+          "what_changed": "Gary Monroe noted the customer will not be renewing due to budget constraints, although they intend to renew the contract when funds are available.",
+          "why_it_matters": "Intent without budget creates a pipeline risk; deal could slip quarters or require restructuring to fit available funds.",
+          "red_hat_relevance": "Renewal revenue at risk; need to understand scope of budget constraints and identify alternative funding paths.",
+          "recommended_action": "Explore whether smaller-scope or phased renewal options could fit within current budget constraints while maintaining the customer relationship.",
+          "source_type": "backstory_mcp",
+          "source_url": null,
+          "published_at": null,
+          "confidence": "medium"
+        },
+        {
+          "signal_id": "sig-mpo-8",
+          "disposition": "WATCH",
+          "score": 40,
+          "headline": "Transition to Private Training Day SKUs replacing 143 legacy course SKUs",
+          "what_changed": "Red Hat is retiring 143 individual course SKUs and replacing them with four Private Training Day SKUs for simplified quoting; MPO is among the accounts navigating this transition.",
+          "why_it_matters": "SKU transition creates short-term quoting complexity but long-term simplification; customer communication is key to avoiding confusion.",
+          "red_hat_relevance": "Operational change affecting how MPO training deals are quoted and processed.",
+          "recommended_action": "Ensure Andrew Lee and Homer Minnick are aligned on new PTD SKU usage for upcoming MPO course requests.",
+          "source_type": "backstory_mcp",
+          "source_url": null,
+          "published_at": null,
+          "confidence": "high"
+        }
+      ],
+      "signal_score": 60
+    },
+    {
+      "account_id": "defense-intelligence-agency-dia",
+      "account_name": "DEFENSE INTELLIGENCE AGENCY (DIA)",
+      "hierarchy": {
+        "geo": "NAPS",
+        "region": "INTEL",
+        "pod": null,
+        "territory_name": "FED_INTEL_ENT_POD_TERR01",
+        "segment": "Enterprise"
+      },
+      "identity": {
+        "crm_id": null,
+        "peopleai_account_id": 19263680443,
+        "match_status": "matched",
+        "query_account_name": "Defense Intelligence Agency",
+        "identity_status": "confirmed",
+        "identity_notes": "Exact match as 'Defense Intelligence Agency' on dia.mil; 30 open opportunities owned by Charles Wells"
+      },
+      "internal_priority_score": 71,
+      "priority_reasons": [
+        "volume=1 (activities=135)",
+        "opportunities=20 (count=12)",
+        "momentum=25 (trend=increasing)",
+        "recency=25 (date=2026-07-23)",
+        "caveat: 5 field(s) unavailable"
+      ],
+      "internal": {
+        "metrics": {
+          "registry_account_name": "DEFENSE INTELLIGENCE AGENCY (DIA)",
+          "query_account_name": "Defense Intelligence Agency",
+          "identity_status": "confirmed",
+          "identity_notes": "Exact match as 'Defense Intelligence Agency' on dia.mil; 30 open opportunities owned by Charles Wells",
+          "metrics_status": "available",
+          "source": "peopleai_query_activity",
+          "query_window_days": 120,
+          "query_timestamp": "2026-07-24T17:36:53.034643+00:00",
+          "total_activities": 135,
+          "meeting_count_30d": 0,
+          "meeting_count_90d": 1,
+          "meeting_count_all": 1,
+          "email_count_30d": 26,
+          "email_count_90d": 63,
+          "email_count_all": 134,
+          "outbound_count": 89,
+          "inbound_count": 46,
+          "external_count": 135,
+          "internal_count": 0,
+          "most_recent_activity_date": "2026-07-23",
+          "most_recent_activity_type": "email",
+          "activity_types": {
+            "email": 134,
+            "meeting": 1
+          },
+          "linked_opportunity_names": [
+            "CW - DIA - CIO2_AWS - AAP",
+            "CW - DIA - CIPHER- RHEL_AAP_OCP - Peraton",
+            "CW - DIA - DPaaS - Adv Dev Suite - MetroStar",
+            "CW - DIA - DPaaS AI Cluster1 - RHAIE - ThunderCat",
+            "CW - DIA - JAGUAR - OCP-Virt - ThunderCat",
+            "CW - DIA CY26 DPaaS ExpansionV2 - Services - CACI",
+            "CW - DIA DPaaS - OCP Consulting FY26 - ThunderCat",
+            "CW - DIA IC-SCC Services - ThunderCat",
+            "Defense Intelligence Agency - Deal Reg - Ansible",
+            "Peraton-",
+            "Renewal | CW - DIA - JAGUAR - RHEL-OPP-AAP-RHLS - ThunderCat - 00544390",
+            "Renewal | CW - DIA - Puma - OPP - Peraton (00575291)"
+          ],
+          "activity_trend": "increasing",
+          "timestamp_warnings": null,
+          "engagement_level": null,
+          "opportunity_amount": null,
+          "opportunity_stage": null,
+          "executive_activity": null,
+          "account_owner": null,
+          "unavailable_fields": [
+            "engagement_level",
+            "opportunity_amount",
+            "opportunity_stage",
+            "executive_activity",
+            "account_owner"
+          ],
+          "linked_opportunity_count": 12
+        },
+        "risks": [
+          "Funding Delays: Project funding delayed due to competing resource priorities, pushed to Q4",
+          "Budget Concerns: Dave McCloy finds budgetary quotes for DIA Enterprise Renewal very high",
+          "Obligation Issues: Obligation/de-obligation issue between DIA parties",
+          "Lack of Engagement: No response from GDIT and IDT despite repeated outreach attempts"
+        ],
+        "next_steps": [
+          "Collins Alt: Follow up on the status of the MIPR and funds placement on the RAPTOR vehicle",
+          "Charles Wells: Request a meeting with Forest Spencer to discuss cleared engineers on contract via RAPTOR vehicle",
+          "Charles Wells: Prepare and provide updated quotes to Forest Spencer and Mike D'Amato",
+          "Forest Spencer: Provide update on funding status at DISA and allocation to MetroStar's CLIN via RAPTOR vehicle"
+        ],
+        "topics": [
+          "Funding at DISA being moved to MetroStar's CLIN via RAPTOR vehicle",
+          "Charles Wells refreshing quote for MetroStar end-of-year subscription funds",
+          "Cleared engineers on contract via RAPTOR vehicle",
+          "CACI updated SOW discussions for CY26"
+        ]
+      },
+      "summary": "DIA's DPaaS platform (built on Red Hat OpenShift) remains an active engagement with a ~$190K TAM and subscription renewal due by Oct 6, plus a CY26 CACI Expansion quote in processing. However, funding delays have pushed key project funding to Q4, and there are unresolved obligation issues between DIA and DISA around the RAPTOR vehicle that could stall cleared-engineer onboarding.",
+      "recommended_next_move": "Prioritize securing the TAM renewal PO before Government Fiscal Year end (Sept 30) to lock in continued DPaaS support, and escalate the RAPTOR vehicle MIPR status with Forest Spencer to unblock the cleared-engineer pipeline.",
+      "signals": [
+        {
+          "signal_id": "sig-dia-1",
+          "disposition": "KEEP",
+          "score": 80,
+          "headline": "DIA launches Digital Modernization Accelerator to scale enterprise AI",
+          "what_changed": "DIA stood up a permanent Digital Modernization Accelerator (DMA) organization in March 2026 to provide enterprise-wide AI capabilities, building on Task Force Sabre which executed six OTAs in one year.",
+          "why_it_matters": "DIA is institutionalizing rapid technology adoption with dedicated budget and OTA authority, creating new avenues for platform and infrastructure sales.",
+          "red_hat_relevance": "DPaaS (built on OpenShift) is DIA's enterprise container platform; AI workload expansion on DPaaS could drive additional OpenShift, RHEL, and Ansible subscriptions.",
+          "recommended_action": "Position Red Hat AI and OpenShift AI capabilities for DMA workloads; coordinate with Collins Alt to brief DMA leadership on Red Hat's AI platform story.",
+          "source_type": "external_public",
+          "source_url": "https://federalnewsnetwork.com/defense-news/2026/04/dia-stands-up-digital-modernization-accelerator-to-scale-ai/",
+          "published_at": "2026-04-01",
+          "confidence": "high"
+        },
+        {
+          "signal_id": "sig-dia-2",
+          "disposition": "KEEP",
+          "score": 75,
+          "headline": "TAM and subscription renewal (~$190K) approaching Oct 6 expiration",
+          "what_changed": "Charles Wells and Collins Alt are working to renew the bundled TAM and subscriptions, targeting completion before Government Fiscal Year end to mitigate risk of losing DPaaS support continuity.",
+          "why_it_matters": "If renewal slips past Oct 6, DIA loses TAM support for DPaaS, potentially disrupting operations and weakening Red Hat's footprint in a strategic account.",
+          "red_hat_relevance": "Direct renewal revenue at stake; early renewal secures continued presence on DIA's core platform.",
+          "recommended_action": "Ensure PO is secured before Sept 30 GFY deadline; consider co-terminating with FVEY cluster renewal to streamline future renewals.",
+          "source_type": "backstory_mcp",
+          "source_url": null,
+          "published_at": null,
+          "confidence": "high"
+        },
+        {
+          "signal_id": "sig-dia-3",
+          "disposition": "KEEP",
+          "score": 70,
+          "headline": "DIA DPaaS CY26 CACI Expansion quote in processing",
+          "what_changed": "Jackson Reco sent a quote for the DIA DPaaS CY26 CACI Expansion opportunity; quote 66203132 is being processed for ML concurrence.",
+          "why_it_matters": "Expansion deal adds new services and personnel to DPaaS, growing Red Hat's footprint within DIA's core platform program.",
+          "red_hat_relevance": "Incremental subscription and services revenue tied directly to the OpenShift-based DPaaS platform.",
+          "recommended_action": "Track quote 66203132 through ML review and maintain close coordination between Collins Alt, Jackson Reco, and Leonard Holland.",
+          "source_type": "backstory_mcp",
+          "source_url": null,
+          "published_at": null,
+          "confidence": "high"
+        },
+        {
+          "signal_id": "sig-dia-4",
+          "disposition": "KEEP",
+          "score": 70,
+          "headline": "DIA soliciting $14.1B COMET contract for intelligence analysis and IT operations",
+          "what_changed": "DIA opened proposals for a 10.5-year, $14.1B COMET contract covering all-source intelligence analysis, IT operations, and modeling/simulation across five mission task areas.",
+          "why_it_matters": "COMET's IT operations and modeling task areas could drive significant infrastructure and platform demand that flows through to Red Hat technology.",
+          "red_hat_relevance": "COMET awardees will need enterprise Linux, container platforms, and automation to support DIA IT operations; Red Hat should ensure it is positioned with prime bidders.",
+          "recommended_action": "Identify COMET prime bidders already using Red Hat (CACI, GDIT, Booz Allen) and engage their capture teams on Red Hat platform inclusion.",
+          "source_type": "external_public",
+          "source_url": "https://www.washingtontechnology.com/companies/2026/03/dia-starts-bidding-14b-analysis-support-contract/411842/",
+          "published_at": "2026-03-01",
+          "confidence": "medium"
+        },
+        {
+          "signal_id": "sig-dia-5",
+          "disposition": "KEEP",
+          "score": 65,
+          "headline": "Funding delays push key project funding to Q4",
+          "what_changed": "Project funding delayed due to competing resource priorities; now pushed to Q4 fiscal timeline.",
+          "why_it_matters": "Delays create risk of deals slipping past GFY end and potential loss of available funds if not obligated in time.",
+          "red_hat_relevance": "Multiple active quotes and renewals depend on timely funding; delays could cascade across DPaaS TAM renewal and CACI expansion.",
+          "recommended_action": "Work with Collins Alt to track funding milestones weekly and prepare contingency plans for expedited processing if funds arrive late in Q4.",
+          "source_type": "backstory_mcp",
+          "source_url": null,
+          "published_at": null,
+          "confidence": "high"
+        },
+        {
+          "signal_id": "sig-dia-6",
+          "disposition": "KEEP",
+          "score": 60,
+          "headline": "RAPTOR vehicle funding flow stalled between DISA and DIA",
+          "what_changed": "MIPR for RAPTOR vehicle funding between DISA and DIA remains unresolved; Forest Spencer awaiting DISA feedback before proceeding with quote.",
+          "why_it_matters": "RAPTOR is the contracting vehicle for cleared Red Hat engineers on DPaaS; blocked funding means no engineers on contract and potential loss to competing projects.",
+          "red_hat_relevance": "Cleared engineers on RAPTOR provide direct services revenue and deepen Red Hat's operational role within DPaaS.",
+          "recommended_action": "Collins Alt should escalate MIPR status check with both DIA and DISA counterparts; prepare to nominate available cleared resources immediately once funding clears.",
+          "source_type": "backstory_mcp",
+          "source_url": null,
+          "published_at": null,
+          "confidence": "high"
+        },
+        {
+          "signal_id": "sig-dia-7",
+          "disposition": "WATCH",
+          "score": 55,
+          "headline": "Risk of losing cleared engineers to competing project",
+          "what_changed": "Charles Wells flagged that cleared engineers may be reassigned to another project if RAPTOR funding does not flow soon.",
+          "why_it_matters": "Losing cleared personnel is difficult to recover from given lengthy clearance timelines; could set DPaaS support back by months.",
+          "red_hat_relevance": "Direct impact on Red Hat's ability to deliver committed engineering support on DIA's flagship platform.",
+          "recommended_action": "Monitor weekly; if RAPTOR funding does not clear by mid-August, escalate to Red Hat leadership for resource hold decision.",
+          "source_type": "backstory_mcp",
+          "source_url": null,
+          "published_at": null,
+          "confidence": "medium"
+        },
+        {
+          "signal_id": "sig-dia-8",
+          "disposition": "WATCH",
+          "score": 45,
+          "headline": "No response from GDIT and IDT despite repeated outreach",
+          "what_changed": "Multiple outreach attempts to GDIT and IDT partners have gone unanswered.",
+          "why_it_matters": "Partner disengagement could signal shifting priorities or competitive displacement on related DIA programs.",
+          "red_hat_relevance": "GDIT and IDT are potential channels for Red Hat technology on DIA programs; loss of engagement reduces expansion surface.",
+          "recommended_action": "Continue periodic outreach; consider alternate partner engagement paths through MetroStar or CACI channels.",
+          "source_type": "backstory_mcp",
+          "source_url": null,
+          "published_at": null,
+          "confidence": "medium"
+        }
+      ],
+      "signal_score": 65
+    },
+    {
+      "account_id": "owl-cyber-defense",
+      "account_name": "OWL CYBER DEFENSE",
+      "hierarchy": {
+        "geo": "NAPS",
+        "region": "INTEL",
+        "pod": null,
+        "territory_name": "FED_INTEL_ENT_POD_TERR03",
+        "segment": "Enterprise"
+      },
+      "identity": {
+        "crm_id": null,
+        "peopleai_account_id": 20495167359,
+        "match_status": "matched",
+        "query_account_name": "Owl Cyber Defense",
+        "identity_status": "confirmed",
+        "identity_notes": "Exact match as 'Owl Cyber Defense' on owlcyberdefense.com; no open opportunities"
+      },
+      "internal_priority_score": 70,
+      "priority_reasons": [
+        "volume=25 (activities=2279)",
+        "opportunities=10 (count=1)",
+        "momentum=10 (trend=declining)",
+        "recency=25 (date=2026-07-24)",
+        "caveat: 5 field(s) unavailable"
+      ],
+      "internal": {
+        "metrics": {
+          "registry_account_name": "OWL CYBER DEFENSE",
+          "query_account_name": "Owl Cyber Defense",
+          "identity_status": "confirmed",
+          "identity_notes": "Exact match as 'Owl Cyber Defense' on owlcyberdefense.com; no open opportunities",
+          "metrics_status": "available",
+          "source": "peopleai_query_activity",
+          "query_window_days": 120,
+          "query_timestamp": "2026-07-24T17:36:53.034643+00:00",
+          "total_activities": 2279,
+          "meeting_count_30d": 44,
+          "meeting_count_90d": 155,
+          "meeting_count_all": 196,
+          "email_count_30d": 523,
+          "email_count_90d": 1905,
+          "email_count_all": 2083,
+          "outbound_count": 1062,
+          "inbound_count": 1217,
+          "external_count": 2279,
+          "internal_count": 0,
+          "most_recent_activity_date": "2026-07-24",
+          "most_recent_activity_type": "email",
+          "activity_types": {
+            "email": 2083,
+            "meeting": 196
+          },
+          "linked_opportunity_names": [
+            "Owl Cyber FY26 Q2 royalties"
+          ],
+          "activity_trend": "declining",
+          "timestamp_warnings": null,
+          "engagement_level": null,
+          "opportunity_amount": null,
+          "opportunity_stage": null,
+          "executive_activity": null,
+          "account_owner": null,
+          "unavailable_fields": [
+            "engagement_level",
+            "opportunity_amount",
+            "opportunity_stage",
+            "executive_activity",
+            "account_owner"
+          ],
+          "linked_opportunity_count": 1
+        },
+        "risks": [
+          "Competitive Threat: Dan Davy has decided to choose a partner with the strongest demonstrated value and alignment",
+          "Uncertainty in Support Continuation: David Blades mentions a lack of clarity on continued support for Red Hat",
+          "Product Change Concern: Joey Ratner is concerned about potential product changes affecting the RedHat JBoss renewal",
+          "Lack of Engagement: Sreedhar Chanamolu expresses concern over unanswered requests for technical review and feedback"
+        ],
+        "next_steps": [
+          "Sreedhar Chanamolu: Request a 45-day pause on the reassignment decision for Vinsys to present a growth plan",
+          "Roy Bryan: Adjust Kevin's weekly hours to ensure support through the end of the Period-of-Performance on July 29",
+          "Dominic Rubino: Confirmed the quote has been sent to the customer",
+          "Halie Elmore: Collaborate with Billy Elgert to update and send the DISA PQC SOW ASAP"
+        ],
+        "topics": [
+          "Andrew Kinas received approval for AI infrastructure deployment supporting Colombian Navy Intelligence Fusion Center with Dell AI, NVIDIA, and RHEL support",
+          "Vinsys seeking alignment with Red Hat on USDA account growth plan with 45-day pause request",
+          "Opportunity locked and committed to close this month for $195K",
+          "Modernization of Red Hat Learning Subscription into three tiers and launch of Lead Pass Program",
+          "Red Hat is now CMMC Level 2 compliant",
+          "DISA PQC SOW pending finalization"
+        ]
+      },
+      "summary": "OWL Cyber Defense is navigating competitive partner evaluations with concerns about continued Red Hat support and JBoss renewal product changes. The account recently secured a $150M IDIQ Air Force contract and has active deal flow through Carahsoft, including an approved AI infrastructure deployment for the Colombian Navy Intelligence Fusion Center featuring RHEL support.",
+      "recommended_next_move": "Schedule a strategic review meeting to address David Blades' uncertainty around continued Red Hat support and Joey Ratner's JBoss renewal product change concerns; present a concrete value roadmap to counter the competitive threat from Dan Davy's partner evaluation.",
+      "signals": [
+        {
+          "signal_id": "sig-owl-cyber-defense-1",
+          "disposition": "KEEP",
+          "score": 78,
+          "headline": "OWL Cyber Defense awarded $150M Air Force IDIQ for cross-domain solutions",
+          "what_changed": "Air Force Research Laboratory awarded OWL a $150M IDIQ contract for secure cross-domain solutions including V2CDS, XD Vision, and CDFMV products, with work through July 2030",
+          "why_it_matters": "A major sole-source defense contract signals OWL's growing footprint in classified network environments where Red Hat infrastructure may underpin deployments",
+          "red_hat_relevance": "Cross-domain and classified network environments frequently rely on RHEL and OpenShift; OWL's expanding defense footprint creates potential for bundled infrastructure deals",
+          "recommended_action": "Engage OWL's defense program team to understand infrastructure requirements for the AFRL contract and position RHEL/OpenShift as the platform layer",
+          "source_type": "external_public",
+          "source_url": "https://finance.yahoo.com/news/owl-cyber-defense-awarded-150-120300955.html",
+          "published_at": "2025-08-01T00:00:00Z",
+          "confidence": "high"
+        },
+        {
+          "signal_id": "sig-owl-cyber-defense-2",
+          "disposition": "KEEP",
+          "score": 72,
+          "headline": "Competitive threat: Dan Davy evaluating partners on demonstrated value",
+          "what_changed": "Dan Davy has decided to choose a partner with the strongest demonstrated value and alignment, creating a competitive evaluation scenario",
+          "why_it_matters": "Active partner evaluation puts Red Hat's position at risk if value proposition is not clearly articulated and differentiated",
+          "red_hat_relevance": "Direct risk to Red Hat's incumbent position; requires proactive engagement to demonstrate ROI and strategic alignment",
+          "recommended_action": "Prepare a tailored business case showing Red Hat's unique value and schedule an executive-level meeting with Dan Davy before the evaluation concludes",
+          "source_type": "backstory_mcp",
+          "source_url": null,
+          "published_at": "2026-07-20T00:00:00Z",
+          "confidence": "high"
+        },
+        {
+          "signal_id": "sig-owl-cyber-defense-3",
+          "disposition": "KEEP",
+          "score": 68,
+          "headline": "Uncertainty around continued Red Hat support raises retention risk",
+          "what_changed": "David Blades has flagged a lack of clarity on whether Red Hat support will continue, signaling potential churn risk",
+          "why_it_matters": "Unresolved support uncertainty could lead to non-renewal or migration to a competitor platform",
+          "red_hat_relevance": "Direct retention risk for Red Hat subscriptions; needs immediate clarification and commitment from Red Hat account team",
+          "recommended_action": "Schedule a call with David Blades to clarify Red Hat's support roadmap and commitment, and address any gaps in service coverage",
+          "source_type": "backstory_mcp",
+          "source_url": null,
+          "published_at": "2026-07-20T00:00:00Z",
+          "confidence": "high"
+        },
+        {
+          "signal_id": "sig-owl-cyber-defense-4",
+          "disposition": "KEEP",
+          "score": 65,
+          "headline": "Colombian Navy AI infrastructure deployment approved with RHEL",
+          "what_changed": "Andrew Kinas received approval for an AI infrastructure deployment opportunity for the Colombian Navy Intelligence Fusion Center, including Dell AI infrastructure, NVIDIA AI Enterprise, and Red Hat Enterprise Linux",
+          "why_it_matters": "Approved international defense AI deployment with RHEL as a core component represents a concrete revenue opportunity and expansion into intelligence fusion use cases",
+          "red_hat_relevance": "RHEL is a confirmed component of the approved deployment; this is a direct revenue opportunity requiring execution support",
+          "recommended_action": "Coordinate with Andrew Kinas to ensure smooth RHEL provisioning and explore upsell opportunities for OpenShift or Ansible in the AI infrastructure stack",
+          "source_type": "backstory_mcp",
+          "source_url": null,
+          "published_at": "2026-07-20T00:00:00Z",
+          "confidence": "high"
+        },
+        {
+          "signal_id": "sig-owl-cyber-defense-5",
+          "disposition": "KEEP",
+          "score": 62,
+          "headline": "JBoss renewal at risk due to product change concerns",
+          "what_changed": "Joey Ratner expressed concern about potential product changes that could affect the RedHat JBoss renewal",
+          "why_it_matters": "Product roadmap uncertainty could jeopardize the JBoss renewal and erode trust in Red Hat's middleware portfolio",
+          "red_hat_relevance": "Direct renewal risk for JBoss subscription revenue; requires product team engagement to clarify roadmap",
+          "recommended_action": "Arrange a JBoss product roadmap briefing for Joey Ratner with a Red Hat middleware specialist to address concerns and reinforce the value of renewal",
+          "source_type": "backstory_mcp",
+          "source_url": null,
+          "published_at": "2026-07-20T00:00:00Z",
+          "confidence": "high"
+        },
+        {
+          "signal_id": "sig-owl-cyber-defense-6",
+          "disposition": "KEEP",
+          "score": 60,
+          "headline": "DISA Post-Quantum Cryptography SOW pending finalization",
+          "what_changed": "Halie Elmore and Billy Elgert are collaborating to update and send the DISA PQC SOW, indicating an active defense opportunity",
+          "why_it_matters": "DISA PQC work aligns with the broader government push for post-quantum readiness and could open a significant defense engagement",
+          "red_hat_relevance": "Red Hat's OpenShift 4.20+ includes initial PQC algorithm support, making Red Hat a natural infrastructure partner for PQC initiatives",
+          "recommended_action": "Ensure the DISA PQC SOW includes Red Hat platform components and connect the account team with Red Hat's security solutions specialists",
+          "source_type": "backstory_mcp",
+          "source_url": null,
+          "published_at": "2026-07-20T00:00:00Z",
+          "confidence": "medium"
+        },
+        {
+          "signal_id": "sig-owl-cyber-defense-7",
+          "disposition": "WATCH",
+          "score": 55,
+          "headline": "Carahsoft named OWL's 2025 North America Federal Distributor of the Year",
+          "what_changed": "OWL Cyber Defense honored Carahsoft as its 2025 North America Federal Distributor of the Year at its Sales Kickoff 2026 event",
+          "why_it_matters": "Strengthening OWL-Carahsoft distribution relationship could amplify Red Hat's channel access for OWL's federal customer base",
+          "red_hat_relevance": "Carahsoft is also Red Hat's key government distributor; the tighter OWL-Carahsoft partnership creates joint bundling opportunities",
+          "recommended_action": "Explore joint solution bundling with OWL and Carahsoft for federal opportunities where cross-domain solutions and RHEL intersect",
+          "source_type": "external_public",
+          "source_url": "https://www.carahsoft.com/news/owl-cyber-defense-honors-carahsoft-with-2025-north-america-federal-distributor-of-the-year-award-2026",
+          "published_at": "2026-01-15T00:00:00Z",
+          "confidence": "medium"
+        },
+        {
+          "signal_id": "sig-owl-cyber-defense-8",
+          "disposition": "WATCH",
+          "score": 50,
+          "headline": "OWL launches XD Tyton and Incident Response Diode products in 2026",
+          "what_changed": "OWL launched XD Tyton (secure iOS gateway for air-gapped networks) and the Incident Response Diode (pocket-sized protocol filtering diode) in May 2026",
+          "why_it_matters": "New product launches expand OWL's addressable market in air-gapped and incident response environments where secure infrastructure is critical",
+          "red_hat_relevance": "Air-gapped network deployments often require hardened RHEL configurations; new OWL products could create adjacent infrastructure demand",
+          "recommended_action": "Monitor OWL's new product deployments for infrastructure requirements that could be met by RHEL or OpenShift",
+          "source_type": "external_public",
+          "source_url": "https://owlcyberdefense.com/resources/news/",
+          "published_at": "2026-05-05T00:00:00Z",
+          "confidence": "medium"
+        },
+        {
+          "signal_id": "sig-owl-cyber-defense-9",
+          "disposition": "WATCH",
+          "score": 48,
+          "headline": "Red Hat achieves CMMC Level 2 compliance",
+          "what_changed": "Red Hat is now CMMC Level 2 compliant, enabling it to meet Defense Industrial Base requirements for controlled unclassified information handling",
+          "why_it_matters": "CMMC Level 2 compliance removes a barrier for Red Hat in defense procurement and makes it eligible for a broader set of DoD contracts",
+          "red_hat_relevance": "Directly strengthens Red Hat's competitive position for defense opportunities with OWL and other defense contractors",
+          "recommended_action": "Leverage CMMC Level 2 compliance in all defense-related proposals and communications with OWL stakeholders",
+          "source_type": "backstory_mcp",
+          "source_url": null,
+          "published_at": "2026-06-29T00:00:00Z",
+          "confidence": "high"
+        },
+        {
+          "signal_id": "sig-owl-cyber-defense-10",
+          "disposition": "WATCH",
+          "score": 45,
+          "headline": "Unanswered technical review requests from Vinsys partner",
+          "what_changed": "Sreedhar Chanamolu from Vinsys has raised concerns about unanswered requests for technical review and feedback on the USDA account growth plan",
+          "why_it_matters": "Delayed partner engagement risks losing momentum on the USDA account growth initiative and could damage the Vinsys relationship",
+          "red_hat_relevance": "Vinsys is a Red Hat partner seeking alignment; unresponsiveness could push them toward competing platforms",
+          "recommended_action": "Prioritize responding to Vinsys's technical review requests and schedule the growth plan discussion within the 45-day window",
+          "source_type": "backstory_mcp",
+          "source_url": null,
+          "published_at": "2026-07-20T00:00:00Z",
+          "confidence": "medium"
+        }
+      ],
+      "signal_score": 60
+    },
+    {
+      "account_id": "carahsoft-technology-corp",
+      "account_name": "CARAHSOFT TECHNOLOGY CORP.",
+      "hierarchy": {
+        "geo": "NAPS",
+        "region": "INTEL",
+        "pod": null,
+        "territory_name": "FED_INTEL_ENT_POD_TERR04",
+        "segment": "Enterprise"
+      },
+      "identity": {
+        "crm_id": null,
+        "peopleai_account_id": 18361614506,
+        "match_status": "matched",
+        "query_account_name": "Carahsoft Technology Corp.",
+        "identity_status": "confirmed",
+        "identity_notes": "Exact match as 'Carahsoft Technology Corp.' on carahsoft.com; no open opportunities"
+      },
+      "internal_priority_score": 64,
+      "priority_reasons": [
+        "volume=14 (activities=1249)",
+        "opportunities=15 (count=5)",
+        "momentum=10 (trend=declining)",
+        "recency=25 (date=2026-07-24)",
+        "caveat: 5 field(s) unavailable"
+      ],
+      "internal": {
+        "metrics": {
+          "registry_account_name": "CARAHSOFT TECHNOLOGY CORP.",
+          "query_account_name": "Carahsoft Technology Corp.",
+          "identity_status": "confirmed",
+          "identity_notes": "Exact match as 'Carahsoft Technology Corp.' on carahsoft.com; no open opportunities",
+          "metrics_status": "available",
+          "source": "peopleai_query_activity",
+          "query_window_days": 120,
+          "query_timestamp": "2026-07-24T17:36:53.034643+00:00",
+          "total_activities": 1249,
+          "meeting_count_30d": 9,
+          "meeting_count_90d": 34,
+          "meeting_count_all": 73,
+          "email_count_30d": 139,
+          "email_count_90d": 406,
+          "email_count_all": 1164,
+          "outbound_count": 580,
+          "inbound_count": 669,
+          "external_count": 1249,
+          "internal_count": 0,
+          "most_recent_activity_date": "2026-07-24",
+          "most_recent_activity_type": "email",
+          "activity_types": {
+            "email": 1164,
+            "meeting": 65,
+            "chat": 12,
+            "call": 8
+          },
+          "linked_opportunity_names": [
+            "(CH) RedSeal Embedded Program DSS subscription",
+            "Boeing Defense, Space and Security - Carahsoft - Private Offer",
+            "Global Royalty-CCSP-40762963-Google-CY26 Q2 M1-United States-Carahsoft Technology Corp.",
+            "Renewal - Carahsoft Technology Corp. - 00629055",
+            "Test_Carahsoft"
+          ],
+          "activity_trend": "declining",
+          "timestamp_warnings": null,
+          "engagement_level": null,
+          "opportunity_amount": null,
+          "opportunity_stage": null,
+          "executive_activity": null,
+          "account_owner": null,
+          "unavailable_fields": [
+            "engagement_level",
+            "opportunity_amount",
+            "opportunity_stage",
+            "executive_activity",
+            "account_owner"
+          ],
+          "linked_opportunity_count": 5
+        },
+        "risks": [
+          "Outstanding Royalties Compliance Issue: Red Hat/RedSeal royalties have been outstanding for several months, considered a compliance issue",
+          "Budget Discrepancy: A significant budget discrepancy of $50K has been identified",
+          "Change in Opportunity Type: The opportunity is now being pursued as a sell-through rather than the original approach",
+          "Delayed Opportunity Progress: The opportunity is not moving forward this quarter"
+        ],
+        "next_steps": [
+          "Heather Price: Reach out to the CO and the COR immediately to ensure funding for the 790K quote",
+          "David Beltz: Finalize the Statement of Work (SOW) this week",
+          "Josh Radin: Forward the redlines to the SOW immediately to Red Hat",
+          "Kaitlyn Speice: Request updated RHQFs for both subs and services for the Singularity deal from David Pearson"
+        ],
+        "topics": [
+          "Charles Wells and Jackson Reco confirmed booking of OCP-AI Services worth $475K",
+          "Nawfal Elmachiadi and John ReShore addressing compliance issues related to Red Hat/RedSeal royalties outstanding for several months",
+          "Contract modification to increase overall ceiling and funded value to $1,495,000 with POP extension",
+          "Eagle Springs Refinery project with RHEL for SAP Solutions subscriptions",
+          "CMMC Phase 2 mandatory Level 2 C3PAO assessments driving compliance requirements",
+          "MetroStar RHADS opportunity valued at $247,500 in Best Case stage",
+          "Invictus requesting updated OTSS quotes"
+        ]
+      },
+      "summary": "Carahsoft remains Red Hat's primary government distribution channel with active deal flow including a confirmed $475K OCP-AI Services booking and a contract ceiling modification to $1.495M. However, the account has compliance concerns around outstanding Red Hat/RedSeal royalties that have persisted for months, a $50K budget discrepancy, and federal regulatory scrutiny around pricing transparency that could impact Carahsoft's aggregator business model.",
+      "recommended_next_move": "Resolve the outstanding royalties compliance issue by connecting Nawfal Elmachiadi with Red Hat's compliance team immediately; separately, ensure Heather Price secures funding commitment from the CO/COR for the $790K quote before the fiscal window closes.",
+      "signals": [
+        {
+          "signal_id": "sig-carahsoft-1",
+          "disposition": "KEEP",
+          "score": 78,
+          "headline": "OCP-AI Services opportunity booked at $475K",
+          "what_changed": "Charles Wells and Jackson Reco confirmed the booking of OCP-AI Services worth $475K, marking a significant deal milestone",
+          "why_it_matters": "A confirmed $475K booking demonstrates continued demand for Red Hat AI services through the Carahsoft channel and validates the AI services pipeline",
+          "red_hat_relevance": "Direct Red Hat revenue through Carahsoft's government distribution channel; OCP-AI services represent Red Hat's growing AI/ML portfolio",
+          "recommended_action": "Ensure smooth delivery of the OCP-AI Services engagement and document the win for replication across other Carahsoft government accounts",
+          "source_type": "backstory_mcp",
+          "source_url": null,
+          "published_at": "2026-07-06T00:00:00Z",
+          "confidence": "high"
+        },
+        {
+          "signal_id": "sig-carahsoft-2",
+          "disposition": "KEEP",
+          "score": 75,
+          "headline": "Federal regulatory scrutiny on pricing transparency could impact Carahsoft's business model",
+          "what_changed": "High-profile federal inquiries into pricing transparency and antitrust concerns in the government reseller ecosystem began in late 2024 and continued through 2025, with potential for stricter reporting requirements",
+          "why_it_matters": "Regulatory action could force changes to how Carahsoft bundles and prices Red Hat products, potentially affecting margins, deal structures, and contract compliance across the entire government channel",
+          "red_hat_relevance": "As Carahsoft's largest vendor partner relationships face scrutiny, Red Hat needs to ensure its pricing and bundling practices through Carahsoft are defensible and transparent",
+          "recommended_action": "Engage Red Hat legal and government sales leadership to review pricing practices through Carahsoft and prepare for potential regulatory changes to the aggregator model",
+          "source_type": "external_public",
+          "source_url": "https://matrixbcg.com/blogs/growth-strategy/carahsoft",
+          "published_at": "2025-12-01T00:00:00Z",
+          "confidence": "medium"
+        },
+        {
+          "signal_id": "sig-carahsoft-3",
+          "disposition": "KEEP",
+          "score": 72,
+          "headline": "Red Hat/RedSeal royalties compliance issue outstanding for months",
+          "what_changed": "Nawfal Elmachiadi and John ReShore have identified that Red Hat/RedSeal royalties have been outstanding for several months, escalating to a compliance concern",
+          "why_it_matters": "Prolonged royalty non-compliance strains the Carahsoft-Red Hat relationship and could trigger contractual penalties or partner status changes",
+          "red_hat_relevance": "Direct financial and compliance impact on Red Hat; unresolved royalties represent lost revenue and potential partner friction",
+          "recommended_action": "Escalate the royalties compliance issue to Red Hat finance and partner operations; John ReShore should introduce Nawfal Elmachiadi to Brook for compliance handling immediately",
+          "source_type": "backstory_mcp",
+          "source_url": null,
+          "published_at": "2026-07-20T00:00:00Z",
+          "confidence": "high"
+        },
+        {
+          "signal_id": "sig-carahsoft-4",
+          "disposition": "KEEP",
+          "score": 68,
+          "headline": "Contract ceiling modification to $1.495M with POP extension in progress",
+          "what_changed": "Jackson Reco is working on a modification to increase the overall contract ceiling and funded value to $1,495,000 and extend the period of performance end date",
+          "why_it_matters": "A ceiling increase to nearly $1.5M represents significant expansion of an existing Red Hat engagement through Carahsoft",
+          "red_hat_relevance": "Direct revenue upside through contract expansion; ensuring the modification is processed smoothly is critical",
+          "recommended_action": "Support Jackson Reco in processing the modification and ensure Red Hat product pricing and SOW terms align with the expanded scope",
+          "source_type": "backstory_mcp",
+          "source_url": null,
+          "published_at": "2026-07-06T00:00:00Z",
+          "confidence": "high"
+        },
+        {
+          "signal_id": "sig-carahsoft-5",
+          "disposition": "KEEP",
+          "score": 67,
+          "headline": "$790K quote requires immediate CO/COR funding outreach",
+          "what_changed": "Heather Price has been tasked with reaching out to the Contracting Officer and COR immediately to ensure funding for a $790K quote",
+          "why_it_matters": "A $790K opportunity at the funding stage represents near-term revenue that requires prompt government engagement to secure",
+          "red_hat_relevance": "Direct Red Hat revenue at risk if funding is not secured in the current fiscal window",
+          "recommended_action": "Support Heather Price's outreach to the CO/COR with Red Hat technical justification materials and pricing documentation",
+          "source_type": "backstory_mcp",
+          "source_url": null,
+          "published_at": "2026-07-20T00:00:00Z",
+          "confidence": "high"
+        },
+        {
+          "signal_id": "sig-carahsoft-6",
+          "disposition": "KEEP",
+          "score": 65,
+          "headline": "Carahsoft projected to reach $17.5B revenue with 15% YoY growth",
+          "what_changed": "Carahsoft's 2025 projected revenues are approximately $17.5 billion, reflecting 15% year-over-year growth as the company continues to dominate multi-billion-dollar cloud and AI migrations across DoD and civilian agencies",
+          "why_it_matters": "Carahsoft's continued growth validates it as the dominant government IT distribution channel; Red Hat's share of this growing pie is a key revenue driver",
+          "red_hat_relevance": "As Carahsoft grows, Red Hat needs to ensure its share of Carahsoft's portfolio grows proportionally, particularly in cloud and AI segments",
+          "recommended_action": "Review Red Hat's share of Carahsoft revenue and set growth targets for FY2026 that align with Carahsoft's AI and cloud expansion trajectory",
+          "source_type": "external_public",
+          "source_url": "https://matrixbcg.com/blogs/growth-strategy/carahsoft",
+          "published_at": "2025-12-01T00:00:00Z",
+          "confidence": "medium"
+        },
+        {
+          "signal_id": "sig-carahsoft-7",
+          "disposition": "KEEP",
+          "score": 62,
+          "headline": "MetroStar RHADS opportunity valued at $247.5K in Best Case stage",
+          "what_changed": "Charles Wells is preparing a quote for Forest Spencer at MetroStar for the RHADS opportunity, valued at $247,500 with a close date of July 30, 2026",
+          "why_it_matters": "A $247.5K opportunity in Best Case stage with an imminent close date represents near-term revenue potential requiring focused execution",
+          "red_hat_relevance": "RHADS (Red Hat Advanced Deployment Services) revenue through Carahsoft-MetroStar channel",
+          "recommended_action": "Ensure the quote to MetroStar is delivered promptly and provide any technical support needed to close by July 30",
+          "source_type": "backstory_mcp",
+          "source_url": null,
+          "published_at": "2026-07-27T00:00:00Z",
+          "confidence": "high"
+        },
+        {
+          "signal_id": "sig-carahsoft-8",
+          "disposition": "WATCH",
+          "score": 55,
+          "headline": "Eagle Springs Refinery project using RHEL for SAP Solutions",
+          "what_changed": "Nawfal Elmachiadi and Carson Gillions are working on quotes for the Eagle Springs Refinery project, confirming the BOM for RHEL for SAP Solutions subscriptions",
+          "why_it_matters": "RHEL for SAP represents a premium subscription tier with higher margins; industrial/energy sector adoption expands Red Hat's addressable market through Carahsoft",
+          "red_hat_relevance": "RHEL for SAP Solutions is a high-value Red Hat product; successful deployment creates a referenceable account for similar industrial opportunities",
+          "recommended_action": "Support the Eagle Springs Refinery quote with Red Hat SAP specialist engagement and reference architectures",
+          "source_type": "backstory_mcp",
+          "source_url": null,
+          "published_at": "2026-07-20T00:00:00Z",
+          "confidence": "medium"
+        },
+        {
+          "signal_id": "sig-carahsoft-9",
+          "disposition": "WATCH",
+          "score": 52,
+          "headline": "CMMC Phase 2 driving mandatory compliance assessments across Defense Industrial Base",
+          "what_changed": "CMMC Phase 2 has arrived, requiring mandatory Level 2 C3PAO assessments for many Defense Industrial Base organizations, creating compliance urgency",
+          "why_it_matters": "CMMC compliance requirements create demand for hardened, compliant IT platforms that can demonstrate security controls",
+          "red_hat_relevance": "Red Hat's recent CMMC Level 2 compliance positions its products favorably for DIB organizations going through mandatory assessments",
+          "recommended_action": "Develop CMMC compliance messaging for Red Hat products distributed through Carahsoft and target DIB organizations preparing for Phase 2 assessments",
+          "source_type": "backstory_mcp",
+          "source_url": null,
+          "published_at": "2026-07-06T00:00:00Z",
+          "confidence": "medium"
+        },
+        {
+          "signal_id": "sig-carahsoft-10",
+          "disposition": "WATCH",
+          "score": 48,
+          "headline": "$50K budget discrepancy identified on active opportunity",
+          "what_changed": "A significant budget discrepancy of $50K has been identified on an opportunity, requiring resolution before the deal can progress",
+          "why_it_matters": "Budget discrepancies can delay deal closure and erode partner trust if not resolved promptly",
+          "red_hat_relevance": "Unresolved budget issues could delay Red Hat revenue recognition and complicate the quoting process",
+          "recommended_action": "Work with Carahsoft finance to reconcile the $50K discrepancy and ensure alignment between the quote and available funding",
+          "source_type": "backstory_mcp",
+          "source_url": null,
+          "published_at": "2026-07-20T00:00:00Z",
+          "confidence": "medium"
+        }
+      ],
+      "signal_score": 64
+    },
+    {
+      "account_id": "westfields",
+      "account_name": "WESTFIELDS",
+      "hierarchy": {
+        "geo": "NAPS",
+        "region": "INTEL",
+        "pod": null,
+        "territory_name": "FED_INTEL_ENT_POD_TERR02",
+        "segment": "Enterprise"
+      },
+      "identity": {
+        "crm_id": null,
+        "peopleai_account_id": 19219386493,
+        "match_status": "matched",
+        "query_account_name": "Westfields",
+        "identity_status": "confirmed",
+        "identity_notes": "Exact match as 'Westfields'; 30 open opportunities owned primarily by Dean Van Tol"
+      },
+      "internal_priority_score": 63,
+      "priority_reasons": [
+        "volume=3 (activities=256)",
+        "opportunities=25 (count=33)",
+        "momentum=10 (trend=declining)",
+        "recency=25 (date=2026-07-23)",
+        "caveat: 5 field(s) unavailable"
+      ],
+      "internal": {
+        "metrics": {
+          "registry_account_name": "WESTFIELDS",
+          "query_account_name": "Westfields",
+          "identity_status": "confirmed",
+          "identity_notes": "Exact match as 'Westfields'; 30 open opportunities owned primarily by Dean Van Tol",
+          "metrics_status": "available",
+          "source": "peopleai_query_activity",
+          "query_window_days": 120,
+          "query_timestamp": "2026-07-24T17:36:53.034643+00:00",
+          "total_activities": 256,
+          "meeting_count_30d": 1,
+          "meeting_count_90d": 4,
+          "meeting_count_all": 5,
+          "email_count_30d": 63,
+          "email_count_90d": 213,
+          "email_count_all": 251,
+          "outbound_count": 118,
+          "inbound_count": 138,
+          "external_count": 256,
+          "internal_count": 0,
+          "most_recent_activity_date": "2026-07-23",
+          "most_recent_activity_type": "email",
+          "activity_types": {
+            "email": 251,
+            "call": 1,
+            "meeting": 4
+          },
+          "linked_opportunity_names": [
+            "(DVT) - Westfields - SheepAuto-TO2",
+            "(DVT)-Westfields-PeraNmil",
+            "DVT-Westfields-Spinning in the Clouds II (MPX 3)",
+            "New- WF - Redondo Scholar RHLS -Qty5",
+            "New- WF- BAE Scott Davison - ACM + OVE",
+            "New- WF- NGC \"Classified B\" SAP - Nikita Jones",
+            "New- Westfields - ESAM_C2C_ADMIN - RHA 4870W- Deal Reg FlyWheel",
+            "New-Westfields-(DV) Metroplex DC3 Initial",
+            "Renewal - Westfields - (17309366) - Metroplex",
+            "Renewal - Westfields - 00491852",
+            "Renewal - Westfields - 00501936- NGC",
+            "Renewal - Westfields - 00571788 - WWT Alvin Brewer",
+            "Renewal - Westfields - 00594166",
+            "Renewal - Westfields - 00599964",
+            "Renewal - Westfields - 00608740",
+            "Renewal - Westfields - 00628088",
+            "Renewal - Westfields - 00629164",
+            "Renewal - Westfields - 00632424",
+            "Renewal - Westfields - 00689984",
+            "Renewal - Westfields - ESAM_C2C_ADMIN - RHA (Old 4870W)",
+            "Renewal - Westfields - ESAM_GED-RH_ADMIN-RHA (old 4698W)",
+            "Renewal - Westfields - ESAM_GLOBE_ADMIN-RHA 4761W (old 4623W)",
+            "Renewal - Westfields - ESAM_M2C2_ADMIN-RHA 4862(old 4569W)",
+            "Renewal - Westfields - ESAM_STARCHASER_ADMIN-RHA 4879W(old 4694W)",
+            "Renewal - Westfields - ESAM_SUNSET_ADMIN-RHA (old 4687W)",
+            "Renewal - Westfields - ESAM_WICCT_ADMIN RHA (Old 4884W)",
+            "Westfields - Deal Reg - Ansible - ESAM_CAO_ADMIN-RHA tbd",
+            "Westfields - Deal Reg - Flywheel Data LLC",
+            "Westfields - Deal Reg - Flywheel Data LLC-ESAM_UHUB_ADMIN-RHA (Old 4692W)",
+            "Westfields - Deal Reg - One Technology Corporation",
+            "Westfields - Deal Reg - OpenShift",
+            "Westfields - Deal Reg - RHEL - Flywheel-ESAM_MAS_ADMIN-RHA tbd",
+            "Westfields - New - Euphoria Program / IC / RTX - Deal Reg - RHELRHEL"
+          ],
+          "activity_trend": "declining",
+          "timestamp_warnings": null,
+          "engagement_level": null,
+          "opportunity_amount": null,
+          "opportunity_stage": null,
+          "executive_activity": null,
+          "account_owner": null,
+          "unavailable_fields": [
+            "engagement_level",
+            "opportunity_amount",
+            "opportunity_stage",
+            "executive_activity",
+            "account_owner"
+          ],
+          "linked_opportunity_count": 33
+        },
+        "risks": [
+          "Competitive Re-Competition: Opportunity re-competed at standard price due to distributor alignment changes",
+          "Program Decommissioned: Program decommissioned and will not be renewing",
+          "Funding Issues: Ongoing funding issues across programs causing delays and lack of response",
+          "Procurement Delays: Procurement process delayed with approvals still pending"
+        ],
+        "next_steps": [
+          "Rick Stahovec: Check status of Embedded agreement and provide authorization documentation to Nikita Jones",
+          "Jake Houser: Coordinate with Mark Fillmore and Taylor Silva to provide RHEL Satellite to their group",
+          "Mariah Scott: Add accounts to the learning subscription for Peraton as requested by Steve Kovalak",
+          "David Pearson: Ensure Renee Davis and Ashley Jones are included in SOWs before Julia Skipper goes OOO"
+        ],
+        "topics": [
+          "Customer decided not to renew program; new VLAB team may consider renewing by end of 2026",
+          "Additional RHEL subscriptions needed for RHEL 5 virtual machines for license compliance",
+          "Revised SOW sent to Flywheel team with new cloud-native VM deployment task",
+          "DR approved; customer requested split of CSS into two separate orders"
+        ]
+      },
+      "summary": "Westfields (IC Acquisition Research Center) covers NGA and NRO programs with active quote activity on NGA ICITE 3, an ongoing GED Consolidation effort, and a new Air-Gapped Software Coding AI demo. However, one program has been decommissioned and will not renew, and funding issues persist across multiple programs causing delays and partner non-responsiveness.",
+      "recommended_next_move": "Focus on the NGA ICITE 3 RFQ response pipeline and the upcoming GED Consolidation RFQ posting to capture new subscription and services revenue, while positioning the Air-Gapped AI demo as a door-opener for new OpenShift workloads.",
+      "signals": [
+        {
+          "signal_id": "sig-westfields-1",
+          "disposition": "KEEP",
+          "score": 70,
+          "headline": "NGA ICITE 3 RFQ active with multiple quotes submitted through Flywheel",
+          "what_changed": "Jackson Reco submitted five quotes related to NGA ICITE 3 RFQ to Julia Skipper at Flywheel Data, with updated end dates through 2/28/27 and refreshed services SOWs.",
+          "why_it_matters": "ICITE 3 is a major NGA infrastructure program; winning these quotes secures Red Hat subscriptions and services revenue for a full year.",
+          "red_hat_relevance": "Direct subscription and professional services revenue through NGA's enterprise IT modernization program.",
+          "recommended_action": "Ensure all quote deadlines are met; coordinate with Julia Skipper on any outstanding RFQ requirements before she goes OOO.",
+          "source_type": "backstory_mcp",
+          "source_url": null,
+          "published_at": null,
+          "confidence": "high"
+        },
+        {
+          "signal_id": "sig-westfields-2",
+          "disposition": "KEEP",
+          "score": 65,
+          "headline": "Air-Gapped Software Coding AI demo scheduled with customer",
+          "what_changed": "Nick Straiter scheduled a two-hour Air-Gapped Software Coding AI demo with the Red Hat team, with encouragement to share with other teams.",
+          "why_it_matters": "AI coding tools for air-gapped environments address a critical IC capability gap; successful demo could open new workload opportunities.",
+          "red_hat_relevance": "Positions OpenShift and RHEL as the platform for air-gapped AI workloads in the intelligence community.",
+          "recommended_action": "Prepare compelling demo content tailored to IC use cases; identify follow-up opportunities for OpenShift AI or Ansible Lightspeed in air-gapped settings.",
+          "source_type": "backstory_mcp",
+          "source_url": null,
+          "published_at": null,
+          "confidence": "medium"
+        },
+        {
+          "signal_id": "sig-westfields-3",
+          "disposition": "KEEP",
+          "score": 65,
+          "headline": "Program decommissioned with no renewal; VLAB team may re-engage by year end",
+          "what_changed": "Dean Van Tol and Jackson Reco confirmed the customer decided not to renew the decommissioned program, but the new VLAB team may consider renewing by end of 2026.",
+          "why_it_matters": "Lost revenue from decommissioned program must be offset; VLAB re-engagement represents a recovery opportunity but timeline is uncertain.",
+          "red_hat_relevance": "Revenue at risk from lost program; need to protect installed base and cultivate VLAB relationship for potential recovery.",
+          "recommended_action": "Maintain light-touch engagement with VLAB team contacts through Q3/Q4; prepare a tailored proposal for when they are ready to evaluate.",
+          "source_type": "backstory_mcp",
+          "source_url": null,
+          "published_at": null,
+          "confidence": "medium"
+        },
+        {
+          "signal_id": "sig-westfields-4",
+          "disposition": "KEEP",
+          "score": 60,
+          "headline": "GED Consolidation effort underway; awaiting RFQ posting and RHA assignment",
+          "what_changed": "A large GED Consolidation effort is in progress, with the team waiting for the RFQ to post and for Red Hat Assignment (RHA) number.",
+          "why_it_matters": "GED Consolidation represents a significant infrastructure modernization opportunity within the IC that could drive large subscription deals.",
+          "red_hat_relevance": "Consolidation efforts typically require enterprise Linux, container platforms, and automation tools -- all Red Hat strengths.",
+          "recommended_action": "Monitor for RFQ posting; pre-position with Dean Van Tol to ensure Red Hat is included in the response strategy.",
+          "source_type": "backstory_mcp",
+          "source_url": null,
+          "published_at": null,
+          "confidence": "medium"
+        },
+        {
+          "signal_id": "sig-westfields-5",
+          "disposition": "KEEP",
+          "score": 60,
+          "headline": "NRO MAC RFP competitive pressure from Flywheel partnering with competitor",
+          "what_changed": "Josh Schell from August Schell flagged that Flywheel is partnering with a competitor for the NRO MAC RFP, prompting inquiry about the Westfields team's strategy.",
+          "why_it_matters": "Competitive teaming on NRO MAC could displace Red Hat if the competitor offers an alternative platform stack.",
+          "red_hat_relevance": "Risk of Red Hat being excluded from NRO MAC if Flywheel's competitor partner brings a competing platform.",
+          "recommended_action": "Clarify Flywheel's NRO MAC teaming arrangement and Red Hat's role; engage directly with the Westfields team on competitive response.",
+          "source_type": "backstory_mcp",
+          "source_url": null,
+          "published_at": null,
+          "confidence": "medium"
+        },
+        {
+          "signal_id": "sig-westfields-6",
+          "disposition": "KEEP",
+          "score": 60,
+          "headline": "NGA posts HATTERAS RFI on classified IC-ARC portal",
+          "what_changed": "NGA posted a Request for Information for HATTERAS on the classified Intelligence Community Acquisition Research Center (ARC) website on May 15, 2026.",
+          "why_it_matters": "HATTERAS is an emerging NGA requirement that could translate into new infrastructure and platform opportunities for Red Hat.",
+          "red_hat_relevance": "NGA HATTERAS may require container platforms, enterprise Linux, or automation capabilities that align with Red Hat's portfolio.",
+          "recommended_action": "Obtain details on HATTERAS scope through classified channels; coordinate with Jackson Reco on Red Hat positioning for this requirement.",
+          "source_type": "external_public",
+          "source_url": null,
+          "published_at": "2026-05-15",
+          "confidence": "low"
+        },
+        {
+          "signal_id": "sig-westfields-7",
+          "disposition": "WATCH",
+          "score": 55,
+          "headline": "RHEL 5 VM license compliance gap requiring additional subscriptions",
+          "what_changed": "Matt Regan confirmed that additional RHEL Server subscriptions are required for RHEL 5 virtual machines to remain license compliant; RHEL 4 and older no longer need subscriptions.",
+          "why_it_matters": "Compliance gaps create both risk (customer friction) and opportunity (incremental subscription sales).",
+          "red_hat_relevance": "Direct subscription revenue opportunity; also a chance to initiate migration conversations to newer RHEL versions.",
+          "recommended_action": "Provide Julia Skipper with a compliance remediation quote; explore migration path discussions for RHEL 5 to RHEL 9.",
+          "source_type": "backstory_mcp",
+          "source_url": null,
+          "published_at": null,
+          "confidence": "high"
+        },
+        {
+          "signal_id": "sig-westfields-8",
+          "disposition": "WATCH",
+          "score": 50,
+          "headline": "Funding issues causing delays across multiple programs",
+          "what_changed": "Ongoing funding constraints across programs have caused delays and lack of response from customer contacts.",
+          "why_it_matters": "Systemic funding issues could delay or eliminate multiple deals in the pipeline, compressing revenue into later quarters.",
+          "red_hat_relevance": "Multiple active quotes and renewals at risk if funding does not materialize on time.",
+          "recommended_action": "Track funding status per-program; prioritize deals with confirmed funding and prepare to accelerate processing when funds arrive.",
+          "source_type": "backstory_mcp",
+          "source_url": null,
+          "published_at": null,
+          "confidence": "medium"
+        }
+      ],
+      "signal_score": 61
+    },
+    {
+      "account_id": "national-geospatial-intelligence-agency-nga",
+      "account_name": "NATIONAL GEOSPATIAL-INTELLIGENCE AGENCY (NGA)",
+      "hierarchy": {
+        "geo": "NAPS",
+        "region": "INTEL",
+        "pod": null,
+        "territory_name": "FED_INTEL_ENT_POD_TERR04",
+        "segment": "Enterprise"
+      },
+      "identity": {
+        "crm_id": null,
+        "peopleai_account_id": 19120775807,
+        "match_status": "matched",
+        "query_account_name": "National Geospatial-Intelligence Agency",
+        "identity_status": "confirmed",
+        "identity_notes": "Exact match as 'National Geospatial-Intelligence Agency' on nga.mil; 30 open opportunities owned by Kyle House"
+      },
+      "internal_priority_score": 57,
+      "priority_reasons": [
+        "volume=2 (activities=138)",
+        "opportunities=20 (count=13)",
+        "momentum=10 (trend=declining)",
+        "recency=25 (date=2026-07-20)",
+        "caveat: 5 field(s) unavailable"
+      ],
+      "internal": {
+        "metrics": {
+          "registry_account_name": "NATIONAL GEOSPATIAL-INTELLIGENCE AGENCY (NGA)",
+          "query_account_name": "National Geospatial-Intelligence Agency",
+          "identity_status": "confirmed",
+          "identity_notes": "Exact match as 'National Geospatial-Intelligence Agency' on nga.mil; 30 open opportunities owned by Kyle House",
+          "metrics_status": "available",
+          "source": "peopleai_query_activity",
+          "query_window_days": 120,
+          "query_timestamp": "2026-07-24T17:36:53.034643+00:00",
+          "total_activities": 138,
+          "meeting_count_30d": 0,
+          "meeting_count_90d": 4,
+          "meeting_count_all": 5,
+          "email_count_30d": 40,
+          "email_count_90d": 120,
+          "email_count_all": 133,
+          "outbound_count": 104,
+          "inbound_count": 34,
+          "external_count": 138,
+          "internal_count": 0,
+          "most_recent_activity_date": "2026-07-20",
+          "most_recent_activity_type": "email",
+          "activity_types": {
+            "email": 133,
+            "meeting": 5
+          },
+          "linked_opportunity_names": [
+            "KH - NGA - MAXAR adv. analytics platform",
+            "NGA - ECS OpenShift OPP/AI Uplift",
+            "NGA - KTIS Expansion Part 1 - Conversation to OpenShift AI Enterprise",
+            "NGA - MAXAR KTIS - Svcs - Part 2",
+            "NGA - RHEL 7 ELS - Cloud PMO Private Offer Renewal",
+            "NGA - RHEL Expansion",
+            "NGA - SafeHouse OPP 2nd Wave Expansion",
+            "NGA - UDS CORE Team - Connectivity Link",
+            "NGA - UDS OS Virt - VMware Takeout",
+            "NGA - UDS Services - Patches \\ RHEL",
+            "New- CACI-NGA SAFFIRE-OpenShift ELA James Finnessy- NA-IB",
+            "Renewal - National Geospatial-Intelligence Agency (NGA) - (15783989)",
+            "Renewal - National Geospatial-Intelligence Agency - 00663613"
+          ],
+          "activity_trend": "declining",
+          "timestamp_warnings": null,
+          "engagement_level": null,
+          "opportunity_amount": null,
+          "opportunity_stage": null,
+          "executive_activity": null,
+          "account_owner": null,
+          "unavailable_fields": [
+            "engagement_level",
+            "opportunity_amount",
+            "opportunity_stage",
+            "executive_activity",
+            "account_owner"
+          ],
+          "linked_opportunity_count": 13
+        },
+        "risks": [
+          "Competitive Evaluation: The client is still evaluating options and has requested competitor quotes",
+          "Program Shutdown and Delay: The client has reported a program shutdown and intends to move the purchase to 1Q26",
+          "Opportunity Drop: The opportunity has been dropped from the upside due to lack of feedback from ECS and the government",
+          "Timeline Slippage: The decision-making timeline has been pushed to Q3 or later"
+        ],
+        "next_steps": [
+          "Tom Fellona: Investigate addendum and contractual blockers, explore inclusion of 3rd Party software onto JWCC",
+          "Kimani E. Salley: Provide Red Hat Account ID to Sydney Johnson for activation of DISA Red Hat Learning Subscription",
+          "Stephen Gordon: Schedule meeting with Ms. Holmes and possibly add to July 30th meeting with Gen. Guetlein",
+          "David Combs: Request extension of services through 1 August 2026 and confirm funding availability"
+        ],
+        "topics": [
+          "Stephen Gordon coordinating high-level meeting with General Guetlein and Ms. Holmes for Golden Dome missile defense initiative",
+          "FlyWheel awarded and being processed",
+          "Angela Louis and Tim Ryan discussing GPU-enabled node provisioning and OpenShift AI use cases",
+          "Kyle House dropped opportunity from upside due to lack of ECS/government feedback",
+          "JWCC addendum contractual blockers being investigated for 3rd party software inclusion",
+          "Maven moving away from ECS SunNET for hosting strategy",
+          "OpenShift training delivery coordination for NGA team with Kristen Dylla"
+        ]
+      },
+      "summary": "NGA is a high-priority intelligence community account with Red Hat deeply positioned through the Golden Dome missile defense initiative, where Stephen Gordon is leading a Red Hat task force and has a critical meeting with Gen. Guetlein scheduled for July 30. However, the account faces multiple headwinds including dropped opportunities due to lack of government feedback, program shutdowns delaying purchases, and JWCC contractual blockers that are slowing 3rd party software inclusion.",
+      "recommended_next_move": "Ensure the July 30 meeting with Gen. Guetlein and Ms. Holmes is fully prepared with a compelling Red Hat technology capabilities brief for missile defense and Golden Dome; simultaneously escalate resolution of JWCC addendum blockers through Tom Fellona to unblock 3rd party software inclusion.",
+      "signals": [
+        {
+          "signal_id": "sig-nga-1",
+          "disposition": "KEEP",
+          "score": 90,
+          "headline": "Red Hat Task Force preparing for critical Golden Dome meeting with Gen. Guetlein on July 30",
+          "what_changed": "Stephen Gordon is leading Red Hat's Task Force supporting missile defense and the Golden Dome initiative, with a high-level meeting with Gen. Guetlein and Ms. Marcial Holmes scheduled for July 30 at the Pentagon",
+          "why_it_matters": "The Golden Dome is a $175B+ national defense initiative with massive IT infrastructure requirements; a meeting at the general officer level represents a strategic entry point for Red Hat into one of the largest defense programs in US history",
+          "red_hat_relevance": "Red Hat's OpenShift, RHEL, and AI/ML platforms could serve as foundational infrastructure for Golden Dome's command-and-control, sensor fusion, and data processing capabilities",
+          "recommended_action": "Ensure Stephen Gordon and Michael Ferris have a polished Red Hat capabilities brief covering OpenShift AI, edge computing, and secure hybrid cloud for the July 30 meeting; prepare follow-up materials for rapid engagement",
+          "source_type": "backstory_mcp",
+          "source_url": null,
+          "published_at": "2026-07-20T00:00:00Z",
+          "confidence": "high"
+        },
+        {
+          "signal_id": "sig-nga-2",
+          "disposition": "KEEP",
+          "score": 82,
+          "headline": "Golden Dome program receives $1.75B in new satellite contracts with massive IT infrastructure needs",
+          "what_changed": "Space Development Agency awarded $1.75B for 36 new missile-tracking satellites to L3Harris and Sierra Space, with the broader program now at $185B; Space Force, MDA, and multiple defense primes are actively building the technology ecosystem",
+          "why_it_matters": "Golden Dome's layered defense architecture requires massive data processing, AI/ML inference, and secure communications infrastructure across space, air, sea, and ground domains",
+          "red_hat_relevance": "Red Hat's OpenShift, edge computing, and AI platforms are well-positioned for the ground segment command-and-control and data fusion layers of Golden Dome",
+          "recommended_action": "Map Red Hat's technology capabilities to Golden Dome's known architecture requirements and identify which prime contractors (Anduril, Lockheed, Northrop, KBR) are potential partners for Red Hat platform integration",
+          "source_type": "external_public",
+          "source_url": "https://www.govconwire.com/articles/golden-dome-july-2026-missile-defense-ussf-space-based-interceptor",
+          "published_at": "2026-07-22T00:00:00Z",
+          "confidence": "high"
+        },
+        {
+          "signal_id": "sig-nga-3",
+          "disposition": "KEEP",
+          "score": 75,
+          "headline": "Client requesting competitor quotes signals active competitive evaluation",
+          "what_changed": "NGA stakeholders are actively evaluating alternative options and have requested quotes from Red Hat competitors",
+          "why_it_matters": "Active competitive evaluation could result in displacement of Red Hat from current or upcoming NGA workloads",
+          "red_hat_relevance": "Direct threat to Red Hat's installed base at NGA; requires immediate competitive response with differentiated value proposition",
+          "recommended_action": "Identify which specific workloads are under competitive evaluation and deploy Red Hat solution architects to demonstrate unique capabilities that competitors cannot match",
+          "source_type": "backstory_mcp",
+          "source_url": null,
+          "published_at": "2026-07-20T00:00:00Z",
+          "confidence": "high"
+        },
+        {
+          "signal_id": "sig-nga-4",
+          "disposition": "KEEP",
+          "score": 70,
+          "headline": "FlyWheel contract awarded and being processed for Red Hat licensing",
+          "what_changed": "Kyle House confirmed that FlyWheel was awarded, continuing NGA's Red Hat licensing relationship through Flywheel Data for scaling capabilities across server networks",
+          "why_it_matters": "FlyWheel contract continuation validates NGA's ongoing need for Red Hat products and provides a vehicle for expanding the footprint",
+          "red_hat_relevance": "Direct revenue through Red Hat product licensing; FlyWheel historically handled $9.7M+ in NGA Red Hat licenses",
+          "recommended_action": "Work with Kyle House to maximize the FlyWheel contract scope and identify additional licensing needs as NGA modernizes its infrastructure",
+          "source_type": "backstory_mcp",
+          "source_url": null,
+          "published_at": "2026-06-29T00:00:00Z",
+          "confidence": "high"
+        },
+        {
+          "signal_id": "sig-nga-5",
+          "disposition": "KEEP",
+          "score": 68,
+          "headline": "Program shutdown and purchase delay moves opportunity to 1Q26",
+          "what_changed": "An NGA program reported a shutdown with the intent to move the purchase to Q1 fiscal year 2026, indicating budget or programmatic disruption",
+          "why_it_matters": "Delayed purchases risk being deprioritized or cancelled entirely; maintaining engagement during the delay is critical to preserving the opportunity",
+          "red_hat_relevance": "Revenue timing impact and risk of losing budget priority if the delay extends beyond Q1",
+          "recommended_action": "Maintain regular touchpoints with the program office during the shutdown period and prepare to re-engage quickly when the program restarts",
+          "source_type": "backstory_mcp",
+          "source_url": null,
+          "published_at": "2026-07-20T00:00:00Z",
+          "confidence": "high"
+        },
+        {
+          "signal_id": "sig-nga-6",
+          "disposition": "KEEP",
+          "score": 67,
+          "headline": "OpenShift AI use cases being actively explored with GPU-enabled node provisioning",
+          "what_changed": "Angela Louis and Tim Ryan are discussing best-practice guidance for provisioning GPU-enabled nodes and setting up a call to discuss OpenShift AI use cases at NGA",
+          "why_it_matters": "Active OpenShift AI evaluation represents a potential major expansion of Red Hat's footprint into NGA's AI/ML workloads",
+          "red_hat_relevance": "Direct pipeline opportunity for OpenShift AI subscriptions and professional services; aligns with NGA's broader AI/ML investment strategy including CANYONLANDS and SEQUOIA programs",
+          "recommended_action": "Provide Angela Louis with OpenShift AI reference architectures for GPU workloads and arrange a demo with Red Hat AI specialists",
+          "source_type": "backstory_mcp",
+          "source_url": null,
+          "published_at": "2026-07-20T00:00:00Z",
+          "confidence": "medium"
+        },
+        {
+          "signal_id": "sig-nga-7",
+          "disposition": "KEEP",
+          "score": 65,
+          "headline": "JWCC contractual blockers stalling 3rd party software inclusion",
+          "what_changed": "Tom Fellona is investigating addendum and contractual blockers related to incorporating 3rd party software onto JWCC, with challenges around license terms and external source references",
+          "why_it_matters": "JWCC is a major cloud procurement vehicle; inability to include Red Hat products would limit access to NGA cloud workloads",
+          "red_hat_relevance": "Resolution of JWCC blockers directly impacts Red Hat's ability to sell through the JWCC vehicle at NGA",
+          "recommended_action": "Escalate JWCC addendum resolution with Red Hat legal and contracts team; explore alternative procurement vehicles if JWCC inclusion remains blocked",
+          "source_type": "backstory_mcp",
+          "source_url": null,
+          "published_at": "2026-07-06T00:00:00Z",
+          "confidence": "high"
+        },
+        {
+          "signal_id": "sig-nga-8",
+          "disposition": "KEEP",
+          "score": 62,
+          "headline": "NGA awards $4.5B UDS contract to GDIT for hybrid cloud and data center services",
+          "what_changed": "GDIT won NGA's User Facing and Data Center Services contract worth $4.5B over 10 years, covering hybrid cloud, commercial cloud, and IT infrastructure for NGA's new Next NGA West campus",
+          "why_it_matters": "The UDS contract defines NGA's IT infrastructure for the next decade; Red Hat's position as a platform provider within this ecosystem is critical",
+          "red_hat_relevance": "GDIT's hybrid cloud implementation will likely include Red Hat products; ensuring Red Hat is specified in UDS task orders is essential for long-term revenue",
+          "recommended_action": "Engage GDIT's UDS program team to ensure Red Hat OpenShift and RHEL are included in the hybrid cloud architecture for Next NGA West",
+          "source_type": "external_public",
+          "source_url": "https://www.gdit.com/about-gdit/press-releases/gdit-awarded-usd4-5-billion-user-facing-and-data-center-services-contract/",
+          "published_at": "2025-06-01T00:00:00Z",
+          "confidence": "medium"
+        },
+        {
+          "signal_id": "sig-nga-9",
+          "disposition": "WATCH",
+          "score": 55,
+          "headline": "Maven shifting hosting strategy away from ECS SunNET",
+          "what_changed": "Kyle House reported that Maven is moving away from ECS SunNET for their hosting strategy, triggering re-engagement discussions between Red Hat and Microsoft teams",
+          "why_it_matters": "Maven's hosting strategy shift creates both risk and opportunity depending on which platform they migrate to",
+          "red_hat_relevance": "If Maven moves to Azure or another cloud, Red Hat could position OpenShift or RHEL as the application platform layer; however, Microsoft involvement suggests Azure may be the target",
+          "recommended_action": "Join the Red Hat-Microsoft coordination call to understand Maven's new hosting direction and position OpenShift on Azure as a bridge solution",
+          "source_type": "backstory_mcp",
+          "source_url": null,
+          "published_at": "2026-07-20T00:00:00Z",
+          "confidence": "medium"
+        },
+        {
+          "signal_id": "sig-nga-10",
+          "disposition": "WATCH",
+          "score": 50,
+          "headline": "OpenShift training delivery being coordinated for NGA team",
+          "what_changed": "Kristen Dylla is coordinating OpenShift Admin and Developer training delivery timeline for Erin Lal's NGA team, including RHLS consumption review",
+          "why_it_matters": "Active training delivery indicates growing OpenShift adoption within NGA and creates stickiness for the platform",
+          "red_hat_relevance": "Training delivery validates NGA's investment in OpenShift skills; successful training outcomes increase likelihood of expanded OpenShift deployments",
+          "recommended_action": "Monitor training completion rates and follow up with capability demonstrations to convert trained teams into active OpenShift project advocates",
+          "source_type": "backstory_mcp",
+          "source_url": null,
+          "published_at": "2026-07-20T00:00:00Z",
+          "confidence": "high"
+        }
+      ],
+      "signal_score": 68
+    },
+    {
+      "account_id": "fed-c",
+      "account_name": "FED - C",
+      "hierarchy": {
+        "geo": "NAPS",
+        "region": "INTEL",
+        "pod": null,
+        "territory_name": "FED_INTEL_ENT_POD_TERR05",
+        "segment": "Enterprise"
+      },
+      "identity": {
+        "crm_id": null,
+        "peopleai_account_id": 19219386411,
+        "match_status": "matched",
+        "query_account_name": "Fed - C",
+        "identity_status": "confirmed",
+        "identity_notes": "Exact match as 'Fed - C' on fed-c.net; 30 open opportunities owned by Chad Harmon"
+      },
+      "internal_priority_score": 51,
+      "priority_reasons": [
+        "volume=1 (activities=62)",
+        "opportunities=15 (count=4)",
+        "momentum=10 (trend=declining)",
+        "recency=25 (date=2026-07-22)",
+        "caveat: 5 field(s) unavailable"
+      ],
+      "internal": {
+        "metrics": {
+          "registry_account_name": "FED - C",
+          "query_account_name": "Fed - C",
+          "identity_status": "confirmed",
+          "identity_notes": "Exact match as 'Fed - C' on fed-c.net; 30 open opportunities owned by Chad Harmon",
+          "metrics_status": "available",
+          "source": "peopleai_query_activity",
+          "query_window_days": 120,
+          "query_timestamp": "2026-07-24T17:36:53.034643+00:00",
+          "total_activities": 62,
+          "meeting_count_30d": 0,
+          "meeting_count_90d": 1,
+          "meeting_count_all": 1,
+          "email_count_30d": 15,
+          "email_count_90d": 58,
+          "email_count_all": 61,
+          "outbound_count": 35,
+          "inbound_count": 27,
+          "external_count": 62,
+          "internal_count": 0,
+          "most_recent_activity_date": "2026-07-22",
+          "most_recent_activity_type": "email",
+          "activity_types": {
+            "email": 61,
+            "meeting": 1
+          },
+          "linked_opportunity_names": [
+            "KB - Fed-C - LPB Automation Modernization (formerly SDW) - Ansible Subs",
+            "KB - Fed-C ACQ - ATOM - Subs",
+            "New- FedC- FTSG, Charles Weddle",
+            "Renewal - KB - Fed-C - RHEL X 3 - (Fierce 00603564)"
+          ],
+          "activity_trend": "declining",
+          "timestamp_warnings": null,
+          "engagement_level": null,
+          "opportunity_amount": null,
+          "opportunity_stage": null,
+          "executive_activity": null,
+          "account_owner": null,
+          "unavailable_fields": [
+            "engagement_level",
+            "opportunity_amount",
+            "opportunity_stage",
+            "executive_activity",
+            "account_owner"
+          ],
+          "linked_opportunity_count": 4
+        },
+        "risks": [
+          "Opportunity has been moved to next year due to delays and no action",
+          "Budgetary constraints: Charles Weddle is trying to fill budget holes for a 5-year plan, and previous misunderstandings have led to unsupported VMs",
+          "Competitive RFQ requests received from Leidos, CompSec, and Silver Edge",
+          "Subcontract required for security clearances and DD254 flow-down is pending"
+        ],
+        "next_steps": [
+          "David Pearson: Ensure no gap in services for the next option year by checking funding modification status",
+          "Michael Paonessa: Facilitate the internal review and execution of the subcontract for ICITE transactions",
+          "Thomas Walker: Ensure DD254s and ECPRL are in place for Red Hat and its subsidiaries",
+          "Isreal Varela: Provide a budgetary cost estimate for licenses to Charles Weddle"
+        ],
+        "topics": [
+          "RFQ management with Leidos, CompSec, and Silver Edge",
+          "Budgetary quote for SingleLock solicitation covering server and workstation needs",
+          "DD254 and eCPRL approval process with Customer Security",
+          "Subcontract information and LAVACAKE contract transition",
+          "Security issue resolution and legal team follow-up"
+        ]
+      },
+      "summary": "FED - C has active deal motion with multiple RFQ requests from Leidos, CompSec, and Silver Edge, alongside budgetary planning for a 5-year government program. Key blockers include a pending subcontract for security clearances (DD254 flow-down), with DD254 approval expected in 3-4 weeks, and a security issue under management review.",
+      "recommended_next_move": "Follow up with Katrina Thompson on DD254 approval status and ensure the subcontract execution for ICITE transactions is unblocked so awards can proceed without further delay.",
+      "signals": [
+        {
+          "signal_id": "sig-fed-c-1",
+          "disposition": "KEEP",
+          "score": 72,
+          "headline": "Multiple competitive RFQs received from Leidos, CompSec, and Silver Edge",
+          "what_changed": "Chad Harmon is managing RFQ requests from three different integrators, indicating active competitive motion around this account.",
+          "why_it_matters": "Multiple integrators competing for the same work creates both risk of displacement and opportunity to position Red Hat as the platform of choice across all bidders.",
+          "red_hat_relevance": "Red Hat licensing is central to the RFQ responses; maintaining relationships with all bidders ensures Red Hat stays in the solution regardless of winner.",
+          "recommended_action": "Ensure budgetary quotes are provided promptly to all three integrators and position Red Hat value proposition consistently across all RFQ responses.",
+          "source_type": "backstory_mcp",
+          "source_url": null,
+          "published_at": null,
+          "confidence": "high"
+        },
+        {
+          "signal_id": "sig-fed-c-2",
+          "disposition": "KEEP",
+          "score": 68,
+          "headline": "DD254 security clearance approval blocking contract awards",
+          "what_changed": "DD254s submitted in mid-June are caught in a backlog with 3-4 week expected turnaround; eCPRL adds cannot start until DD254s are approved.",
+          "why_it_matters": "Security clearance delays directly block contract awards and revenue recognition. Katrina Thompson is anticipating receiving awards soon but is dependent on this process.",
+          "red_hat_relevance": "Red Hat and its subsidiaries (Unisity/Cyplex) all need DD254 and ECPRL approvals to proceed with classified work under the LAVACAKE contract.",
+          "recommended_action": "Escalate DD254 backlog through security office channels and prepare all eCPRL documentation in advance so adds can begin immediately upon DD254 approval.",
+          "source_type": "backstory_mcp",
+          "source_url": null,
+          "published_at": null,
+          "confidence": "high"
+        },
+        {
+          "signal_id": "sig-fed-c-3",
+          "disposition": "KEEP",
+          "score": 65,
+          "headline": "Opportunity delayed to next year due to inaction",
+          "what_changed": "The primary opportunity has been pushed to the following fiscal year because of accumulated delays and lack of forward progress.",
+          "why_it_matters": "Revenue slip into next year impacts current quarter and FY targets. Without active intervention, further delays could compound.",
+          "red_hat_relevance": "Delayed opportunity means deferred Red Hat subscription and licensing revenue. Ensuring the subcontract and clearance blockers are resolved is critical to preventing further slippage.",
+          "recommended_action": "Establish a weekly cadence with key stakeholders (Ashley Jones, David Pearson, Thomas Walker) to track blocker resolution and prevent further delays.",
+          "source_type": "backstory_mcp",
+          "source_url": null,
+          "published_at": null,
+          "confidence": "high"
+        },
+        {
+          "signal_id": "sig-fed-c-4",
+          "disposition": "WATCH",
+          "score": 55,
+          "headline": "Budget misunderstanding led to unsupported VMs in production",
+          "what_changed": "A previous misunderstanding around 'self-service license' resulted in VMs being created without Red Hat support, and Charles Weddle is now filling budget holes for a 5-year plan.",
+          "why_it_matters": "Unsupported VMs represent both compliance risk and upsell opportunity. The 5-year budget planning cycle is a window to right-size licensing.",
+          "red_hat_relevance": "Opportunity to convert unsupported VMs to properly licensed Red Hat subscriptions and embed Red Hat into the 5-year budget baseline.",
+          "recommended_action": "Have Isreal Varela deliver the budgetary cost estimate promptly and include a compliance remediation narrative that justifies backdating to 2024.",
+          "source_type": "backstory_mcp",
+          "source_url": null,
+          "published_at": null,
+          "confidence": "medium"
+        },
+        {
+          "signal_id": "sig-fed-c-5",
+          "disposition": "WATCH",
+          "score": 45,
+          "headline": "Active security issue under management review",
+          "what_changed": "Ashley Jones is tracking a security issue with outcomes pending from a management review scheduled for next week. David Pearson confirmed his territories are clear.",
+          "why_it_matters": "Unresolved security issues can delay contract actions and erode customer confidence. The management review outcome could affect deal progression.",
+          "red_hat_relevance": "If the security issue relates to Red Hat systems or clearances, it could further delay the already-slipped opportunity timeline.",
+          "recommended_action": "Monitor the management review outcome and request a formal status update from the legal team through the FSO team.",
+          "source_type": "backstory_mcp",
+          "source_url": null,
+          "published_at": null,
+          "confidence": "medium"
+        }
+      ],
+      "signal_score": 61
+    },
+    {
+      "account_id": "amazon-web-services-govcloud-unallocated",
+      "account_name": "AMAZON WEB SERVICES GOVCLOUD UNALLOCATED",
+      "hierarchy": {
+        "geo": "NAPS",
+        "region": "INTEL",
+        "pod": null,
+        "territory_name": "FED_INTEL_ENT_POD_TERR06",
+        "segment": "Enterprise"
+      },
+      "identity": {
+        "crm_id": null,
+        "peopleai_account_id": 23892651196,
+        "match_status": "matched",
+        "query_account_name": "Amazon Web Services GovCloud Unallocated",
+        "identity_status": "confirmed",
+        "identity_notes": "Exact match as 'Amazon Web Services GovCloud Unallocated' on cloudbasic.net; no open opportunities"
+      },
+      "internal_priority_score": 0,
+      "priority_reasons": [
+        "Metrics unavailable: no_activity"
+      ],
+      "internal": {
+        "metrics": {
+          "registry_account_name": "AMAZON WEB SERVICES GOVCLOUD UNALLOCATED",
+          "query_account_name": "Amazon Web Services GovCloud Unallocated",
+          "identity_status": "confirmed",
+          "identity_notes": "Exact match as 'Amazon Web Services GovCloud Unallocated' on cloudbasic.net; no open opportunities",
+          "metrics_status": "no_activity",
+          "source": "peopleai_query_activity",
+          "query_window_days": 120,
+          "query_timestamp": "2026-07-24T17:36:53.034643+00:00",
+          "total_activities": 0,
+          "meeting_count_30d": 0,
+          "meeting_count_90d": 0,
+          "meeting_count_all": 0,
+          "email_count_30d": 0,
+          "email_count_90d": 0,
+          "email_count_all": 0,
+          "outbound_count": 0,
+          "inbound_count": 0,
+          "external_count": 0,
+          "internal_count": 0,
+          "most_recent_activity_date": null,
+          "most_recent_activity_type": null,
+          "activity_types": {},
+          "linked_opportunity_names": [],
+          "activity_trend": null,
+          "timestamp_warnings": null,
+          "engagement_level": null,
+          "opportunity_amount": null,
+          "opportunity_stage": null,
+          "executive_activity": null,
+          "account_owner": null,
+          "unavailable_fields": [
+            "engagement_level",
+            "opportunity_amount",
+            "opportunity_stage",
+            "executive_activity",
+            "account_owner"
+          ],
+          "linked_opportunity_count": 0
+        },
+        "risks": [],
+        "next_steps": [],
+        "topics": []
+      },
+      "summary": "No recent engagement activity detected in Backstory for this account. Externally, ROSA with hosted control planes in AWS GovCloud achieved FedRAMP High Authorization (December 2025), and GSA's OneGov agreement with AWS (up to $1B) is accelerating federal cloud adoption -- both developments create opportunities for Red Hat positioning in GovCloud.",
+      "recommended_next_move": "Identify the account owner and initiate engagement planning to leverage ROSA FedRAMP High authorization momentum and the GSA OneGov agreement to drive Red Hat OpenShift adoption within AWS GovCloud federal workloads.",
+      "signals": [
+        {
+          "signal_id": "sig-aws-govcloud-unallocated-1",
+          "disposition": "KEEP",
+          "score": 82,
+          "headline": "ROSA with hosted control planes achieves FedRAMP High Authorization in AWS GovCloud",
+          "what_changed": "Red Hat OpenShift Service on AWS with hosted control planes in AWS GovCloud received FedRAMP High Authorization (Rev 5 path) in December 2025, reducing customer assessment scope by up to 70%.",
+          "why_it_matters": "Federal agencies can now deploy their most sensitive unclassified workloads on a fully managed Red Hat OpenShift platform in GovCloud with accelerated ATO timelines.",
+          "red_hat_relevance": "This is a direct Red Hat product milestone that enables federal customers to adopt ROSA in GovCloud for mission-critical applications with simplified compliance.",
+          "recommended_action": "Use the FedRAMP High authorization as a lead-in for conversations with federal agency customers evaluating container platforms on GovCloud.",
+          "source_type": "external_public",
+          "source_url": "https://www.redhat.com/en/about/press-releases/red-hat-openshift-service-aws-hosted-control-planes-aws-govcloud-achieves-fedramp-high-authorization",
+          "published_at": "2025-12-17T00:00:00Z",
+          "confidence": "high"
+        },
+        {
+          "signal_id": "sig-aws-govcloud-unallocated-2",
+          "disposition": "KEEP",
+          "score": 70,
+          "headline": "GSA OneGov agreement with AWS provides up to $1B for federal cloud modernization",
+          "what_changed": "GSA announced a OneGov agreement with AWS (August 2025) enabling federal agencies to accelerate migration from on-premises infrastructure to cloud, with dedicated AWS training and migration resources.",
+          "why_it_matters": "A $1B federal cloud modernization initiative through AWS creates a massive addressable market for Red Hat solutions running on GovCloud infrastructure.",
+          "red_hat_relevance": "As agencies migrate to AWS GovCloud under OneGov, Red Hat can position RHEL and OpenShift as the enterprise Linux and container platform of choice for migrated workloads.",
+          "recommended_action": "Coordinate with AWS partner team to ensure Red Hat solutions are included in OneGov migration playbooks and agency modernization plans.",
+          "source_type": "external_public",
+          "source_url": "https://www.gsa.gov/about-gsa/newsroom/news-releases/gsa-announces-onegov-agreement-with-aws-08072025",
+          "published_at": "2025-08-07T00:00:00Z",
+          "confidence": "high"
+        },
+        {
+          "signal_id": "sig-aws-govcloud-unallocated-3",
+          "disposition": "WATCH",
+          "score": 50,
+          "headline": "No Backstory engagement activity detected for this account",
+          "what_changed": "People.ai shows no recent communications, meetings, or activity data for this account record.",
+          "why_it_matters": "An unallocated GovCloud account with no seller engagement represents a gap in coverage during a period of significant federal cloud investment.",
+          "red_hat_relevance": "Without active engagement, Red Hat risks missing opportunities as agencies adopt GovCloud under FedRAMP High and OneGov programs.",
+          "recommended_action": "Assign account ownership and establish initial engagement plan targeting federal agencies currently evaluating or migrating to AWS GovCloud.",
+          "source_type": "backstory_mcp",
+          "source_url": null,
+          "published_at": null,
+          "confidence": "high"
+        },
+        {
+          "signal_id": "sig-aws-govcloud-unallocated-4",
+          "disposition": "WATCH",
+          "score": 48,
+          "headline": "GAO report highlights federal cloud procurement challenges needing resolution",
+          "what_changed": "A June 2026 GAO report (GAO-26-107530) found that FAR still lacks a cloud computing definition and agencies face interoperability challenges with multi-cloud vendors.",
+          "why_it_matters": "Procurement friction and interoperability concerns may slow GovCloud adoption but also create demand for solutions that bridge multiple cloud environments.",
+          "red_hat_relevance": "Red Hat's hybrid cloud and multi-cloud strategy (OpenShift across AWS, Azure, on-prem) directly addresses the interoperability challenges cited by GAO.",
+          "recommended_action": "Position Red Hat hybrid cloud capabilities in procurement discussions where interoperability and vendor lock-in concerns are raised.",
+          "source_type": "external_public",
+          "source_url": "https://www.gao.gov/products/gao-26-107530",
+          "published_at": "2026-06-23T00:00:00Z",
+          "confidence": "medium"
+        }
+      ],
+      "signal_score": 62
+    },
+    {
+      "account_id": "microsoft-airgapped-cloud",
+      "account_name": "MICROSOFT AIRGAPPED CLOUD",
+      "hierarchy": {
+        "geo": "NAPS",
+        "region": "INTEL",
+        "pod": null,
+        "territory_name": "FED_INTEL_ENT_POD_TERR06",
+        "segment": "Enterprise"
+      },
+      "identity": {
+        "crm_id": null,
+        "peopleai_account_id": 23946938418,
+        "match_status": "matched",
+        "query_account_name": "Microsoft Airgapped Cloud",
+        "identity_status": "confirmed",
+        "identity_notes": "Exact match as 'Microsoft Airgapped Cloud'; no open opportunities"
+      },
+      "internal_priority_score": 0,
+      "priority_reasons": [
+        "Metrics unavailable: no_activity"
+      ],
+      "internal": {
+        "metrics": {
+          "registry_account_name": "MICROSOFT AIRGAPPED CLOUD",
+          "query_account_name": "Microsoft Airgapped Cloud",
+          "identity_status": "confirmed",
+          "identity_notes": "Exact match as 'Microsoft Airgapped Cloud'; no open opportunities",
+          "metrics_status": "no_activity",
+          "source": "peopleai_query_activity",
+          "query_window_days": 120,
+          "query_timestamp": "2026-07-24T17:36:53.034643+00:00",
+          "total_activities": 0,
+          "meeting_count_30d": 0,
+          "meeting_count_90d": 0,
+          "meeting_count_all": 0,
+          "email_count_30d": 0,
+          "email_count_90d": 0,
+          "email_count_all": 0,
+          "outbound_count": 0,
+          "inbound_count": 0,
+          "external_count": 0,
+          "internal_count": 0,
+          "most_recent_activity_date": null,
+          "most_recent_activity_type": null,
+          "activity_types": {},
+          "linked_opportunity_names": [],
+          "activity_trend": null,
+          "timestamp_warnings": null,
+          "engagement_level": null,
+          "opportunity_amount": null,
+          "opportunity_stage": null,
+          "executive_activity": null,
+          "account_owner": null,
+          "unavailable_fields": [
+            "engagement_level",
+            "opportunity_amount",
+            "opportunity_stage",
+            "executive_activity",
+            "account_owner"
+          ],
+          "linked_opportunity_count": 0
+        },
+        "risks": [],
+        "next_steps": [],
+        "topics": []
+      },
+      "summary": "No recent engagement activity detected in Backstory for this account. Externally, Microsoft and Red Hat deepened their partnership at Red Hat Summit 2026, with Azure Red Hat OpenShift positioned as the primary platform for enterprise AI and legacy modernization. Microsoft's air-gapped Azure Government Secret cloud (IL6) continues expanding, though ARO availability within the classified air-gapped tier is not yet confirmed.",
+      "recommended_next_move": "Engage the Microsoft alliance team to clarify the Azure Red Hat OpenShift roadmap for Azure Government Secret (air-gapped/IL6) environments and identify classified workload opportunities where ARO could be positioned.",
+      "signals": [
+        {
+          "signal_id": "sig-microsoft-airgapped-cloud-1",
+          "disposition": "KEEP",
+          "score": 80,
+          "headline": "Microsoft names Red Hat as Platform Modernization Partner of the Year at Red Hat Summit 2026",
+          "what_changed": "Microsoft received the 2026 Red Hat Ecosystem Innovation Award for Platform Modernization Partner of the Year, with Azure Red Hat OpenShift repositioned as the default path for production AI under regulatory scrutiny.",
+          "why_it_matters": "The strengthened Microsoft-Red Hat partnership validates ARO as a strategic platform for regulated industries, including government, creating executive-level selling narratives.",
+          "red_hat_relevance": "ARO is directly co-engineered by Red Hat and Microsoft with unified SLA, making it the platform of choice for government agencies in Azure environments.",
+          "recommended_action": "Leverage the Summit 2026 partnership announcement in executive briefings with government customers evaluating Azure-based classified workloads.",
+          "source_type": "external_public",
+          "source_url": "https://azure.microsoft.com/en-us/blog/red-hat-summit-2026-platform-modernization-and-ai-on-azure-microsoft-red-hat-openshift/",
+          "published_at": "2026-06-01T00:00:00Z",
+          "confidence": "high"
+        },
+        {
+          "signal_id": "sig-microsoft-airgapped-cloud-2",
+          "disposition": "KEEP",
+          "score": 75,
+          "headline": "Microsoft deploys GPT-4 in air-gapped Top Secret Azure cloud for DoD",
+          "what_changed": "Microsoft deployed GPT-4 in a fully air-gapped Azure Government Top Secret cloud environment, the first such deployment for any cloud provider, exclusively for U.S. government classified use.",
+          "why_it_matters": "AI workloads in classified environments will require robust container orchestration and platform infrastructure, creating demand for enterprise Kubernetes platforms.",
+          "red_hat_relevance": "If ARO becomes available in Azure Government Secret/Top Secret, Red Hat could be the Kubernetes platform powering AI inference and data pipelines in classified clouds.",
+          "recommended_action": "Work with Microsoft alliance to understand ARO roadmap for air-gapped tiers and position Red Hat OpenShift as the Kubernetes layer for classified AI workloads.",
+          "source_type": "external_public",
+          "source_url": "https://defensescoop.com/2024/05/07/gpt-4-pentagon-azure-top-secret-cloud-microsoft/",
+          "published_at": "2024-05-07T00:00:00Z",
+          "confidence": "medium"
+        },
+        {
+          "signal_id": "sig-microsoft-airgapped-cloud-3",
+          "disposition": "KEEP",
+          "score": 65,
+          "headline": "Azure Government Secret expands to 67+ accredited services at IL6",
+          "what_changed": "Azure Government Secret now has over 67 services accredited for DoD Impact Level 6, with many more in the DISA authorization queue, including IaaS, PaaS, and SaaS capabilities.",
+          "why_it_matters": "Service expansion in air-gapped environments signals growing federal demand for classified cloud workloads, increasing the addressable market for platform solutions.",
+          "red_hat_relevance": "As Azure Government Secret grows, the need for enterprise container platforms in classified environments grows with it -- a potential market for ARO or standalone OpenShift.",
+          "recommended_action": "Track DISA authorization pipeline for ARO in Azure Government Secret and prepare enablement materials for classified cloud use cases.",
+          "source_type": "external_public",
+          "source_url": "https://azure.microsoft.com/en-us/explore/global-infrastructure/government/national-security",
+          "published_at": null,
+          "confidence": "medium"
+        },
+        {
+          "signal_id": "sig-microsoft-airgapped-cloud-4",
+          "disposition": "WATCH",
+          "score": 50,
+          "headline": "No Backstory engagement activity detected for this account",
+          "what_changed": "People.ai shows no recent communications, meetings, or activity data for this account record.",
+          "why_it_matters": "A named Microsoft air-gapped cloud account with no seller engagement represents a coverage gap as classified cloud adoption accelerates.",
+          "red_hat_relevance": "Without active engagement, Red Hat may miss early-mover positioning for ARO in classified Azure environments.",
+          "recommended_action": "Assign account ownership, connect with Microsoft alliance team, and establish an engagement plan targeting agencies operating in Azure Government Secret.",
+          "source_type": "backstory_mcp",
+          "source_url": null,
+          "published_at": null,
+          "confidence": "high"
+        },
+        {
+          "signal_id": "sig-microsoft-airgapped-cloud-5",
+          "disposition": "WATCH",
+          "score": 55,
+          "headline": "ARO availability in Azure Government Secret air-gapped tier not yet confirmed",
+          "what_changed": "Azure Red Hat OpenShift is generally available on Azure Government (IL4/IL5) but has not been publicly confirmed for the air-gapped Azure Government Secret (IL6) environment.",
+          "why_it_matters": "Without ARO in the classified tier, Red Hat cannot offer its fully managed OpenShift experience for Secret-level workloads, limiting competitive positioning against standalone Kubernetes solutions.",
+          "red_hat_relevance": "Bringing ARO to Azure Government Secret would unlock a significant market for Red Hat in classified government computing.",
+          "recommended_action": "Engage Red Hat and Microsoft product teams to prioritize ARO authorization for Azure Government Secret and develop a joint go-to-market plan for classified workloads.",
+          "source_type": "external_public",
+          "source_url": "https://learn.microsoft.com/en-us/azure/azure-government/documentation-government-product-roadmap",
+          "published_at": null,
+          "confidence": "medium"
+        }
+      ],
+      "signal_score": 65
+    }
+  ],
+  "_meta": {
+    "query_window_days": 120,
+    "accounts_in_scope": 9,
+    "accounts_enriched": 9,
+    "mcp_status": "connected",
+    "caveats": [
+      "Activity metrics retrieved with corrected People.ai canonical account names.",
+      "AWS GovCloud Unallocated and Microsoft Airgapped Cloud show zero activity (placeholder accounts).",
+      "Priority scores combine volume, opportunities, momentum, and recency from internal data."
+    ]
+  }
+}</script>
+<script>
+(function(){
+const data = JSON.parse(document.getElementById('portfolio-data').textContent);
+const accounts = data.accounts || [];
+const scopeType = data.scope.type;
+const scopeValue = data.scope.value;
+
+// ── Helpers ──
+
+function esc(s) {
+  if (s == null) return '';
+  var d = document.createElement('div');
+  d.textContent = String(s);
+  return d.innerHTML;
+}
+
+function metric(acct, key) {
+  var m = acct && acct.internal && acct.internal.metrics;
+  return m ? m[key] : null;
+}
+
+function oppCount(acct) {
+  var names = metric(acct, 'linked_opportunity_names');
+  if (Array.isArray(names)) return names.length;
+  var c = metric(acct, 'linked_opportunity_count');
+  return (typeof c === 'number') ? c : 0;
+}
+
+function trendHTML(trend, long) {
+  if (!trend) return '<span style="color:#707070">—</span>';
+  if (trend === 'increasing') return '<span class="trend-up">↑' + (long ? ' increasing' : '') + '</span>';
+  if (trend === 'stable') return '<span class="trend-stable">→' + (long ? ' stable' : '') + '</span>';
+  if (trend === 'declining') return '<span class="trend-down">↓' + (long ? ' declining' : '') + '</span>';
+  return esc(trend);
+}
+
+function accountScore(a) {
+  if (a.signal_score != null) return a.signal_score;
+  var sigs = (a.signals || []).filter(function(s){ return s.score != null; });
+  if (!sigs.length) return null;
+  var sum = 0;
+  for (var i = 0; i < sigs.length; i++) sum += sigs[i].score;
+  return Math.round(sum / sigs.length);
+}
+
+function pillHTML(disposition, count) {
+  var cls = disposition.toLowerCase();
+  var label = count != null ? count + ' ' + disposition : disposition;
+  return '<span class="status-pill ' + cls + '">' + esc(label) + '</span>';
+}
+
+function matchBadgeHTML(status) {
+  return '<span class="match-badge ' + esc(status) + '">' + esc(status.replace('_', ' ')) + '</span>';
+}
+
+function fmtDate(iso) {
+  if (!iso) return '—';
+  var d = new Date(iso);
+  var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  return months[d.getMonth()] + ' ' + d.getDate() + ', ' + d.getFullYear();
+}
+
+function avg(arr) {
+  var nums = arr.filter(function(v){ return v != null && typeof v === 'number'; });
+  if (!nums.length) return null;
+  var s = 0;
+  for (var i = 0; i < nums.length; i++) s += nums[i];
+  return Math.round(s / nums.length);
+}
+
+function modeTrend(accts) {
+  var counts = {};
+  accts.forEach(function(a) {
+    var t = metric(a, 'activity_trend');
+    if (t) counts[t] = (counts[t] || 0) + 1;
+  });
+  var best = null, bestN = 0;
+  for (var k in counts) {
+    if (counts[k] > bestN) { best = k; bestN = counts[k]; }
+  }
+  return best;
+}
+
+// ── Aggregate a group of accounts ──
+
+function aggregate(accts) {
+  var totalAct = 0, meetings = 0, emails = 0, opps = 0;
+  var keepCount = 0, watchCount = 0, rejectCount = 0;
+  var scores = [];
+  accts.forEach(function(a) {
+    totalAct += (metric(a, 'total_activities') || 0);
+    meetings += (metric(a, 'meeting_count_30d') || 0);
+    emails += (metric(a, 'email_count_30d') || 0);
+    opps += oppCount(a);
+    var sc = accountScore(a);
+    if (sc != null) scores.push(sc);
+    (a.signals || []).forEach(function(s) {
+      if (s.disposition === 'KEEP') keepCount++;
+      else if (s.disposition === 'WATCH') watchCount++;
+      else if (s.disposition === 'REJECT') rejectCount++;
+    });
+  });
+  return {
+    count: accts.length,
+    withData: accts.filter(function(a){ var m = a && a.internal && a.internal.metrics; return m && Object.keys(m).length > 0; }).length,
+    enriched: accts.filter(function(a){ return (a.signals||[]).length > 0; }).length,
+    keepCount: keepCount,
+    watchCount: watchCount,
+    rejectCount: rejectCount,
+    highestScore: scores.length ? Math.max.apply(null, scores) : null,
+    avgScore: avg(scores),
+    totalActivities: totalAct,
+    meetings30d: meetings,
+    emails30d: emails,
+    opportunities: opps,
+    overallTrend: modeTrend(accts)
+  };
+}
+
+// ── Build hierarchy tree ──
+
+function groupBy(accts, field) {
+  var map = {};
+  accts.forEach(function(a) {
+    var key = (a.hierarchy && a.hierarchy[field]) || '(unassigned)';
+    if (!map[key]) map[key] = [];
+    map[key].push(a);
+  });
+  return map;
+}
+
+// ── Determine hierarchy levels based on scope ──
+
+var LEVELS = {
+  geo:       ['region', 'territory_name'],
+  region:    ['territory_name'],
+  pod:       ['territory_name'],
+  territory: [],
+  account:   []
+};
+
+var levelLabels = {
+  geo: 'GEO',
+  region: 'Region',
+  territory_name: 'Territory',
+  pod: 'Pod'
+};
+
+var hierarchyLevels = LEVELS[scopeType] || [];
+
+// ── Navigation state ──
+
+var navStack = [];
+var currentView = 'top';
+
+function navigateTo(level, key, accts) {
+  navStack.push({ level: level, key: key, accounts: accts });
+  renderCurrentView();
+}
+
+function navigateBack(index) {
+  navStack = navStack.slice(0, index);
+  renderCurrentView();
+}
+
+function showGuide() {
+  currentView = 'guide';
+  renderTabs();
+  document.getElementById('app').innerHTML = renderGuideView();
+  window.scrollTo(0, 0);
+}
+
+function showMain() {
+  currentView = 'top';
+  navStack = [];
+  renderCurrentView();
+}
+
+// ── Render tabs ──
+
+function renderTabs() {
+  var bar = document.getElementById('tabBar');
+  var html = '';
+
+  if (scopeType === 'account') {
+    html += '<button' + (currentView !== 'guide' ? ' class="active"' : '') + ' onclick="EM.showMain()">' + esc(scopeValue) + '</button>';
+  } else {
+    var topLabel = scopeType.charAt(0).toUpperCase() + scopeType.slice(1);
+    html += '<button' + (currentView !== 'guide' && navStack.length === 0 ? ' class="active"' : '') + ' onclick="EM.showMain()">' + esc(topLabel) + ' Overview</button>';
+    navStack.forEach(function(frame, i) {
+      var isActive = currentView !== 'guide' && i === navStack.length - 1;
+      html += '<button' + (isActive ? ' class="active"' : '') + ' onclick="EM.navigateBack(' + (i + 1) + ')">' + esc(frame.key) + '</button>';
+    });
+  }
+
+  html += '<button' + (currentView === 'guide' ? ' class="active"' : '') + ' onclick="EM.showGuide()">Guide</button>';
+  bar.innerHTML = html;
+}
+
+// ── Determine what to render ──
+
+function renderCurrentView() {
+  currentView = 'top';
+  renderTabs();
+
+  if (scopeType === 'account') {
+    document.getElementById('app').innerHTML = renderAccountDetail(accounts[0]);
+    window.scrollTo(0, 0);
+    return;
+  }
+
+  var currentAccounts, drillField, depth;
+
+  if (navStack.length === 0) {
+    currentAccounts = accounts;
+    depth = 0;
+  } else {
+    var last = navStack[navStack.length - 1];
+    currentAccounts = last.accounts;
+    depth = navStack.length;
+  }
+
+  var remainingLevels = hierarchyLevels.slice(depth);
+
+  if (remainingLevels.length === 0) {
+    if (currentAccounts.length === 1) {
+      document.getElementById('app').innerHTML = renderAccountDetail(currentAccounts[0]);
+    } else {
+      document.getElementById('app').innerHTML = renderAccountListView(currentAccounts);
+    }
+  } else {
+    drillField = remainingLevels[0];
+    document.getElementById('app').innerHTML = renderGroupView(currentAccounts, drillField, remainingLevels);
+  }
+  window.scrollTo(0, 0);
+}
+
+// ── Breadcrumb ──
+
+function buildBreadcrumb() {
+  var parts = [];
+  parts.push('<a onclick="EM.showMain()">' + esc(scopeValue) + '</a>');
+  navStack.forEach(function(frame, i) {
+    if (i < navStack.length - 1) {
+      parts.push('<a onclick="EM.navigateBack(' + (i + 1) + ')">' + esc(frame.key) + '</a>');
+    } else {
+      parts.push('<span>' + esc(frame.key) + '</span>');
+    }
+  });
+  return parts.join(' <span class="sep">/</span> ');
+}
+
+// ── KPI row HTML ──
+
+function summaryKPI() {
+  var s = data.summary;
+  return {
+    count: s.account_count,
+    withData: s.accounts_with_internal_data,
+    enriched: s.accounts_enriched,
+    keepCount: s.keep_count,
+    watchCount: s.watch_count,
+    highestScore: s.highest_signal_score
+  };
+}
+
+function kpiRowHTML(agg) {
+  return '<div class="kpi-row">' +
+    '<div class="kpi-card"><div class="kpi-value">' + agg.count + '</div><div class="kpi-label">Accounts</div></div>' +
+    '<div class="kpi-card"><div class="kpi-value">' + agg.withData + '</div><div class="kpi-label">Internal Data</div></div>' +
+    '<div class="kpi-card"><div class="kpi-value">' + agg.enriched + '</div><div class="kpi-label">Enriched</div></div>' +
+    '<div class="kpi-card"><div class="kpi-value">' + agg.keepCount + ' / ' + agg.watchCount + '</div><div class="kpi-label">Keep / Watch</div></div>' +
+    '<div class="kpi-card"><div class="kpi-value">' + (agg.highestScore != null ? agg.highestScore : '—') + '</div><div class="kpi-label">Highest Score</div></div>' +
+  '</div>';
+}
+
+// ── Activity bar HTML ──
+
+function activityBarHTML(agg) {
+  return '<div class="activity-bar">' +
+    '<div class="activity-stat"><div class="stat-value">' + agg.totalActivities + '</div><div class="stat-label">Total Activities</div></div>' +
+    '<div class="activity-stat"><div class="stat-value">' + agg.meetings30d + '</div><div class="stat-label">Meetings (30d)</div></div>' +
+    '<div class="activity-stat"><div class="stat-value">' + agg.emails30d + '</div><div class="stat-label">Emails (30d)</div></div>' +
+    '<div class="activity-stat"><div class="stat-value">' + agg.opportunities + '</div><div class="stat-label">Opportunities</div></div>' +
+    '<div class="activity-stat"><div class="stat-value">' + trendHTML(agg.overallTrend, false) + '</div><div class="stat-label">Overall Trend</div></div>' +
+  '</div>';
+}
+
+// ── Group view (e.g. Region showing Territories) ──
+
+function renderGroupView(accts, drillField, remainingLevels) {
+  var groups = groupBy(accts, drillField);
+  var agg = aggregate(accts);
+  var isTopLevel = navStack.length === 0;
+  var kpi = isTopLevel ? summaryKPI() : agg;
+  var childLabel = levelLabels[drillField] || drillField;
+
+  var title = isTopLevel ? scopeValue : navStack[navStack.length - 1].key;
+  var scopeLabel = scopeType.charAt(0).toUpperCase() + scopeType.slice(1);
+  var subtitle = isTopLevel ? scopeLabel : childLabel;
+
+  var html = '<div class="page-header"><div class="page-header-inner">';
+  html += '<div class="breadcrumb">' + buildBreadcrumb() + '</div>';
+  html += '<h1>' + esc(title) + '</h1>';
+  html += '<div class="subtitle"><span>' + esc(subtitle) + '</span>';
+  var groupCount = Object.keys(groups).length;
+  var childPlural = childLabel.toLowerCase().replace(/y$/, 'ie') + 's';
+  var childSingular = childLabel.toLowerCase();
+  html += '<span class="dot">' + groupCount + ' ' + (groupCount !== 1 ? childPlural : childSingular) + '</span>';
+  if (remainingLevels.length > 1) {
+    var subGroups = {};
+    accts.forEach(function(a){ var v = (a.hierarchy && a.hierarchy[remainingLevels[1]]) || '(unassigned)'; subGroups[v] = true; });
+    var subCount = Object.keys(subGroups).length;
+    var subLabel = levelLabels[remainingLevels[1]] || remainingLevels[1];
+    var subPlural = subLabel.toLowerCase().replace(/y$/, 'ie') + 's';
+    html += '<span class="dot">' + subCount + ' ' + (subCount !== 1 ? subPlural : subLabel.toLowerCase()) + '</span>';
+  }
+  html += '<span class="dot">' + kpi.count + ' account' + (kpi.count !== 1 ? 's' : '') + '</span>';
+  html += '<span class="dot">Generated ' + fmtDate(data.run.generated_at) + '</span>';
+  html += '</div></div></div>';
+
+  html += '<div class="main">';
+  html += kpiRowHTML(kpi);
+
+  html += '<div class="summary-card"><h2>Executive Summary</h2><p>' + esc(data.summary.text) + '</p></div>';
+
+  html += activityBarHTML(agg);
+
+  // Table of child groups
+  html += '<div class="table-card"><div class="table-header"><h2>' + esc(childLabel.replace(/y$/, 'ie') + 's') + '</h2></div>';
+  html += '<table class="data-table"><thead><tr>';
+  html += '<th>' + esc(childLabel) + '</th><th>Accounts</th><th>Avg Score</th><th>Activities</th><th>Meetings (30d)</th><th>Trend</th><th>Keep</th><th>Watch</th><th></th>';
+  html += '</tr></thead><tbody>';
+
+  var keys = Object.keys(groups).sort();
+  keys.forEach(function(key, idx) {
+    var gAccts = groups[key];
+    var gAgg = aggregate(gAccts);
+    html += '<tr>';
+    html += '<td><strong>' + esc(key) + '</strong></td>';
+    html += '<td>' + gAgg.count + '</td>';
+    html += '<td>' + (gAgg.avgScore != null ? gAgg.avgScore : '—') + '</td>';
+    html += '<td>' + gAgg.totalActivities + '</td>';
+    html += '<td>' + gAgg.meetings30d + '</td>';
+    html += '<td>' + trendHTML(gAgg.overallTrend, true) + '</td>';
+    html += '<td>' + gAgg.keepCount + '</td>';
+    html += '<td>' + gAgg.watchCount + '</td>';
+    html += '<td><a class="drill-link" onclick="EM.drillGroup(' + idx + ')">Open &rarr;</a></td>';
+    html += '</tr>';
+  });
+
+  html += '</tbody></table></div>';
+  html += '</div>';
+
+  // Store keys for drill-down
+  window._groupKeys = keys;
+  window._groupMap = groups;
+
+  return html;
+}
+
+// ── Account list view (Territory level showing accounts) ──
+
+function renderAccountListView(accts) {
+  var agg = aggregate(accts);
+  var isTopLevel = navStack.length === 0;
+  var kpi = isTopLevel ? summaryKPI() : agg;
+  var title = isTopLevel ? scopeValue : navStack[navStack.length - 1].key;
+  var scopeLabel = scopeType.charAt(0).toUpperCase() + scopeType.slice(1);
+  var viewLabel = isTopLevel ? scopeLabel : (navStack.length > 0 ? (levelLabels[navStack[navStack.length - 1].level] || scopeLabel) : scopeLabel);
+
+  var html = '<div class="page-header"><div class="page-header-inner">';
+  html += '<div class="breadcrumb">' + buildBreadcrumb() + '</div>';
+  html += '<h1>' + esc(title) + '</h1>';
+  html += '<div class="subtitle"><span>' + esc(viewLabel) + '</span>';
+  html += '<span class="dot">' + kpi.count + ' account' + (kpi.count !== 1 ? 's' : '') + '</span>';
+  html += '</div></div></div>';
+
+  html += '<div class="main">';
+  html += kpiRowHTML(kpi);
+
+  html += '<div class="summary-card"><h2>Executive Summary</h2><p>' + esc(data.summary.text) + '</p></div>';
+
+  html += activityBarHTML(agg);
+
+  html += '<div class="table-card"><div class="table-header"><h2>Accounts</h2></div>';
+  html += '<table class="data-table"><thead><tr>';
+  html += '<th>Account</th><th>Score</th><th>Signals</th><th>Activities</th><th>Meetings (30d)</th><th>Trend</th><th>Top Signal</th><th>Match</th><th></th>';
+  html += '</tr></thead><tbody>';
+
+  accts.forEach(function(a, idx) {
+    var signals = a.signals || [];
+    var keepN = signals.filter(function(s){ return s.disposition === 'KEEP'; }).length;
+    var watchN = signals.filter(function(s){ return s.disposition === 'WATCH'; }).length;
+    var sc = accountScore(a);
+
+    var signalCell = '';
+    if (keepN > 0) signalCell += pillHTML('KEEP', keepN) + ' ';
+    if (watchN > 0) signalCell += pillHTML('WATCH', watchN);
+    if (!keepN && !watchN) signalCell = signals.length ? String(signals.length) : '0';
+
+    html += '<tr>';
+    html += '<td><strong>' + esc(a.account_name) + '</strong></td>';
+    html += '<td>' + (sc != null ? sc : '—') + '</td>';
+    html += '<td>' + signalCell + '</td>';
+    html += '<td>' + (metric(a, 'total_activities') || 0) + '</td>';
+    html += '<td>' + (metric(a, 'meeting_count_30d') || 0) + '</td>';
+    html += '<td>' + trendHTML(metric(a, 'activity_trend'), false) + '</td>';
+    html += '<td>' + (function(){ var ss = (a.signals || []).slice().sort(function(x,y){ return (y.score||0)-(x.score||0); }); return ss.length ? esc(ss[0].headline) : ''; })() + '</td>';
+    html += '<td>' + matchBadgeHTML(a.identity.match_status) + '</td>';
+    html += '<td><a class="drill-link" onclick="EM.openAccount(\'' + esc(a.account_id) + '\')">Open &rarr;</a></td>';
+    html += '</tr>';
+  });
+
+  html += '</tbody></table></div>';
+  html += '</div>';
+
+  return html;
+}
+
+// ── Account detail view ──
+
+function renderAccountDetail(a) {
+  if (!a) return '<div class="main"><p>No account data available.</p></div>';
+
+  var signals = (a.signals || []).slice().sort(function(x, y) {
+    return (y.score || 0) - (x.score || 0);
+  });
+
+  var keepN = signals.filter(function(s){ return s.disposition === 'KEEP'; }).length;
+  var watchN = signals.filter(function(s){ return s.disposition === 'WATCH'; }).length;
+
+  var html = '<div class="page-header"><div class="page-header-inner">';
+  html += '<div class="breadcrumb">' + buildBreadcrumb() + '</div>';
+  html += '<h1>' + esc(a.account_name) + '</h1>';
+  html += '<div class="subtitle"><span>Account</span>';
+  if (a.hierarchy.territory_name) html += '<span class="dot">' + esc(a.hierarchy.territory_name) + '</span>';
+  html += '<span class="dot">Signal Score: ' + (accountScore(a) != null ? accountScore(a) : '—') + '</span>';
+  html += '<span class="dot">' + esc(a.identity.match_status.replace('_', ' ').charAt(0).toUpperCase() + a.identity.match_status.replace('_', ' ').slice(1)) + '</span>';
+  html += '</div></div></div>';
+
+  html += '<div class="main"><div class="account-layout"><div class="account-main">';
+
+  // Summary
+  if (a.summary) {
+    html += '<div class="summary-card"><h2>30-Second Summary</h2><p>' + esc(a.summary) + '</p></div>';
+  }
+
+  // Recommended next move
+  if (a.recommended_next_move) {
+    html += '<div class="next-move"><h2>Recommended Next Move</h2><p>' + esc(a.recommended_next_move) + '</p></div>';
+  }
+
+  // Signals
+  if (signals.length > 0) {
+    html += '<div class="table-card" style="overflow:visible"><div class="table-header"><h2>Signals</h2><div style="display:flex;gap:8px">';
+    if (keepN) html += pillHTML('KEEP', keepN) + ' ';
+    if (watchN) html += pillHTML('WATCH', watchN);
+    html += '</div></div>';
+
+    signals.forEach(function(s, i) {
+      var isLast = i === signals.length - 1;
+      html += '<div class="signal-card" style="border-radius:0;border:none;' + (isLast ? '' : 'border-bottom:1px solid #e0e0e0') + '">';
+      html += '<div class="signal-card-header">';
+      html += pillHTML(s.disposition);
+      html += ' <span class="signal-score">' + s.score + '</span>';
+      html += ' <span class="signal-meta">' + esc(s.confidence) + ' confidence &bull; ' + esc(s.source_type) + '</span>';
+      html += '</div>';
+      html += '<h3>' + esc(s.headline) + '</h3>';
+
+      if (s.why_it_matters || s.recommended_action) {
+        html += '<div class="signal-body">';
+        if (s.why_it_matters) {
+          html += '<div><div class="col-label">Why it matters</div><p>' + esc(s.why_it_matters) + '</p></div>';
+        }
+        if (s.recommended_action) {
+          html += '<div><div class="col-label">Recommended action</div><p>' + esc(s.recommended_action) + '</p></div>';
+        }
+        html += '</div>';
+      }
+
+      // Collapsible details
+      var hasDetails = s.what_changed || s.red_hat_relevance || s.source_url || s.published_at;
+      if (hasDetails) {
+        html += '<details><summary>View details</summary><div class="detail-grid">';
+        if (s.what_changed) html += '<div class="detail-row"><span class="detail-label">What changed</span><span class="detail-value">' + esc(s.what_changed) + '</span></div>';
+        if (s.red_hat_relevance) html += '<div class="detail-row"><span class="detail-label">Red Hat relevance</span><span class="detail-value">' + esc(s.red_hat_relevance) + '</span></div>';
+        if (s.source_url) html += '<div class="detail-row"><span class="detail-label">Source</span><span class="detail-value"><a href="' + esc(s.source_url) + '" target="_blank" rel="noopener" style="color:#0066cc">' + esc(s.source_url) + '</a></span></div>';
+        if (s.published_at) html += '<div class="detail-row"><span class="detail-label">Published</span><span class="detail-value">' + esc(fmtDate(s.published_at)) + '</span></div>';
+        if (!s.what_changed && !s.red_hat_relevance) {
+          html += '<div class="detail-row"><span class="detail-label">Source type</span><span class="detail-value">' + esc(s.source_type) + '</span></div>';
+          html += '<div class="detail-row"><span class="detail-label">Confidence</span><span class="detail-value">' + esc(s.confidence) + '</span></div>';
+        }
+        html += '</div></details>';
+      }
+
+      html += '</div>';
+    });
+
+    html += '</div>';
+  }
+
+  html += '</div>'; // end account-main
+
+  // ── Sidebar ──
+  html += '<div class="account-sidebar">';
+
+  // Account Details card
+  html += '<div class="sidebar-card"><h3>Account Details</h3>';
+  var hier = a.hierarchy || {};
+  if (hier.geo) html += '<div class="meta-row"><span class="meta-label">GEO</span><span class="meta-value">' + esc(hier.geo) + '</span></div>';
+  if (hier.region) html += '<div class="meta-row"><span class="meta-label">Region</span><span class="meta-value">' + esc(hier.region) + '</span></div>';
+  if (hier.pod) html += '<div class="meta-row"><span class="meta-label">Pod</span><span class="meta-value">' + esc(hier.pod) + '</span></div>';
+  if (hier.territory_name) html += '<div class="meta-row"><span class="meta-label">Territory</span><span class="meta-value">' + esc(hier.territory_name) + '</span></div>';
+  if (hier.segment) html += '<div class="meta-row"><span class="meta-label">Segment</span><span class="meta-value">' + esc(hier.segment) + '</span></div>';
+  html += '<div class="meta-row"><span class="meta-label">Match</span><span class="meta-value">' + matchBadgeHTML(a.identity.match_status) + '</span></div>';
+  if (a.internal_priority_score != null) html += '<div class="meta-row"><span class="meta-label">Priority Score</span><span class="meta-value">' + a.internal_priority_score + '</span></div>';
+  html += '</div>';
+
+  // Activity card
+  html += '<div class="sidebar-card"><h3>Activity (' + (data._meta.query_window_days || 120) + ' days)</h3>';
+  html += '<div class="meta-row"><span class="meta-label">Total Activities</span><span class="meta-value">' + (metric(a, 'total_activities') ?? '—') + '</span></div>';
+  html += '<div class="meta-row"><span class="meta-label">Meetings (30d)</span><span class="meta-value">' + (metric(a, 'meeting_count_30d') ?? '—') + '</span></div>';
+  html += '<div class="meta-row"><span class="meta-label">Emails (30d)</span><span class="meta-value">' + (metric(a, 'email_count_30d') ?? '—') + '</span></div>';
+  html += '<div class="meta-row"><span class="meta-label">Trend</span><span class="meta-value">' + trendHTML(metric(a, 'activity_trend'), true) + '</span></div>';
+  html += '<div class="meta-row"><span class="meta-label">Opportunities</span><span class="meta-value">' + oppCount(a) + '</span></div>';
+  html += '</div>';
+
+  // MCP Insights card
+  var risks = (a.internal && a.internal.risks) || [];
+  var nextSteps = (a.internal && a.internal.next_steps) || [];
+  var topics = (a.internal && a.internal.topics) || [];
+  if (risks.length || nextSteps.length || topics.length) {
+    html += '<div class="sidebar-card"><h3>MCP Insights</h3><div style="font-size:13px;color:#383838">';
+    if (risks.length) {
+      html += '<div style="margin-bottom:8px"><strong style="color:#707070;font-size:12px;text-transform:uppercase">Risks</strong></div><ul>';
+      risks.forEach(function(r){ html += '<li>' + esc(r) + '</li>'; });
+      html += '</ul>';
+    }
+    if (nextSteps.length) {
+      html += '<div style="margin-top:12px;margin-bottom:8px"><strong style="color:#707070;font-size:12px;text-transform:uppercase">Next Steps</strong></div><ul>';
+      nextSteps.forEach(function(r){ html += '<li>' + esc(r) + '</li>'; });
+      html += '</ul>';
+    }
+    if (topics.length) {
+      html += '<div style="margin-top:12px;margin-bottom:8px"><strong style="color:#707070;font-size:12px;text-transform:uppercase">Topics</strong></div><ul>';
+      topics.forEach(function(r){ html += '<li>' + esc(r) + '</li>'; });
+      html += '</ul>';
+    }
+    html += '</div></div>';
+  }
+
+  // Caveats card
+  var caveats = (data._meta && data._meta.caveats) || [];
+  html += '<div class="sidebar-card"><h3>Caveats</h3>';
+  if (caveats.length) {
+    html += '<ul style="font-size:13px;color:#4d4d4d">';
+    caveats.forEach(function(c){ html += '<li>' + esc(c) + '</li>'; });
+    html += '</ul>';
+  }
+  html += '<div style="margin-top:12px;font-size:12px;color:#707070">';
+  html += 'Window: ' + (data._meta.query_window_days || 120) + ' days';
+  if (data._meta.mcp_status) html += ' &bull; MCP: ' + esc(data._meta.mcp_status);
+  html += '<br>Generated: ' + fmtDate(data.run.generated_at);
+  html += '</div></div>';
+
+  html += '</div>'; // end sidebar
+  html += '</div>'; // end account-layout
+  html += '</div>'; // end main
+
+  return html;
+}
+
+// ── Guide view ──
+
+function renderGuideView() {
+  return '<div class="page-header"><div class="page-header-inner">' +
+    '<h1>Guide</h1><div class="subtitle"><span>How to read this report</span></div>' +
+    '</div></div><div class="main"><div class="guide">' +
+    '<h2>What this report is</h2>' +
+    '<p>This report shows which accounts need your attention and why. It pulls data from three places: your team’s activity in People.ai, AI-generated insights from Backstory, and public web sources. It then scores and ranks each account so you can focus on what matters most.</p>' +
+
+    '<div class="guide-section"><h3>How to navigate</h3>' +
+    '<p>The report works like a drill-down. You start at the broadest level of your scope and click into narrower views:</p>' +
+    '<table class="def-table">' +
+    '<tr><td class="term">GEO</td><td>The broadest grouping. Contains regions.</td></tr>' +
+    '<tr><td class="term">Region</td><td>A group of territories. Click a territory row to go deeper.</td></tr>' +
+    '<tr><td class="term">Territory</td><td>A group of accounts. Click an account row to see its full detail.</td></tr>' +
+    '<tr><td class="term">Account</td><td>A single customer. Shows the summary, recommended action, and all signals.</td></tr>' +
+    '</table>' +
+    '<p style="margin-top:12px">Numbers at each level (activities, meetings, scores) are sums or averages of the accounts below. The breadcrumb at the top lets you move back up.</p></div>' +
+
+    '<div class="guide-section"><h3>Signal score</h3>' +
+    '<p>A number from 0 to 100. It answers: “how urgently does this account need attention?” Higher means more urgent. The score is the average of all individual signal scores for that account. Accounts with no signals show a dash.</p></div>' +
+
+    '<div class="guide-section"><h3>Signals: Keep, Watch, Reject</h3>' +
+    '<p>Each signal is a piece of intelligence about an account. The system sorts every signal into one of three buckets:</p>' +
+    '<table class="def-table"><thead><tr><th>Label</th><th>Meaning</th></tr></thead><tbody>' +
+    '<tr><td><span class="status-pill keep">KEEP</span></td><td>Act on this. The signal is strong, relevant, and worth your time now.</td></tr>' +
+    '<tr><td><span class="status-pill watch">WATCH</span></td><td>Worth knowing, but not urgent. Check back later or gather more information.</td></tr>' +
+    '<tr><td><span class="status-pill reject">REJECT</span></td><td>Noise. The system found it but decided it is not relevant or useful. Rejected signals are hidden by default.</td></tr>' +
+    '</tbody></table></div>' +
+
+    '<div class="guide-section"><h3>Where signals come from</h3>' +
+    '<p>Every signal lists its source. There are four types:</p>' +
+    '<table class="def-table"><thead><tr><th>Source</th><th>What it means</th></tr></thead><tbody>' +
+    '<tr><td class="term">derived</td><td>Calculated from your team’s own activity data in People.ai. Example: “high engagement but no next meeting.”</td></tr>' +
+    '<tr><td class="term">backstory_mcp</td><td>Generated by Backstory AI from your CRM and activity history. Example: “executive sponsor changed.”</td></tr>' +
+    '<tr><td class="term">external_public</td><td>Found on the public web: news articles, press releases, budget documents, SEC filings. Always includes a link.</td></tr>' +
+    '<tr><td class="term">peopleai_query</td><td>A direct query result from People.ai data. Example: “activity dropped 40% month over month.”</td></tr>' +
+    '</tbody></table></div>' +
+
+    '<div class="guide-section"><h3>Confidence</h3>' +
+    '<p>How certain the system is about a signal. Three levels:</p>' +
+    '<table class="def-table"><tbody>' +
+    '<tr><td class="term">High</td><td>Based on clear, direct evidence. Likely accurate.</td></tr>' +
+    '<tr><td class="term">Medium</td><td>Based on partial evidence or inference. Probably right, worth checking.</td></tr>' +
+    '<tr><td class="term">Low</td><td>Weak evidence. Treat as a lead, not a fact.</td></tr>' +
+    '</tbody></table></div>' +
+
+    '<div class="guide-section"><h3>Match status</h3>' +
+    '<p>Whether the system could find this account in People.ai. This matters because unmatched accounts have no activity data.</p>' +
+    '<table class="def-table"><tbody>' +
+    '<tr><td><span class="match-badge matched">matched</span></td><td>Found. Activity data is available.</td></tr>' +
+    '<tr><td><span class="match-badge ambiguous">ambiguous</span></td><td>Multiple possible matches. Data may be incomplete or mixed.</td></tr>' +
+    '<tr><td><span class="match-badge not_found">not found</span></td><td>Not found in People.ai. No activity data available.</td></tr>' +
+    '<tr><td><span class="match-badge unresolved">unresolved</span></td><td>Not yet looked up. The system has not tried to match this account.</td></tr>' +
+    '</tbody></table></div>' +
+
+    '<div class="guide-section"><h3>Activity trend</h3>' +
+    '<p>Compares recent activity to past activity for an account. Three values:</p>' +
+    '<table class="def-table"><tbody>' +
+    '<tr><td class="trend-up" style="width:100px">↑ increasing</td><td>More activity recently than before. Engagement is growing.</td></tr>' +
+    '<tr><td class="trend-stable">→ stable</td><td>About the same level. No change.</td></tr>' +
+    '<tr><td class="trend-down">↓ declining</td><td>Less activity recently. Engagement is dropping.</td></tr>' +
+    '</tbody></table></div>' +
+
+    '<div class="guide-section"><h3>Activity numbers</h3>' +
+    '<p>All activity counts come from People.ai. They include meetings, emails, and other tracked interactions between your team and the account.</p>' +
+    '<table class="def-table"><tbody>' +
+    '<tr><td class="term">Total Activities</td><td>All tracked interactions within the query window (shown in the sidebar).</td></tr>' +
+    '<tr><td class="term">Meetings (30d)</td><td>Meetings in the last 30 days.</td></tr>' +
+    '<tr><td class="term">Emails (30d)</td><td>Emails in the last 30 days.</td></tr>' +
+    '<tr><td class="term">Opportunities</td><td>Open opportunities tied to this account.</td></tr>' +
+    '</tbody></table></div>' +
+
+    '<div class="guide-section"><h3>Enrichment</h3>' +
+    '<p>“Enriched” means the system went beyond basic activity data and pulled deeper insights from Backstory AI: risks, next steps, topics, and company news. Only the top accounts (by priority score) get enriched. Unenriched accounts still have activity data and scores, but lack AI-generated narrative.</p></div>' +
+
+    '<div class="guide-section"><h3>Priority score vs. signal score</h3>' +
+    '<p>Two different numbers. Do not confuse them.</p>' +
+    '<table class="def-table"><tbody>' +
+    '<tr><td class="term">Priority Score</td><td>Used internally to decide which accounts to enrich. Based on activity volume, opportunities, momentum, and recency. You see it in the account sidebar. You do not need to act on it.</td></tr>' +
+    '<tr><td class="term">Signal Score</td><td>The main number you see everywhere. It tells you how urgently an account needs your attention based on its signals. This is the one that matters for your work.</td></tr>' +
+    '</tbody></table></div>' +
+
+    '<div class="guide-section"><h3>Caveats</h3>' +
+    '<p>Every report lists its limits at the bottom of the account view. Common ones:</p>' +
+    '<ul style="padding-left:18px;margin-top:8px;color:#383838;font-size:14px;line-height:1.6">' +
+    '<li>Backstory AI insights cover the last 30 days unless noted otherwise.</li>' +
+    '<li>External research uses only public sources. It cannot see paywalled or internal content.</li>' +
+    '<li>Scores reflect relative importance within this portfolio, not absolute importance across all accounts.</li>' +
+    '<li>Not every account gets enriched. The query window and enrichment limit are shown in each report’s metadata.</li>' +
+    '</ul></div>' +
+
+    '</div></div>';
+}
+
+// ── Drill handlers (exposed globally) ──
+
+window.EM = {
+  showMain: showMain,
+  showGuide: showGuide,
+  navigateBack: navigateBack,
+  drillGroup: function(idx) {
+    var key = window._groupKeys[idx];
+    var accts = window._groupMap[key];
+    var depth = navStack.length;
+    var remainingLevels = hierarchyLevels.slice(depth);
+    navigateTo(remainingLevels[0], key, accts);
+  },
+  openAccount: function(accountId) {
+    var a = accounts.find(function(x){ return x.account_id === accountId; });
+    if (!a) return;
+    navStack.push({ level: 'account', key: a.account_name, accounts: [a] });
+    currentView = 'top';
+    renderTabs();
+    document.getElementById('app').innerHTML = renderAccountDetail(a);
+    window.scrollTo(0, 0);
+  }
+};
+
+// ── Initial render ──
+
+renderCurrentView();
+
+})();
+</script>
+</body>
+</html>

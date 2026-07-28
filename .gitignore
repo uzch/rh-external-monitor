@@ -23,6 +23,7 @@ package-lock.json
 
 # Generated test artifacts
 **/tests/test-output.html
+**/tests/fixtures/*-preview.html
 **/examples/portfolio-geo-test.json
 
 # Temp and build artifacts

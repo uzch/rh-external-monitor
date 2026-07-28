@@ -1,0 +1,490 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Preview: etr V2 Editorial Style</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,sans-serif;background:#f4f7f5;color:#18212b;line-height:1.5;-webkit-font-smoothing:antialiased}
+
+/* Workspace container */
+.workspace{max-width:1240px;margin:0 auto;padding:28px 36px 64px}
+
+/* Topbar */
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:24px;border-bottom:1px solid #d8ddd9;padding-bottom:18px;margin-bottom:34px}
+.kicker{color:#5d6b69;font-size:11px;font-weight:700;letter-spacing:.09em;text-transform:uppercase}
+.topbar h2{font-family:Georgia,"Times New Roman",serif;font-size:24px;font-weight:500;letter-spacing:0}
+.nav{display:flex;gap:4px}
+.nav button{background:transparent;border:none;color:#345b56;border-radius:5px;padding:8px 10px;font:inherit;font-size:14px;cursor:pointer}
+.nav button:hover,.nav button.active{background:#e7f0ec;color:#123d38}
+
+/* Breadcrumb */
+.breadcrumb{display:flex;gap:6px;align-items:center;color:#65736f;font-size:13px;margin-bottom:12px}
+.breadcrumb a{color:#174e48;text-decoration:none;font-weight:600}
+.breadcrumb a:hover{text-decoration:underline}
+.breadcrumb .sep{color:#a7b1ad}
+
+/* Hero */
+.hero{border-bottom:1px solid #d8ddd9;padding:10px 0 29px;margin-bottom:34px}
+.hero h1{font-family:Georgia,"Times New Roman",serif;font-size:48px;font-weight:500;line-height:1.1;margin-bottom:8px}
+.hero .meta{display:flex;flex-wrap:wrap;gap:10px;color:#65736f;font-size:13px;align-items:center}
+.hero .meta .dot::before{content:"\2022";color:#a7b1ad;margin-right:10px}
+
+/* Count strip (KPIs) */
+.count-strip{display:flex;border-top:1px solid #d8ddd9;gap:0;margin-bottom:34px}
+.count-strip .stat{display:grid;gap:3px;min-width:86px;padding:14px 20px 0 0}
+.count-strip .stat strong{font-family:Georgia,"Times New Roman",serif;font-size:24px;font-weight:500;color:#18212b}
+.count-strip .stat span{color:#62706d;font-size:12px;text-transform:capitalize}
+
+/* Brief / Summary */
+.summary-block{border-bottom:1px solid #d8ddd9;padding-bottom:29px;margin-bottom:35px}
+.summary-block h2{font-family:Georgia,"Times New Roman",serif;font-size:clamp(25px,2.25vw,32px);font-weight:500;line-height:1.3;max-width:890px;margin-bottom:16px}
+.summary-block p{color:#3d4d4a;line-height:1.55;max-width:800px}
+
+/* Section titles */
+.section-title{display:flex;align-items:center;justify-content:space-between;gap:24px;margin-bottom:18px}
+.section-title h2{font-family:Georgia,"Times New Roman",serif;font-size:27px;font-weight:500}
+
+/* Table */
+.data-table{width:100%;border-collapse:collapse;background:#fff;border:1px solid #d8ddd9;border-radius:8px;overflow:hidden}
+.data-table th{text-align:left;padding:12px 16px;font-size:12px;font-weight:700;color:#5d6b69;text-transform:uppercase;letter-spacing:.04em;border-bottom:2px solid #d8ddd9;background:#f8faf9}
+.data-table td{padding:14px 16px;border-bottom:1px solid #e8edea;vertical-align:top}
+.data-table tr:last-child td{border-bottom:none}
+.data-table tr:hover{background:#f1f5f2}
+.drill-link{color:#174e48;font-weight:650;cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+
+/* Disposition pills */
+.disposition{display:inline-block;border-radius:999px;padding:3px 10px;font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase}
+.disposition.keep{background:#d9eee9;color:#185a50}
+.disposition.watch{background:#f4ead1;color:#73550e}
+.disposition.reject{background:#f2e0df;color:#853c35}
+
+/* Trend indicators */
+.trend-up{color:#185a50;font-weight:600}
+.trend-stable{color:#73550e;font-weight:600}
+.trend-down{color:#853c35;font-weight:600}
+
+/* Signal cards */
+.signal-feature{border-top:1px solid #cbd5d0;padding:24px 0}
+.signal-feature:last-child{border-bottom:1px solid #cbd5d0}
+.signal-label{display:flex;flex-wrap:wrap;gap:10px;color:#64736f;font-size:12px;text-transform:capitalize;align-items:center;margin-bottom:10px}
+.signal-feature h3{font-family:Georgia,"Times New Roman",serif;font-size:25px;font-weight:500;line-height:1.27;margin-bottom:16px}
+.signal-columns{display:grid;grid-template-columns:1fr 1fr;gap:25px}
+.signal-columns .col-label{font-size:12px;font-weight:700;color:#5d6b69;text-transform:uppercase;letter-spacing:.04em;margin-bottom:6px}
+.signal-columns p{color:#3d4d4a;line-height:1.55;font-size:14px}
+
+/* Collapsible audit */
+details{margin-top:20px}
+summary{color:#1d574f;font-size:14px;font-weight:650;cursor:pointer;list-style:none}
+summary::before{content:"\25B6\00a0";font-size:10px}
+details[open] summary::before{content:"\25BC\00a0"}
+.audit{border-left:2px solid #c4d5ce;padding-left:18px;margin-top:12px;display:grid;gap:12px}
+.audit-row{display:grid;grid-template-columns:140px 1fr;gap:8px;font-size:13px}
+.audit-label{color:#5d6b69;font-weight:650}
+.audit-value{color:#3d4d4a}
+.audit-muted{color:#71807b;font-size:12px}
+
+/* Brief layout (main + aside) */
+.brief-layout{display:grid;gap:44px;grid-template-columns:minmax(0,1fr) 285px;margin-top:34px}
+.brief-aside{border-left:1px solid #d8ddd9;padding-left:24px}
+.limitations{color:#52615f;font-size:13px;line-height:1.5}
+.limitations h3{font-family:Georgia,"Times New Roman",serif;font-size:16px;font-weight:500;margin-bottom:8px}
+.limitations ul{padding-left:18px}
+.limitations li{margin-bottom:4px}
+.meta-note{border-top:1px solid #d8ddd9;margin-top:18px;padding-top:12px;color:#64736f;font-size:12px}
+
+/* Primary action button */
+.primary-action{background:#174e48;border:1px solid #174e48;border-radius:5px;color:#fff;padding:10px 15px;font:inherit;font-size:14px;cursor:pointer}
+.primary-action:hover{background:#0f3d38}
+.quiet-action{background:transparent;border:1px solid #bdc8c2;border-radius:5px;color:#345b56;padding:9px 13px;font:inherit;font-size:14px;cursor:pointer}
+.quiet-action:hover{border-color:#476a64;background:#f1f5f2}
+
+/* Views */
+.view{display:none}
+.view.active{display:block}
+
+/* Responsive */
+@media(max-width:920px){
+  .workspace{padding:24px}
+  .brief-layout{grid-template-columns:1fr}
+  .brief-aside{border-left:none;border-top:1px solid #d8ddd9;padding-left:0;padding-top:24px}
+  .signal-columns{grid-template-columns:1fr}
+}
+@media(max-width:620px){
+  .workspace{padding:18px}
+  .topbar,.hero,.section-title{flex-direction:column;align-items:flex-start}
+  .hero h1{font-size:38px}
+  .count-strip{flex-wrap:wrap}
+}
+</style>
+</head>
+<body>
+
+<div class="workspace">
+  <!-- Topbar -->
+  <div class="topbar">
+    <div>
+      <div class="kicker">External Monitor</div>
+      <h2>Portfolio Intelligence</h2>
+    </div>
+    <div class="nav">
+      <button class="active" onclick="showView('region')">Region Overview</button>
+      <button onclick="showView('territory')">Territory View</button>
+      <button onclick="showView('account')">Account Detail</button>
+    </div>
+  </div>
+
+  <!-- REGION VIEW -->
+  <div id="region" class="view active">
+    <div class="hero">
+      <div class="breadcrumb">
+        <a href="#">NAPS</a> <span class="sep">/</span> <span>Federal Civilian</span>
+      </div>
+      <h1>Federal Civilian</h1>
+      <div class="meta">
+        <span>Region</span>
+        <span class="dot">NAPS</span>
+        <span class="dot">4 territories</span>
+        <span class="dot">12 accounts</span>
+        <span class="dot">Generated Jul 25, 2026</span>
+      </div>
+    </div>
+
+    <div class="count-strip">
+      <div class="stat"><strong>12</strong><span>accounts</span></div>
+      <div class="stat"><strong>8</strong><span>internal data</span></div>
+      <div class="stat"><strong>5</strong><span>enriched</span></div>
+      <div class="stat"><strong>4 / 3</strong><span>keep / watch</span></div>
+      <div class="stat"><strong>91</strong><span>highest score</span></div>
+    </div>
+
+    <div class="summary-block">
+      <h2>Executive Summary</h2>
+      <p>Federal Civilian region has 12 accounts across 4 territories. Healthcare and Defense IT show the strongest engagement signals. Two accounts have immediate engagement gaps requiring follow-up, and three accounts show emerging public signals around platform modernization initiatives that align with Red Hat capabilities.</p>
+    </div>
+
+    <div class="section-title">
+      <h2>Territories</h2>
+    </div>
+
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Territory</th>
+          <th>Accounts</th>
+          <th>Avg Signal Score</th>
+          <th>Activity Trend</th>
+          <th>Keep</th>
+          <th>Watch</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Healthcare</strong></td>
+          <td>3</td>
+          <td>91</td>
+          <td class="trend-up">&#8593; increasing</td>
+          <td>2</td>
+          <td>1</td>
+          <td><span class="drill-link" onclick="showView('territory')">Open &rarr;</span></td>
+        </tr>
+        <tr>
+          <td><strong>Defense IT</strong></td>
+          <td>5</td>
+          <td>74</td>
+          <td class="trend-stable">&#8594; stable</td>
+          <td>1</td>
+          <td>2</td>
+          <td><span class="drill-link">Open &rarr;</span></td>
+        </tr>
+        <tr>
+          <td><strong>Civilian Agencies</strong></td>
+          <td>2</td>
+          <td>62</td>
+          <td class="trend-stable">&#8594; stable</td>
+          <td>1</td>
+          <td>0</td>
+          <td><span class="drill-link">Open &rarr;</span></td>
+        </tr>
+        <tr>
+          <td><strong>Intelligence Community</strong></td>
+          <td>2</td>
+          <td>45</td>
+          <td class="trend-down">&#8595; declining</td>
+          <td>0</td>
+          <td>0</td>
+          <td><span class="drill-link">Open &rarr;</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- TERRITORY VIEW -->
+  <div id="territory" class="view">
+    <div class="hero">
+      <div class="breadcrumb">
+        <a href="#" onclick="showView('region');return false">NAPS</a>
+        <span class="sep">/</span>
+        <a href="#" onclick="showView('region');return false">Federal Civilian</a>
+        <span class="sep">/</span>
+        <span>Healthcare</span>
+      </div>
+      <h1>Healthcare</h1>
+      <div class="meta">
+        <span>Territory</span>
+        <span class="dot">Federal Civilian</span>
+        <span class="dot">3 accounts</span>
+      </div>
+    </div>
+
+    <div class="count-strip">
+      <div class="stat"><strong>3</strong><span>accounts</span></div>
+      <div class="stat"><strong>3</strong><span>internal data</span></div>
+      <div class="stat"><strong>2</strong><span>enriched</span></div>
+      <div class="stat"><strong>2 / 1</strong><span>keep / watch</span></div>
+      <div class="stat"><strong>91</strong><span>highest score</span></div>
+    </div>
+
+    <div class="summary-block">
+      <h2>Territory Brief</h2>
+      <p>Healthcare territory has strong engagement across all three accounts. Example Health Agency leads with active modernization discussions but lacks a scheduled next engagement. Veterans Health Corp shows early-stage interest in container platforms.</p>
+    </div>
+
+    <div class="section-title">
+      <h2>Accounts</h2>
+    </div>
+
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Account</th>
+          <th>Signal Score</th>
+          <th>Signals</th>
+          <th>Top Reason</th>
+          <th>Match</th>
+          <th>Trend</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Example Health Agency</strong></td>
+          <td>91</td>
+          <td><span class="disposition keep">2 KEEP</span></td>
+          <td>High engagement with no upcoming meeting</td>
+          <td>matched</td>
+          <td class="trend-up">&#8593;</td>
+          <td><span class="drill-link" onclick="showView('account')">Open &rarr;</span></td>
+        </tr>
+        <tr>
+          <td><strong>Veterans Health Corp</strong></td>
+          <td>68</td>
+          <td><span class="disposition watch">1 WATCH</span></td>
+          <td>Container platform exploration signal</td>
+          <td>matched</td>
+          <td class="trend-stable">&#8594;</td>
+          <td><span class="drill-link">Open &rarr;</span></td>
+        </tr>
+        <tr>
+          <td><strong>National Health Institute</strong></td>
+          <td>&mdash;</td>
+          <td>0</td>
+          <td>No recent activity</td>
+          <td>not_found</td>
+          <td class="trend-down">&#8595;</td>
+          <td><span class="drill-link">Open &rarr;</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ACCOUNT VIEW -->
+  <div id="account" class="view">
+    <div class="hero">
+      <div class="breadcrumb">
+        <a href="#" onclick="showView('region');return false">NAPS</a>
+        <span class="sep">/</span>
+        <a href="#" onclick="showView('region');return false">Federal Civilian</a>
+        <span class="sep">/</span>
+        <a href="#" onclick="showView('territory');return false">Healthcare</a>
+        <span class="sep">/</span>
+        <span>Example Health Agency</span>
+      </div>
+      <h1>Example Health Agency</h1>
+      <div class="meta">
+        <span>Account</span>
+        <span class="dot">Healthcare</span>
+        <span class="dot">Signal Score: 91</span>
+        <span class="dot">Matched</span>
+      </div>
+    </div>
+
+    <div class="brief-layout">
+      <div class="brief-main">
+        <div class="summary-block">
+          <h2>The account is active but lacks a scheduled next engagement. Recent activity remains high while the upcoming-meeting count is zero.</h2>
+          <p style="margin-top:12px"><strong>Recommended Next Move:</strong> Schedule an architecture follow-up tied to the active modernization topic. Confirm executive sponsor and align with the open opportunity timeline.</p>
+        </div>
+
+        <div class="count-strip">
+          <div class="stat"><strong>2</strong><span>keep</span></div>
+          <div class="stat"><strong>1</strong><span>watch</span></div>
+          <div class="stat"><strong>0</strong><span>reject</span></div>
+        </div>
+
+        <div class="section-title" style="margin-top:35px">
+          <h2>Noteworthy Findings</h2>
+        </div>
+
+        <!-- Signal 1 -->
+        <article class="signal-feature">
+          <div class="signal-label">
+            <span class="disposition keep">KEEP</span>
+            <span>score: 91</span>
+            <span>&bull; high confidence</span>
+            <span>&bull; derived</span>
+          </div>
+          <h3>Strong engagement without a next meeting</h3>
+          <div class="signal-columns">
+            <div>
+              <div class="col-label">Why it matters</div>
+              <p>Momentum may decay without a concrete next step. The account has had 15 activities in 30 days but zero upcoming meetings scheduled.</p>
+            </div>
+            <div>
+              <div class="col-label">Recommended action</div>
+              <p>Secure a next meeting and confirm ownership. Align the meeting agenda with the active modernization topic to maintain momentum.</p>
+            </div>
+          </div>
+          <details>
+            <summary>Audit trail</summary>
+            <div class="audit">
+              <div class="audit-row">
+                <span class="audit-label">What changed</span>
+                <span class="audit-value">Recent activity remains high while the upcoming-meeting count is zero.</span>
+              </div>
+              <div class="audit-row">
+                <span class="audit-label">Red Hat relevance</span>
+                <span class="audit-value">The active topic aligns with platform modernization, a core Red Hat capability area.</span>
+              </div>
+              <div class="audit-row">
+                <span class="audit-label">Source type</span>
+                <span class="audit-value">derived</span>
+              </div>
+            </div>
+          </details>
+        </article>
+
+        <!-- Signal 2 -->
+        <article class="signal-feature">
+          <div class="signal-label">
+            <span class="disposition keep">KEEP</span>
+            <span>score: 85</span>
+            <span>&bull; high confidence</span>
+            <span>&bull; external_public</span>
+          </div>
+          <h3>Agency announces $200M cloud modernization initiative in FY2027 budget request</h3>
+          <div class="signal-columns">
+            <div>
+              <div class="col-label">Why it matters</div>
+              <p>A large-scale modernization initiative signals potential demand for enterprise platform solutions. The budget request specifically mentions hybrid cloud and containerization.</p>
+            </div>
+            <div>
+              <div class="col-label">Recommended action</div>
+              <p>Prepare a brief on Red Hat's public sector modernization references and request an introductory meeting with the agency's CTO office.</p>
+            </div>
+          </div>
+          <details>
+            <summary>Audit trail</summary>
+            <div class="audit">
+              <div class="audit-row">
+                <span class="audit-label">What changed</span>
+                <span class="audit-value">FY2027 budget request published with explicit cloud modernization line item.</span>
+              </div>
+              <div class="audit-row">
+                <span class="audit-label">Red Hat relevance</span>
+                <span class="audit-value">Hybrid cloud and containerization align with OpenShift and RHEL capabilities.</span>
+              </div>
+              <div class="audit-row">
+                <span class="audit-label">Source</span>
+                <span class="audit-value"><a href="#" style="color:#174e48;font-weight:650">federalnewsnetwork.com</a></span>
+              </div>
+              <div class="audit-row">
+                <span class="audit-label">Published</span>
+                <span class="audit-value">Jul 20, 2026</span>
+              </div>
+            </div>
+          </details>
+        </article>
+
+        <!-- Signal 3 (Watch) -->
+        <article class="signal-feature">
+          <div class="signal-label">
+            <span class="disposition watch">WATCH</span>
+            <span>score: 62</span>
+            <span>&bull; medium confidence</span>
+            <span>&bull; backstory_mcp</span>
+          </div>
+          <h3>Executive sponsor change noted in recent account activity</h3>
+          <div class="signal-columns">
+            <div>
+              <div class="col-label">Why it matters</div>
+              <p>Changes in executive sponsorship can disrupt existing relationships and alter project priorities. The new sponsor may not be familiar with the current engagement trajectory.</p>
+            </div>
+            <div>
+              <div class="col-label">Recommended action</div>
+              <p>Identify the new sponsor and schedule an introductory meeting. Brief them on the current engagement status and upcoming milestones.</p>
+            </div>
+          </div>
+          <details>
+            <summary>Audit trail</summary>
+            <div class="audit">
+              <div class="audit-row">
+                <span class="audit-label">Source type</span>
+                <span class="audit-value">backstory_mcp</span>
+              </div>
+              <div class="audit-row">
+                <span class="audit-label">Confidence</span>
+                <span class="audit-value">medium</span>
+              </div>
+            </div>
+          </details>
+        </article>
+      </div>
+
+      <div class="brief-aside">
+        <div class="limitations">
+          <h3>Caveats</h3>
+          <ul>
+            <li>Backstory narrative tools cover the last 30 days unless otherwise labeled.</li>
+            <li>External research limited to publicly available sources.</li>
+            <li>Signal scores reflect relative importance within this portfolio only.</li>
+          </ul>
+        </div>
+        <div class="meta-note">
+          <strong>Run details</strong><br>
+          Window: 120 days<br>
+          MCP: connected<br>
+          Enriched: 2 of 3 accounts<br>
+          Generated: Jul 25, 2026
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function showView(v){
+  document.querySelectorAll('.view').forEach(x=>x.classList.remove('active'));
+  document.getElementById(v).classList.add('active');
+  document.querySelectorAll('.nav button').forEach(b=>b.classList.remove('active'));
+  const labels={region:'Region Overview',territory:'Territory View',account:'Account Detail'};
+  document.querySelectorAll('.nav button').forEach(b=>{if(b.textContent===labels[v])b.classList.add('active')});
+  window.scrollTo(0,0);
+}
+</script>
+</body>
+</html>

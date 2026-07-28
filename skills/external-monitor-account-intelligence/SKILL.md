@@ -35,7 +35,7 @@ Never create one tab or one HTML page per account. The same reusable interface f
 
 Required:
 
-- `scope_type`: `geo | region | territory | account`
+- `scope_type`: `geo | region | pod | territory | account` (pod is defined in the schema but not yet implemented in registry scripts)
 - `scope_value`: exact value from the Enterprise Accounts registry
 - Enterprise Accounts registry at `data/local/Enterprise Accounts.csv` containing:
   - `account_sales_group_name` (canonical account name)
@@ -114,15 +114,66 @@ Preferred matching order for People.ai reconciliation:
 
 Never silently merge ambiguous accounts. Mark them `ambiguous` and exclude them from deep enrichment until resolved.
 
+#### Parallelization for large scopes
+
+For territory scope (typically < 20 accounts), resolve identities sequentially -- no subagents needed.
+
+For region or GEO scope (20+ accounts), parallelize identity resolution:
+
+1. Split the account list into chunks of ~20 accounts each.
+2. Spawn one subagent per chunk. Each subagent receives:
+   - Its chunk of registry account records (`account_name`, `geo`, `region`, `segment`, `territory_name`).
+   - The matching instructions above (try `find_account` with the registry name, try name variations if no match, mark `ambiguous` or `not_found`).
+3. Each subagent calls `find_account` for each of its accounts and returns an array of identity records in the same structure shown above (`registry_account_name`, `query_account_name`, `peopleai_account_id`, `identity_status`, `identity_notes`).
+4. The orchestrator concatenates all subagent arrays into one identities JSON file (e.g., `west-identities.json`). No deduplication is needed -- each account appears in exactly one chunk.
+
+The chunk size of ~20 is a practical default, not an API constraint. It keeps each subagent's runtime under ~2 minutes and keeps the number of concurrent subagents manageable. Adjust if needed, but smaller chunks (< 10) create unnecessary subagent overhead and larger chunks (> 30) lose parallelization benefit.
+
+#### Identity cache
+
+Before calling `find_account`, always check the persistent identity cache:
+
+```bash
+python scripts/resolve_identities.py \
+  --accounts scoped-accounts.json \
+  --cache data/local/identity-cache.json \
+  --out identities.json
+```
+
+The script emits cached identities immediately and marks uncached accounts as `needs_resolution` with normalized name variations to try. Only accounts needing resolution require `find_account` calls.
+
+After resolving new identities, persist them back to the cache:
+
+```bash
+python scripts/resolve_identities.py \
+  --update-cache data/local/identity-cache.json \
+  --resolved identities.json
+```
+
+#### MCP unavailable fallback
+
+Backstory MCP tools (`find_account`, etc.) require an authenticated OAuth session bound to the main Claude Code process. They are **not available to subagents** and may be lost when sessions are continued.
+
+When MCP is unavailable for identity resolution:
+
+1. Run `resolve_identities.py` with the cache -- this resolves all previously seen accounts without any MCP calls.
+2. For uncached accounts, use the People.ai Query API `accounts` endpoint as a fallback: query by name variations from the script output.
+3. After resolution, always update the cache so the next run skips MCP entirely for these accounts.
+
+When MCP is available but only in the main session:
+
+1. Resolve uncached accounts sequentially from the main session (not via subagents). Use the `name_variations` array from `resolve_identities.py` output to minimize `find_account` attempts.
+2. Update the cache after resolution.
+
 ### 3. Run the batch Query API pass
 
-**Always use `scripts/aggregate_activity_metrics.py`.** This script queries the `activity` object with a server-side `ootb_activity_account_name $in [...]` filter, scoped to only the accounts in your identity map. It then aggregates per-account metrics client-side.
+**Always use `scripts/aggregate_activity_metrics.py`.** This script queries the `activity` object with a server-side `ootb_activity_account_name $in [...]` filter, scoped to only the accounts in your identity map. It then aggregates per-account metrics client-side. The script handles any scope size internally -- it batches the `$in` filter into groups of 50 account names, runs one Query API call per batch (2 HTTP requests each against the ~100/hr rate limit), and merges the results before aggregation.
 
 ```bash
 python scripts/aggregate_activity_metrics.py \
-  --territory AEROSPACE_AND_DEFENSE_ENT_POD_TERR03 \
-  --identities scoped-identities.json \
-  --out territory-metrics.json
+  --region WEST \
+  --identities west-identities.json \
+  --out west-metrics.json
 ```
 
 > **Do not query the `account` object directly.** The `account` object has no validated server-side name filter. An unfiltered account query dumps metrics for every account in the tenant, causing multi-minute timeouts and wasted API quota. The `activity` object with `$in` filter is the only correct approach for scoped portfolio metrics.
@@ -144,41 +195,51 @@ Preserve the hard rules from `sales-data-explorer`:
 - If a tenant silently drops a requested column, fail that packet rather than delivering partial data.
 - Query API output is metrics and records, not AI narrative.
 
-Default portfolio metrics (aggregated by `aggregate_activity_metrics.py`):
+Default portfolio metrics (aggregated by `aggregate_activity_metrics.py` from the `activity` object):
 
 - account name
-- engagement level
-- last meeting date
-- upcoming meetings next 14 days
-- meetings in last 30 and 90 days
-- emails sent in last 30 days
-- executive activities in last 30 days
-- open opportunity count
-- open opportunity amount this quarter
-- account owner
+- total activities
+- meeting count (30d and 90d)
+- email count (30d)
+- most recent activity date
+- outbound and inbound activity counts
+- linked opportunity count and names
+- activity trend (increasing, stable, declining)
+
+The following fields are **unavailable** from the activity object and are set to null with a caveat: engagement level, executive activity, opportunity amount, opportunity stage, account owner. These would require querying different People.ai objects not currently supported.
 
 ### 4. Compute deterministic portfolio priority
 
 Before MCP enrichment, calculate a transparent `internal_priority_score` from available metrics. Keep the score explainable.
 
-Default components:
+Default components (four equal-weight buckets, 0-25 each, total 0-100):
 
-- engagement level: 25%
-- recent executive activity: 20%
-- open opportunity presence/value: 20%
-- recent meeting/activity momentum: 15%
-- no upcoming meeting despite meaningful engagement: 10%
-- recency of last meaningful activity: 10%
+- volume (0-25): total activities normalized to the scope maximum
+- opportunities (0-25): count-based tiers (0=0, 1=10, 2-5=15, 6-20=20, 21+=25)
+- momentum (0-25): activity trend (increasing=25, stable=15, declining=10)
+- recency (0-25): days since most recent activity (7d=25, 14d=20, 30d=15, 60d=10, 90d=5, >90d=0)
 
-Missing fields reduce confidence; they must not be treated as zero evidence without a caveat.
+Accounts with unavailable metrics receive a score of 0 with a caveat noting the reason.
 
 The deterministic score is for internal triage only. It determines which accounts receive deep enrichment and in what order. It is **not** the user-facing score.
 
-The user-facing metric is `signal_score`, computed by `enrich_portfolio.py` as the average of all per-signal scores for each account (or `null` if no signals). This is the score shown in the spreadsheet, HTML view, and any summary KPIs.
+The user-facing metric is `signal_score`, computed as the integer average of all per-signal scores for each account (or `null` if no signals). Both `enrich_portfolio.py` and `merge_external_signals.py` recompute this value, so it reflects all signals regardless of source. This is the score shown in the spreadsheet, HTML view, and any summary KPIs.
 
 ### 5. Backstory MCP enrichment
 
 Default: top `5` accounts by deterministic priority, maximum `10`. Also include any account explicitly requested by the user. Only enrich accounts with `identity.match_status == "matched"`.
+
+#### Parallel enrichment
+
+Spawn one subagent per enrichment account. Each subagent receives:
+
+- The account's identity record (`registry_account_name`, `query_account_name`, `peopleai_account_id`).
+- The account's metrics from the base portfolio (for synthesis context).
+- The research objective, if the user provided one.
+
+Each subagent runs the 3 free MCP calls below (5a), synthesizes the prose into the structured format (5b), and returns its portion of the enrichment keyed by `peopleai_account_id`. The orchestrator merges all subagent results into one `mcp-enrichment.json`, then runs `enrich_portfolio.py` (5c).
+
+Credit calls (`ask_sales_ai_about_account`) are never delegated to subagents. The orchestrator reviews the free-tier results, decides whether credit calls are needed, announces the cost to the user, and runs them directly. Maximum 10 credit calls per run (see `sales-insights` credit rules).
 
 #### 5a. Collect MCP data
 
@@ -243,13 +304,66 @@ Preserve source windows:
 
 Do not claim that MCP covered all accounts. Record `accounts_enriched` separately from `accounts_in_scope`.
 
+#### MCP unavailable fallback
+
+MCP tools are bound to the main Claude Code session's OAuth and are **not available to subagents**. When MCP tools are unavailable:
+
+**Option A (preferred when MCP is available in the main session):** The orchestrator makes all MCP calls sequentially from the main session, collects the raw responses, then passes them to parallel subagents for synthesis into the structured format (5b). This preserves parallelism for the synthesis work while working within the OAuth constraint.
+
+**Option B (MCP entirely unavailable):** Skip MCP enrichment. Set `mcp_status = "unavailable"` in the portfolio envelope. Proceed directly to external research (step 6), which uses WebSearch and does not require MCP tools. The portfolio remains valid without MCP data -- it just lacks internal narrative context (risks, next_steps, topics, summary from Backstory).
+
+When using Option B, `enrich_portfolio.py` should not be run with empty MCP data. Instead, proceed to external research and merge only external signals using `merge_external_signals.py`.
+
 ### 6. External research
 
 External research runs by default (`external_research=true`). Skip only when the user explicitly opts out.
 
 Follow the guidance in [`RESEARCH.md`](RESEARCH.md). Research runs on accounts selected for deep enrichment (step 5) unless the user explicitly requests broader scope.
 
-**Parallelization:** When researching multiple accounts, use parallel subagents (one per account) to reduce wall-clock time. Each subagent receives the account name, identity, research objective, and the RESEARCH.md guidance, and returns signals conforming to the portfolio schema. The orchestrator merges all returned signals into the portfolio after all subagents complete.
+**Parallelization:** When researching multiple accounts, use parallel subagents to reduce wall-clock time. Each subagent receives account names, identities, internal metrics context, research objective, and the RESEARCH.md guidance, and returns signals conforming to the portfolio schema. Each subagent writes its results to a `research-batch-NN.json` file.
+
+For large scopes (20+ accounts), batch ~5 accounts per subagent to reduce subagent count while keeping wall-clock time reasonable. For tighter time budgets, use a focused research brief (2-3 targeted queries per account instead of open-ended exploration).
+
+#### Internal context in research prompts
+
+**The orchestrator must extract internal metrics context from the portfolio base and include it in every research subagent prompt.** This is what makes signal assessments relationship-aware rather than generic.
+
+For each account in a research batch, extract and pass:
+
+1. **Product footprint** -- the `linked_opportunity_names` array. This tells the subagent which Red Hat products the account uses or is evaluating.
+2. **Renewal pipeline** -- count of opportunities starting with "Renewal -" and their names. Upcoming renewals are churn risk when paired with negative external signals.
+3. **Activity summary** -- `total_activities`, `meeting_count_30d`, `email_count_30d`.
+4. **Engagement direction** -- `outbound_count` vs `inbound_count`. The ratio reveals whether Red Hat is chasing the account or the account is engaged.
+5. **Activity trend** -- `activity_trend` ("increasing", "stable", "declining").
+6. **Opportunity count** -- `linked_opportunity_count`.
+
+Example prompt fragment per account:
+
+```
+APPLE INC. (peopleai_account_id: 18361613631)
+RH product footprint: Ansible (2 opps), OpenShift Virtualization (3 opps), RHEL (multiple + 6 renewals approaching), Lightwell, OCP, Swift language support
+Activity: 1,908 total | 6 meetings last 30d | 243 emails last 30d
+Engagement direction: outbound-heavy (1,654 out vs 254 in)
+Trend: declining | Open opportunities: 24
+
+Ground your red_hat_relevance and recommended_action in this context.
+Reference specific products, renewals, and engagement patterns when they connect to the external signal.
+```
+
+The subagent uses this context as described in RESEARCH.md "Internal relationship context" section. Without this context, signal assessments default to generic industry advice that provides no intelligence value.
+
+When `metrics_status` is not `available` for an account, pass only the account name and note that internal metrics are unavailable. The subagent will use generic assessments for that account.
+
+After all subagents complete, merge signals using `merge_external_signals.py`:
+
+```bash
+python scripts/merge_external_signals.py \
+  --portfolio portfolio-base.json \
+  --research-dir output/run-name/ \
+  --out portfolio.json
+```
+
+**Always use `merge_external_signals.py` for signal merging.** Do not merge signals with inline code. The script handles integer rounding of `signal_score`, correct envelope field names (`keep_count`/`watch_count`), disposition counting, and schema-compliant `signal_id` generation.
 
 Key rules (see `RESEARCH.md` for full guidance):
 

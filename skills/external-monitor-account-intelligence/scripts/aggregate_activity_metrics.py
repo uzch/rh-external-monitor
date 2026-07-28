@@ -26,6 +26,7 @@ import os
 import subprocess
 import sys
 import tempfile
+import time
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 REGISTRY_SCRIPT = os.path.join(HERE, "load_registry.py")
@@ -33,7 +34,7 @@ RUNNER_SCRIPT = os.path.join(
     HERE, "..", "..", "people-ai", "sales-data-explorer", "scripts", "run_query.py"
 )
 
-MAX_ACCOUNTS = 20
+BATCH_SIZE = 50
 
 ACTIVITY_COLUMNS = [
     {"slug": "ootb_activity_uid"},
@@ -101,6 +102,11 @@ def build_packet(confirmed_names, window_start_ms):
     }
 
 
+_PERMANENT_ERRORS = ("Auth failed", "Rate-limited", "COLUMN DROP", "not in the validated catalog")
+_MAX_RETRIES = 2
+_RETRY_DELAY = 5
+
+
 def run_query(packet, out_dir):
     fd, packet_path = tempfile.mkstemp(
         suffix=".json", prefix="activity-packet-", dir=out_dir
@@ -114,13 +120,34 @@ def run_query(packet, out_dir):
             "--out", out_dir,
         ]
         print(f"Running: {' '.join(cmd)}", file=sys.stderr)
-        result = subprocess.run(cmd, capture_output=True, text=True, timeout=120)
-        if result.returncode != 0:
-            return None, result.stderr.strip()
-        csv_path = os.path.join(out_dir, "Activity Metrics.csv")
-        if not os.path.exists(csv_path):
-            return None, f"Expected CSV not found at {csv_path}"
-        return csv_path, result.stdout.strip()
+
+        last_err = None
+        for attempt in range(_MAX_RETRIES + 1):
+            try:
+                result = subprocess.run(cmd, capture_output=True, text=True, timeout=120)
+            except subprocess.TimeoutExpired:
+                last_err = "subprocess timed out after 120s"
+                if attempt < _MAX_RETRIES:
+                    print(f"  Retry {attempt + 1}/{_MAX_RETRIES}: {last_err}", file=sys.stderr)
+                    time.sleep(_RETRY_DELAY)
+                continue
+
+            if result.returncode == 0:
+                csv_path = os.path.join(out_dir, "Activity Metrics.csv")
+                if not os.path.exists(csv_path):
+                    return None, f"Expected CSV not found at {csv_path}"
+                return csv_path, result.stdout.strip()
+
+            err = result.stderr.strip()
+            if any(marker in err for marker in _PERMANENT_ERRORS):
+                return None, err
+
+            last_err = err
+            if attempt < _MAX_RETRIES:
+                print(f"  Retry {attempt + 1}/{_MAX_RETRIES}: {err[:120]}", file=sys.stderr)
+                time.sleep(_RETRY_DELAY)
+
+        return None, last_err or "unknown error after retries"
     finally:
         if os.path.exists(packet_path):
             os.remove(packet_path)
@@ -414,11 +441,6 @@ def main():
     accounts = load_registry_accounts(args)
     if not accounts:
         sys.exit("No accounts found for the specified scope.")
-    if len(accounts) > MAX_ACCOUNTS:
-        sys.exit(
-            f"Scope contains {len(accounts)} accounts, exceeding the limit of "
-            f"{MAX_ACCOUNTS}. Narrow the scope or increase MAX_ACCOUNTS."
-        )
     print(f"Registry accounts in scope: {len(accounts)}", file=sys.stderr)
 
     identity_map = load_identities(args.identities)
@@ -451,15 +473,18 @@ def main():
 
     query_names = [qn for _, qn, _ in queryable]
 
-    uppercase_names = [n for n in query_names if n == n.upper() and len(n) > 3]
-    if uppercase_names and not args.allow_uppercase:
+    unresolved_names = [
+        (reg, qn) for reg, qn, _ in queryable
+        if qn == reg and qn == qn.upper() and len(qn) > 3
+    ]
+    if unresolved_names and not args.allow_uppercase:
         print(
-            f"ERROR: {len(uppercase_names)} of {len(query_names)} query name(s) "
-            f"are ALL CAPS:",
+            f"ERROR: {len(unresolved_names)} of {len(query_names)} query name(s) "
+            f"appear unresolved (query_account_name == registry name in ALL CAPS):",
             file=sys.stderr,
         )
-        for n in uppercase_names[:5]:
-            print(f"  - {n!r}", file=sys.stderr)
+        for reg, qn in unresolved_names[:5]:
+            print(f"  - {qn!r}", file=sys.stderr)
         sys.exit(
             "People.ai Query API uses case-sensitive account name matching. "
             "ALL CAPS names (from the registry) will return zero results. "
@@ -468,37 +493,74 @@ def main():
             "Pass --allow-uppercase to override this check."
         )
 
+    genuine_uppercase = [
+        qn for reg, qn, _ in queryable
+        if qn != reg and qn == qn.upper() and len(qn) > 3
+    ]
+    if genuine_uppercase:
+        print(
+            f"NOTE: {len(genuine_uppercase)} query name(s) are ALL CAPS but "
+            f"differ from the registry name (People.ai stores them this way):",
+            file=sys.stderr,
+        )
+        for n in genuine_uppercase[:5]:
+            print(f"  - {n!r}", file=sys.stderr)
+
     rows_raw = []
     query_error = None
+    failed_names = set()
 
     if query_names:
-        packet = build_packet(query_names, window_start_ms)
-        packet_json = json.dumps(packet, indent=2)
-        print(f"Packet:\n{packet_json}", file=sys.stderr)
+        total_batches = (len(query_names) + BATCH_SIZE - 1) // BATCH_SIZE
+        print(
+            f"Querying {len(query_names)} accounts in {total_batches} "
+            f"batch(es) of up to {BATCH_SIZE}",
+            file=sys.stderr,
+        )
 
-        and_clauses = packet.get("filter", {}).get("$and", [])
-        has_name_filter = any(
-            c.get("attribute", {}).get("slug") == "ootb_activity_account_name"
-            for c in and_clauses
-        )
-        has_ts_filter = any(
-            c.get("attribute", {}).get("slug") == "ootb_activity_timestamp"
-            for c in and_clauses
-        )
-        if not has_name_filter or not has_ts_filter:
-            sys.exit(
-                f"Packet integrity check failed: "
-                f"name_filter={has_name_filter}, ts_filter={has_ts_filter}. "
-                f"Both are required."
+        for i in range(0, len(query_names), BATCH_SIZE):
+            chunk = query_names[i : i + BATCH_SIZE]
+            batch_num = i // BATCH_SIZE + 1
+            print(
+                f"Batch {batch_num}/{total_batches}: {len(chunk)} accounts",
+                file=sys.stderr,
             )
 
-        csv_path, output = run_query(packet, out_dir)
-        if csv_path is None:
-            query_error = output
-            print(f"Query API failed: {output}", file=sys.stderr)
-        else:
-            print(output, file=sys.stderr)
-            rows_raw = parse_activities(csv_path)
+            packet = build_packet(chunk, window_start_ms)
+            if batch_num == 1:
+                packet_json = json.dumps(packet, indent=2)
+                print(f"Packet:\n{packet_json}", file=sys.stderr)
+
+            and_clauses = packet.get("filter", {}).get("$and", [])
+            has_name_filter = any(
+                c.get("attribute", {}).get("slug") == "ootb_activity_account_name"
+                for c in and_clauses
+            )
+            has_ts_filter = any(
+                c.get("attribute", {}).get("slug") == "ootb_activity_timestamp"
+                for c in and_clauses
+            )
+            if not has_name_filter or not has_ts_filter:
+                sys.exit(
+                    f"Packet integrity check failed: "
+                    f"name_filter={has_name_filter}, ts_filter={has_ts_filter}. "
+                    f"Both are required."
+                )
+
+            csv_path, output = run_query(packet, out_dir)
+            if csv_path is None:
+                query_error = output
+                failed_names.update(chunk)
+                print(
+                    f"  Batch {batch_num} failed: {output}", file=sys.stderr
+                )
+                continue
+
+            batch_rows = parse_activities(csv_path)
+            rows_raw.extend(batch_rows)
+            print(
+                f"  Batch {batch_num}: {len(batch_rows)} rows", file=sys.stderr
+            )
     else:
         print("No queryable identities -- skipping Query API call.", file=sys.stderr)
 
@@ -526,16 +588,16 @@ def main():
             results.append(make_unavailable_record(reg_name, identity))
             continue
 
-        if query_error:
+        q_name = identity.get("query_account_name") or reg_name
+        if q_name in failed_names:
             results.append(make_query_failed_record(
                 reg_name,
-                identity.get("query_account_name") or reg_name,
+                q_name,
                 identity,
-                query_error,
+                query_error or "batch failed",
             ))
             continue
 
-        q_name = identity.get("query_account_name") or reg_name
         acct_rows = rows_by_account.get(q_name, [])
         metrics = aggregate_account(acct_rows, now)
         results.append(make_confirmed_record(

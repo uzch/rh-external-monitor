@@ -79,12 +79,12 @@ def update_envelope(portfolio, enriched_count):
     for acct in portfolio["accounts"]:
         for s in acct.get("signals", []):
             disp = s.get("disposition")
-            score = s.get("score", 0)
+            score = s.get("score")
             if disp == "KEEP":
                 keep += 1
             elif disp == "WATCH":
                 watch += 1
-            if highest is None or score > highest:
+            if score is not None and (highest is None or score > highest):
                 highest = score
 
     portfolio["summary"]["accounts_enriched"] = enriched_count
@@ -150,7 +150,7 @@ def main():
         )
 
     for acct in portfolio.get("accounts", []):
-        scores = [s.get("score", 0) for s in acct.get("signals", [])]
+        scores = [s.get("score") for s in acct.get("signals", []) if s.get("score") is not None]
         if scores:
             acct["signal_score"] = round(sum(scores) / len(scores))
         else:

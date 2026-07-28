@@ -157,7 +157,7 @@ def main():
     title = args.title or os.path.splitext(os.path.basename(args.packet))[0]
     safe = re.sub(r"[/\\:]", " ", title).strip() or "query"
     out_csv = os.path.join(args.out, f"{safe}.csv")
-    with open(out_csv, "w", newline="") as fh:
+    with open(out_csv, "w", newline="", encoding="utf-8") as fh:
         w = csv.writer(fh)
         w.writerow(header)
         w.writerows(data)

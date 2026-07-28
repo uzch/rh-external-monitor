@@ -31,7 +31,7 @@ body{font-family:'Red Hat Text',sans-serif;background:#f2f2f2;color:#1f1f1f;line
 /* Navigation tabs */
 .tab-bar{background:#fff;border-bottom:1px solid #c7c7c7;padding:0 clamp(16px,4vw,48px)}
 .tab-bar-inner{max-width:1200px;margin:0 auto;display:flex;gap:0;flex-wrap:wrap}
-.tab-bar button{background:none;border:none;border-bottom:3px solid transparent;padding:14px 20px;font-family:'Red Hat Text',sans-serif;font-size:14px;font-weight:600;color:#4d4d4d;cursor:pointer}
+.tab-bar button{background:none;border:none;border-bottom:3px solid transparent;padding:14px 20px;font-family:'Red Hat Text',sans-serif;font-size:14px;font-weight:600;color:#4d4d4d;cursor:pointer;max-width:240px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .tab-bar button:hover{color:#151515;background:#f2f2f2}
 .tab-bar button.active{color:#151515;border-bottom-color:#EE0000}
 
@@ -55,10 +55,15 @@ body{font-family:'Red Hat Text',sans-serif;background:#f2f2f2;color:#1f1f1f;line
 .table-card{background:#fff;border:1px solid #e0e0e0;border-radius:8px;overflow:hidden;margin-bottom:24px}
 .table-card .table-header{padding:16px 20px;border-bottom:1px solid #e0e0e0;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px}
 .table-card .table-header h2{font-family:'Red Hat Display',sans-serif;font-size:20px;font-weight:500;color:#151515}
-.data-table{width:100%;border-collapse:collapse}
-.data-table th{text-align:left;padding:12px 20px;font-size:12px;font-weight:700;color:#4d4d4d;text-transform:uppercase;letter-spacing:.03em;background:#f2f2f2;border-bottom:1px solid #e0e0e0}
-.data-table td{padding:14px 20px;border-bottom:1px solid #e0e0e0;vertical-align:top;font-size:14px}
-.data-table td:first-child{max-width:280px;word-break:break-word}
+.data-table{width:100%;border-collapse:collapse;table-layout:auto}
+.data-table th{text-align:left;padding:12px 16px;font-size:12px;font-weight:700;color:#4d4d4d;text-transform:uppercase;letter-spacing:.03em;background:#f2f2f2;border-bottom:1px solid #e0e0e0;white-space:nowrap}
+.data-table th.sortable{cursor:pointer;user-select:none}
+.data-table th.sortable:hover{background:#e8e8e8}
+.sort-arrow{font-size:10px;margin-left:4px;color:#707070}
+.data-table td{padding:12px 16px;border-bottom:1px solid #e0e0e0;vertical-align:top;font-size:14px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.data-table .num{text-align:right;width:1%;white-space:nowrap}
+.data-table td:first-child{white-space:normal;word-break:break-word}
+.data-table th:first-child{white-space:normal}
 .data-table tr:last-child td{border-bottom:none}
 .data-table tr:hover{background:#f9f9f9}
 .drill-link{color:#0066cc;font-weight:600;cursor:pointer;text-decoration:none;white-space:nowrap}
@@ -69,6 +74,12 @@ body{font-family:'Red Hat Text',sans-serif;background:#f2f2f2;color:#1f1f1f;line
 .status-pill.keep{background:#e9f7df;color:#3d7317}
 .status-pill.watch{background:#ffe8cc;color:#9e4a06}
 .status-pill.reject{background:#ffe3d9;color:#b1380b}
+
+/* Source type filter pills */
+.source-filter{display:inline-flex;gap:4px;margin-left:12px;align-items:center}
+.source-filter-pill{display:inline-block;border-radius:999px;padding:3px 12px;font-size:11px;font-weight:600;letter-spacing:.02em;cursor:pointer;border:1.5px solid #c8c8c8;background:transparent;color:#6a6a6a;transition:all .15s ease;user-select:none}
+.source-filter-pill:hover{border-color:#a3a3a3;color:#383838}
+.source-filter-pill.active{background:#292929;color:#fff;border-color:#292929}
 
 /* Match badge */
 .match-badge{display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600;white-space:nowrap}
@@ -92,7 +103,7 @@ body{font-family:'Red Hat Text',sans-serif;background:#f2f2f2;color:#1f1f1f;line
 .sidebar-card .meta-row{display:flex;justify-content:space-between;padding:6px 0;font-size:13px;border-bottom:1px solid #f2f2f2}
 .sidebar-card .meta-row:last-child{border-bottom:none}
 .sidebar-card .meta-label{color:#707070}
-.sidebar-card .meta-value{color:#151515;font-weight:500}
+.sidebar-card .meta-value{color:#151515;font-weight:500;text-align:right;word-break:break-word;max-width:180px}
 .sidebar-card ul{padding-left:18px;color:#383838;font-size:13px}
 .sidebar-card li{margin-bottom:4px}
 
@@ -101,6 +112,10 @@ body{font-family:'Red Hat Text',sans-serif;background:#f2f2f2;color:#1f1f1f;line
 .signal-card-header{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:10px}
 .signal-card h3{font-family:'Red Hat Display',sans-serif;font-size:20px;font-weight:500;line-height:1.3;color:#151515;margin-bottom:14px}
 .signal-score{font-family:'Red Hat Display',sans-serif;font-size:14px;font-weight:700;color:#151515;background:#f2f2f2;border-radius:4px;padding:2px 8px}
+.score-badge{display:inline-block;border-radius:4px;padding:2px 8px;font-size:13px;font-weight:700;font-variant-numeric:tabular-nums}
+.score-badge.score-high{background:#e9f7df;color:#3d7317}
+.score-badge.score-mid{background:#ffe8cc;color:#9e4a06}
+.score-badge.score-low{background:#ffe3d9;color:#b1380b}
 .signal-meta{font-size:12px;color:#707070}
 .signal-body{display:grid;grid-template-columns:1fr 1fr;gap:20px}
 .signal-body .col-label{font-size:12px;font-weight:700;color:#4d4d4d;text-transform:uppercase;letter-spacing:.03em;margin-bottom:6px}
@@ -114,7 +129,7 @@ details[open] summary::before{content:"\25BC\00a0"}
 .detail-grid{border-left:3px solid #EE0000;padding-left:16px;margin-top:10px;display:grid;gap:10px}
 .detail-row{display:grid;grid-template-columns:140px 1fr;gap:8px;font-size:13px}
 .detail-label{color:#707070;font-weight:600}
-.detail-value{color:#383838}
+.detail-value{color:#383838;word-break:break-all}
 
 /* Recommended next move */
 .next-move{background:#fff;border:1px solid #e0e0e0;border-left:4px solid #EE0000;border-radius:0 8px 8px 0;padding:20px;margin-bottom:24px}
@@ -213,6 +228,23 @@ function pillHTML(disposition, count) {
   return '<span class="status-pill ' + cls + '">' + esc(label) + '</span>';
 }
 
+var SOURCE_TYPE_LABELS = {
+  external_public: 'External',
+  backstory_mcp: 'Internal',
+  derived: 'Derived',
+  peopleai_query: 'Query'
+};
+
+function sourceTypeLabel(t) {
+  return SOURCE_TYPE_LABELS[t] || t;
+}
+
+function scoreHTML(val) {
+  if (val == null) return '<span style="color:#a3a3a3">—</span>';
+  var cls = val >= 70 ? 'score-high' : val >= 40 ? 'score-mid' : 'score-low';
+  return '<span class="score-badge ' + cls + '">' + val + '</span>';
+}
+
 function matchBadgeHTML(status) {
   return '<span class="match-badge ' + esc(status) + '">' + esc(status.replace('_', ' ')) + '</span>';
 }
@@ -279,6 +311,42 @@ function aggregate(accts) {
     opportunities: opps,
     overallTrend: modeTrend(accts)
   };
+}
+
+// ── Table sort state ──
+
+var sortState = { column: null, ascending: true };
+
+var TREND_ORDER = { up: 3, stable: 2, down: 1 };
+var MATCH_ORDER = { matched: 3, ambiguous: 2, not_found: 1, unresolved: 0 };
+
+function sortHeaderHTML(label, key, cls) {
+  var arrow = '';
+  if (sortState.column === key) {
+    arrow = '<span class="sort-arrow">' + (sortState.ascending ? '▲' : '▼') + '</span>';
+  }
+  return '<th class="sortable' + (cls ? ' ' + cls : '') + '" onclick="EM.sortBy(\'' + key + '\')">' + esc(label) + arrow + '</th>';
+}
+
+function compareRows(a, b, key, ascending) {
+  var va, vb;
+  if (key === 'name') { va = a._sortName; vb = b._sortName; }
+  else if (key === 'account_name') { va = a.account_name; vb = b.account_name; }
+  else if (key === 'score') { va = accountScore(a); vb = accountScore(b); }
+  else if (key === 'total_activities') { va = metric(a, 'total_activities'); vb = metric(b, 'total_activities'); }
+  else if (key === 'meeting_count_30d') { va = metric(a, 'meeting_count_30d'); vb = metric(b, 'meeting_count_30d'); }
+  else if (key === 'activity_trend') { va = TREND_ORDER[metric(a, 'activity_trend')] || 0; vb = TREND_ORDER[metric(b, 'activity_trend')] || 0; }
+  else if (key === 'match_status') { va = MATCH_ORDER[a.identity.match_status] || 0; vb = MATCH_ORDER[b.identity.match_status] || 0; }
+  else { va = a._sortData && a._sortData[key]; vb = b._sortData && b._sortData[key]; }
+
+  if (va == null && vb == null) return 0;
+  if (va == null) return 1;
+  if (vb == null) return -1;
+
+  var cmp;
+  if (typeof va === 'string') cmp = va.localeCompare(vb);
+  else cmp = va - vb;
+  return ascending ? cmp : -cmp;
 }
 
 // ── Build hierarchy tree ──
@@ -363,13 +431,14 @@ function renderTabs() {
 
 // ── Determine what to render ──
 
-function renderCurrentView() {
+function renderCurrentView(opts) {
+  var skipScroll = opts && opts.skipScroll;
   currentView = 'top';
   renderTabs();
 
   if (scopeType === 'account') {
     document.getElementById('app').innerHTML = renderAccountDetail(accounts[0]);
-    window.scrollTo(0, 0);
+    if (!skipScroll) window.scrollTo(0, 0);
     return;
   }
 
@@ -396,7 +465,7 @@ function renderCurrentView() {
     drillField = remainingLevels[0];
     document.getElementById('app').innerHTML = renderGroupView(currentAccounts, drillField, remainingLevels);
   }
-  window.scrollTo(0, 0);
+  if (!skipScroll) window.scrollTo(0, 0);
 }
 
 // ── Breadcrumb ──
@@ -493,22 +562,49 @@ function renderGroupView(accts, drillField, remainingLevels) {
   // Table of child groups
   html += '<div class="table-card"><div class="table-header"><h2>' + esc(childLabel.replace(/y$/, 'ie') + 's') + '</h2></div>';
   html += '<table class="data-table"><thead><tr>';
-  html += '<th>' + esc(childLabel) + '</th><th>Accounts</th><th>Avg Score</th><th>Activities</th><th>Meetings (30d)</th><th>Trend</th><th>Keep</th><th>Watch</th><th></th>';
+  html += sortHeaderHTML(childLabel, 'name');
+  html += sortHeaderHTML('Accounts', 'count', 'num');
+  html += sortHeaderHTML('Avg Score', 'avgScore', 'num');
+  html += sortHeaderHTML('Activities', 'totalActivities', 'num');
+  html += sortHeaderHTML('Meetings (30d)', 'meetings30d', 'num');
+  html += '<th>Trend</th>';
+  html += sortHeaderHTML('Keep', 'keepCount', 'num');
+  html += sortHeaderHTML('Watch', 'watchCount', 'num');
+  html += '<th></th>';
   html += '</tr></thead><tbody>';
 
-  var keys = Object.keys(groups).sort();
-  keys.forEach(function(key, idx) {
-    var gAccts = groups[key];
-    var gAgg = aggregate(gAccts);
+  var groupRows = Object.keys(groups).map(function(key) {
+    var gAgg = aggregate(groups[key]);
+    gAgg._sortName = key;
+    return { key: key, agg: gAgg };
+  });
+  if (sortState.column) {
+    groupRows.sort(function(a, b) {
+      var va, vb, col = sortState.column;
+      if (col === 'name') { va = a.key; vb = b.key; }
+      else if (col === 'overallTrend') { va = TREND_ORDER[a.agg.overallTrend] || 0; vb = TREND_ORDER[b.agg.overallTrend] || 0; }
+      else { va = a.agg[col]; vb = b.agg[col]; }
+      if (va == null && vb == null) return 0;
+      if (va == null) return 1;
+      if (vb == null) return -1;
+      var cmp = typeof va === 'string' ? va.localeCompare(vb) : va - vb;
+      return sortState.ascending ? cmp : -cmp;
+    });
+  } else {
+    groupRows.sort(function(a, b) { return a.key.localeCompare(b.key); });
+  }
+  groupRows.forEach(function(row, idx) {
+    var key = row.key;
+    var gAgg = row.agg;
     html += '<tr>';
     html += '<td><strong>' + esc(key) + '</strong></td>';
-    html += '<td>' + gAgg.count + '</td>';
-    html += '<td>' + (gAgg.avgScore != null ? gAgg.avgScore : '—') + '</td>';
-    html += '<td>' + gAgg.totalActivities + '</td>';
-    html += '<td>' + gAgg.meetings30d + '</td>';
+    html += '<td class="num">' + gAgg.count + '</td>';
+    html += '<td class="num">' + scoreHTML(gAgg.avgScore) + '</td>';
+    html += '<td class="num">' + gAgg.totalActivities + '</td>';
+    html += '<td class="num">' + gAgg.meetings30d + '</td>';
     html += '<td>' + trendHTML(gAgg.overallTrend, true) + '</td>';
-    html += '<td>' + gAgg.keepCount + '</td>';
-    html += '<td>' + gAgg.watchCount + '</td>';
+    html += '<td class="num">' + gAgg.keepCount + '</td>';
+    html += '<td class="num">' + gAgg.watchCount + '</td>';
     html += '<td><a class="drill-link" onclick="EM.drillGroup(' + idx + ')">Open &rarr;</a></td>';
     html += '</tr>';
   });
@@ -517,7 +613,7 @@ function renderGroupView(accts, drillField, remainingLevels) {
   html += '</div>';
 
   // Store keys for drill-down
-  window._groupKeys = keys;
+  window._groupKeys = groupRows.map(function(r){ return r.key; });
   window._groupMap = groups;
 
   return html;
@@ -549,10 +645,22 @@ function renderAccountListView(accts) {
 
   html += '<div class="table-card"><div class="table-header"><h2>Accounts</h2></div>';
   html += '<table class="data-table"><thead><tr>';
-  html += '<th>Account</th><th>Score</th><th>Signals</th><th>Activities</th><th>Meetings (30d)</th><th>Trend</th><th>Top Reason</th><th>Match</th><th></th>';
+  html += sortHeaderHTML('Account', 'account_name');
+  html += sortHeaderHTML('Score', 'score', 'num');
+  html += '<th>Signals</th>';
+  html += sortHeaderHTML('Activities', 'total_activities', 'num');
+  html += sortHeaderHTML('Meetings (30d)', 'meeting_count_30d', 'num');
+  html += '<th>Trend</th>';
+  html += '<th>Match</th>';
+  html += '<th></th>';
   html += '</tr></thead><tbody>';
 
-  accts.forEach(function(a, idx) {
+  var sorted = accts.slice();
+  if (sortState.column) {
+    sorted.sort(function(a, b) { return compareRows(a, b, sortState.column, sortState.ascending); });
+  }
+
+  sorted.forEach(function(a, idx) {
     var signals = a.signals || [];
     var keepN = signals.filter(function(s){ return s.disposition === 'KEEP'; }).length;
     var watchN = signals.filter(function(s){ return s.disposition === 'WATCH'; }).length;
@@ -565,12 +673,11 @@ function renderAccountListView(accts) {
 
     html += '<tr>';
     html += '<td><strong>' + esc(a.account_name) + '</strong></td>';
-    html += '<td>' + (sc != null ? sc : '—') + '</td>';
+    html += '<td class="num">' + scoreHTML(sc) + '</td>';
     html += '<td>' + signalCell + '</td>';
-    html += '<td>' + (metric(a, 'total_activities') || 0) + '</td>';
-    html += '<td>' + (metric(a, 'meeting_count_30d') || 0) + '</td>';
+    html += '<td class="num">' + (metric(a, 'total_activities') || 0) + '</td>';
+    html += '<td class="num">' + (metric(a, 'meeting_count_30d') || 0) + '</td>';
     html += '<td>' + trendHTML(metric(a, 'activity_trend'), false) + '</td>';
-    html += '<td>' + esc((a.priority_reasons || [])[0] || '') + '</td>';
     html += '<td>' + matchBadgeHTML(a.identity.match_status) + '</td>';
     html += '<td><a class="drill-link" onclick="EM.openAccount(\'' + esc(a.account_id) + '\')">Open &rarr;</a></td>';
     html += '</tr>';
@@ -599,7 +706,7 @@ function renderAccountDetail(a) {
   html += '<h1>' + esc(a.account_name) + '</h1>';
   html += '<div class="subtitle"><span>Account</span>';
   if (a.hierarchy.territory_name) html += '<span class="dot">' + esc(a.hierarchy.territory_name) + '</span>';
-  html += '<span class="dot">Signal Score: ' + (accountScore(a) != null ? accountScore(a) : '—') + '</span>';
+  html += '<span class="dot">Signal Score: ' + scoreHTML(accountScore(a)) + '</span>';
   html += '<span class="dot">' + esc(a.identity.match_status.replace('_', ' ').charAt(0).toUpperCase() + a.identity.match_status.replace('_', ' ').slice(1)) + '</span>';
   html += '</div></div></div>';
 
@@ -617,17 +724,34 @@ function renderAccountDetail(a) {
 
   // Signals
   if (signals.length > 0) {
-    html += '<div class="table-card" style="overflow:visible"><div class="table-header"><h2>Signals</h2><div style="display:flex;gap:8px">';
-    if (keepN) html += pillHTML('KEEP', keepN) + ' ';
-    if (watchN) html += pillHTML('WATCH', watchN);
+    var sourceTypes = {};
+    signals.forEach(function(s) { sourceTypes[s.source_type] = (sourceTypes[s.source_type] || 0) + 1; });
+    var typeKeys = Object.keys(sourceTypes);
+
+    html += '<div class="table-card" style="overflow:visible"><div class="table-header"><h2>Signals</h2><div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">';
+    html += '<span class="source-filter" data-filter-group="disposition">';
+    html += '<span class="source-filter-pill active" data-filter-value="all" onclick="EM.filterSignals(this)">All (' + signals.length + ')</span>';
+    if (keepN) html += '<span class="source-filter-pill" data-filter-value="KEEP" onclick="EM.filterSignals(this)">Keep (' + keepN + ')</span>';
+    if (watchN) html += '<span class="source-filter-pill" data-filter-value="WATCH" onclick="EM.filterSignals(this)">Watch (' + watchN + ')</span>';
+    html += '</span>';
+    html += '<span class="source-filter" data-filter-group="source">';
+    html += '<span class="source-filter-pill active" data-filter-value="all" onclick="EM.filterSignals(this)">All</span>';
+    typeKeys.forEach(function(t) {
+      html += '<span class="source-filter-pill" data-filter-value="' + esc(t) + '" onclick="EM.filterSignals(this)">' + esc(sourceTypeLabel(t)) + '</span>';
+    });
+    html += '</span>';
+    html += '<span class="source-filter" style="margin-left:auto"><span style="font-size:11px;color:#707070;font-weight:600;text-transform:uppercase;letter-spacing:.03em;margin-right:4px">Sort</span>';
+    html += '<span class="source-filter-pill active" onclick="EM.sortSignals(this,\'score\')">Score</span>';
+    html += '<span class="source-filter-pill" onclick="EM.sortSignals(this,\'date\')">Date</span>';
+    html += '</span>';
     html += '</div></div>';
 
     signals.forEach(function(s, i) {
       var isLast = i === signals.length - 1;
-      html += '<div class="signal-card" style="border-radius:0;border:none;' + (isLast ? '' : 'border-bottom:1px solid #e0e0e0') + '">';
+      html += '<div class="signal-card" data-source-type="' + esc(s.source_type) + '" data-disposition="' + esc(s.disposition) + '" data-score="' + (s.score || 0) + '" data-published="' + esc(s.published_at || '') + '" style="border-radius:0;border:none;' + (isLast ? '' : 'border-bottom:1px solid #e0e0e0') + '">';
       html += '<div class="signal-card-header">';
       html += pillHTML(s.disposition);
-      html += ' <span class="signal-score">' + s.score + '</span>';
+      html += ' ' + scoreHTML(s.score);
       html += ' <span class="signal-meta">' + esc(s.confidence) + ' confidence &bull; ' + esc(s.source_type) + '</span>';
       html += '</div>';
       html += '<h3>' + esc(s.headline) + '</h3>';
@@ -678,7 +802,7 @@ function renderAccountDetail(a) {
   if (hier.territory_name) html += '<div class="meta-row"><span class="meta-label">Territory</span><span class="meta-value">' + esc(hier.territory_name) + '</span></div>';
   if (hier.segment) html += '<div class="meta-row"><span class="meta-label">Segment</span><span class="meta-value">' + esc(hier.segment) + '</span></div>';
   html += '<div class="meta-row"><span class="meta-label">Match</span><span class="meta-value">' + matchBadgeHTML(a.identity.match_status) + '</span></div>';
-  if (a.internal_priority_score != null) html += '<div class="meta-row"><span class="meta-label">Priority Score</span><span class="meta-value">' + a.internal_priority_score + '</span></div>';
+  if (a.internal_priority_score != null) html += '<div class="meta-row"><span class="meta-label">Priority Score</span><span class="meta-value">' + scoreHTML(a.internal_priority_score) + '</span></div>';
   html += '</div>';
 
   // Activity card
@@ -836,12 +960,61 @@ window.EM = {
   showMain: showMain,
   showGuide: showGuide,
   navigateBack: navigateBack,
+  sortBy: function(col) {
+    if (sortState.column === col) {
+      sortState.ascending = !sortState.ascending;
+    } else {
+      sortState.column = col;
+      sortState.ascending = true;
+    }
+    renderCurrentView({ skipScroll: true });
+  },
   drillGroup: function(idx) {
     var key = window._groupKeys[idx];
     var accts = window._groupMap[key];
     var depth = navStack.length;
     var remainingLevels = hierarchyLevels.slice(depth);
     navigateTo(remainingLevels[0], key, accts);
+  },
+  sortSignals: function(pill, mode) {
+    var pills = pill.parentNode.querySelectorAll('.source-filter-pill');
+    for (var i = 0; i < pills.length; i++) pills[i].classList.remove('active');
+    pill.classList.add('active');
+    var container = pill.closest('.table-card');
+    var cards = Array.prototype.slice.call(container.querySelectorAll('.signal-card'));
+    cards.sort(function(a, b) {
+      if (mode === 'date') {
+        var da = a.getAttribute('data-published') || '';
+        var db = b.getAttribute('data-published') || '';
+        return da > db ? -1 : da < db ? 1 : 0;
+      }
+      return (parseFloat(b.getAttribute('data-score')) || 0) - (parseFloat(a.getAttribute('data-score')) || 0);
+    });
+    var parent = cards[0].parentNode;
+    cards.forEach(function(c) { parent.appendChild(c); });
+  },
+  filterSignals: function(pill) {
+    var group = pill.parentNode;
+    var pills = group.querySelectorAll('.source-filter-pill');
+    for (var i = 0; i < pills.length; i++) pills[i].classList.remove('active');
+    pill.classList.add('active');
+    var container = pill.closest('.table-card');
+    var groups = container.querySelectorAll('[data-filter-group]');
+    var dispFilter = 'all', srcFilter = 'all';
+    for (var g = 0; g < groups.length; g++) {
+      var active = groups[g].querySelector('.source-filter-pill.active');
+      if (!active) continue;
+      var val = active.getAttribute('data-filter-value');
+      if (groups[g].getAttribute('data-filter-group') === 'disposition') dispFilter = val;
+      else srcFilter = val;
+    }
+    var cards = container.querySelectorAll('.signal-card');
+    for (var j = 0; j < cards.length; j++) {
+      var card = cards[j];
+      var dispOk = dispFilter === 'all' || card.getAttribute('data-disposition') === dispFilter;
+      var srcOk = srcFilter === 'all' || card.getAttribute('data-source-type') === srcFilter;
+      card.style.display = (dispOk && srcOk) ? '' : 'none';
+    }
   },
   openAccount: function(accountId) {
     var a = accounts.find(function(x){ return x.account_id === accountId; });

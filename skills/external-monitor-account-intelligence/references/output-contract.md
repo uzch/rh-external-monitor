@@ -32,7 +32,7 @@ The selected account exposes:
 - 30-second summary
 - recommended next move
 - People.ai metrics
-- Backstory status, risks, next steps, topics, engaged people
+- Backstory status, risks, next steps, topics
 - external signals when enabled
 - provenance and time windows
 

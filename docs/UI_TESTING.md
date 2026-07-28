@@ -102,6 +102,24 @@ The synthetic data generator (`examples/generate-geo-fixture.py`) creates a GEO-
 
 The generator is **not** part of the tool pipeline. It is only used for UI testing when explicitly requested. See the warning header in the script.
 
+## Region-scope test
+
+A second test (`tests/test-intel-ui.js`) covers region-level rendering using a pre-built fixture with real INTEL region data (9 accounts across 6 territories).
+
+```bash
+node tests/test-intel-ui.js
+```
+
+Unlike the GEO test, this test does not require fixture generation — the HTML fixture at `tests/fixtures/intel-portfolio-preview.html` is committed. It covers:
+
+- Region overview: title, tabs, KPIs, summary, activity stats, territory table with numeric average scores
+- Territory drill-down: account list with signal pills, match badges, signal score columns
+- Account detail: summary, next move, signal cards sorted descending, collapsible details, sidebar cards
+- Breadcrumb navigation back to region
+- Guide tab: sections, definition tables, styled pills/badges
+- Multi-territory drill: second territory drill to verify consistent rendering
+- Responsive breakpoints: 920px grid collapse, 600px heading font-size
+
 ## Adding new test assertions
 
 The test script at `tests/test-template-ui.js` uses a simple `assert(condition, msg)` helper. To add a new check:
