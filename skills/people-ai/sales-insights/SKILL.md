@@ -25,9 +25,8 @@ itself is always the narrative. If the user wants the underlying data, point at 
 
 ## Prerequisite
 
-A connected Backstory MCP at **`https://mcp.people.ai/mcp`** (the MCP endpoint stays on the
-people.ai domain) — never the `backstory.ai` URL, which silently fails OAuth in Claude Code (see
-INSTALL.md). Each user connects with their own Backstory login; there is no shared-key mode.
+A connected Backstory MCP at **`https://mcp.backstory.ai/mcp`**. Each user connects with their
+own Backstory login; there is no shared-key mode. See INSTALL.md for client-specific setup.
 
 ## The honest windows (say them, don't blur them)
 

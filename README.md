@@ -54,7 +54,7 @@ The registry establishes scope. Query API provides broad structured activity. Ba
 3. Connect Backstory MCP when identity resolution or narrative enrichment is required. This is interactive OAuth and user specific:
 
    ```bash
-   claude mcp add --transport http peopleai https://mcp.people.ai/mcp
+   claude mcp add --transport http backstory https://mcp.backstory.ai/mcp
    ```
 
 4. Run the offline smoke test:

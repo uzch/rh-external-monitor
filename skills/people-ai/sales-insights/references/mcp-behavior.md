@@ -1,15 +1,12 @@
-# Backstory MCP (people.ai endpoint) — validated behavior this skill depends on
+# Backstory MCP endpoint and documented behavior
 
-Facts verified live 2026-07-02 against `https://mcp.people.ai/mcp` (People.ai MCP Server v2.14.7,
-protocol 2025-06-18). Full tool contracts were captured from an authenticated `tools/list`; this file
-distills what the skill relies on.
+The tool behavior below was verified live on 2026-07-02. The current connection endpoint is
+`https://mcp.backstory.ai/mcp`. Full tool contracts were captured from an authenticated
+`tools/list`; this file distills what the skill relies on.
 
 ## Connection
 
-- URL: **`https://mcp.people.ai/mcp`** (Streamable HTTP). The alias `mcp.backstory.ai/mcp` is the
-  same server but its OAuth metadata declares the `people.ai` resource — Claude Code's RFC 8707
-  check then **silently discards the token** (the login browser flow appears to succeed; the
-  connection stays dead). claude.ai connectors tolerate either URL.
+- URL: **`https://mcp.backstory.ai/mcp`** (Streamable HTTP).
 - Auth: OAuth 2.1 + PKCE, per-user interactive login only. No API-key or client-credentials path
   exists — Query API bearer tokens are rejected (`401 non_jwt_token`). This is why each end user
   connects individually and why the companion skill (API-key based) is a separate artifact.

@@ -21,7 +21,7 @@ PEOPLEAI_CLIENT_ID=
 PEOPLEAI_CLIENT_SECRET=
 ```
 
-Backstory MCP requires the user's interactive OAuth connection at `https://mcp.people.ai/mcp`.
+Backstory MCP requires the user's interactive OAuth connection at `https://mcp.backstory.ai/mcp`.
 
 ## Validate the example
 

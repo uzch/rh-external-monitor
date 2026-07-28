@@ -29,7 +29,7 @@ When fixing a bug, reproduce it in an end-to-end flow close to the user experien
 
 ## MCP tool availability
 
-Backstory MCP tools (`find_account`, `get_account_status`, `get_recent_account_activity`, `account_company_news`, `ask_sales_ai_about_account`) require an authenticated OAuth session bound to the main Claude Code process. The canonical MCP endpoint is `https://mcp.people.ai/mcp`.
+Backstory MCP tools (`find_account`, `get_account_status`, `get_recent_account_activity`, `account_company_news`, `ask_sales_ai_about_account`) require an authenticated OAuth session bound to the main Claude Code process. The canonical MCP endpoint is `https://mcp.backstory.ai/mcp`.
 
 Constraints:
 
