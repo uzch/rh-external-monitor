@@ -13,9 +13,9 @@ Key paths from the repository root:
 - MCP behavior reference: `skills/people-ai/sales-insights/references/mcp-behavior.md`
 - Signal merge script: `skills/people-ai/sales-insights/scripts/merge_signals.py`
 
-Prerequisite: Backstory MCP connected at `https://mcp.people.ai/mcp` (NOT backstory.ai).
+Prerequisite: Backstory MCP connected at `https://mcp.backstory.ai/mcp`.
 
-Configure in Claude CLI: `claude mcp add --transport http peopleai https://mcp.people.ai/mcp`
+Configure in Claude CLI: `claude mcp add --transport http backstory https://mcp.backstory.ai/mcp`
 
 No API key needed - this skill uses interactive OAuth under your Backstory identity. SalesAI credit consumption is tenant-metered.
 

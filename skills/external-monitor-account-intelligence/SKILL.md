@@ -255,7 +255,7 @@ MCP responses are unstructured prose. The orchestrator must synthesize each acco
     "recommended_next_move": "single actionable next step for the account team",
     "signals": [
       {
-        "disposition": "KEEP",
+        "disposition": "ACT",
         "score": 80,
         "headline": "concise factual headline",
         "what_changed": "what happened",
@@ -350,7 +350,7 @@ python scripts/merge_external_signals.py \
   --out portfolio.json
 ```
 
-**Always use `merge_external_signals.py` for signal merging.** Do not merge signals with inline code. The script handles integer rounding of `signal_score`, correct envelope field names (`keep_count`/`watch_count`), disposition counting, and schema-compliant `signal_id` generation.
+**Always use `merge_external_signals.py` for signal merging.** Do not merge signals with inline code. The script handles integer rounding of `signal_score`, correct envelope field names (`act_count`/`watch_count`), disposition counting, and schema-compliant `signal_id` generation.
 
 Key rules (see `RESEARCH.md` for full guidance):
 

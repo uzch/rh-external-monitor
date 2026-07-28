@@ -71,7 +71,7 @@ body{font-family:'Red Hat Text',sans-serif;background:#f2f2f2;color:#1f1f1f;line
 
 /* Status pills */
 .status-pill{display:inline-block;border-radius:999px;padding:3px 12px;font-size:12px;font-weight:700;letter-spacing:.02em;text-transform:uppercase;white-space:nowrap}
-.status-pill.keep{background:#e9f7df;color:#3d7317}
+.status-pill.act{background:#e9f7df;color:#3d7317}
 .status-pill.watch{background:#ffe8cc;color:#9e4a06}
 .status-pill.reject{background:#ffe3d9;color:#b1380b}
 
@@ -281,7 +281,7 @@ function modeTrend(accts) {
 
 function aggregate(accts) {
   var totalAct = 0, meetings = 0, emails = 0, opps = 0;
-  var keepCount = 0, watchCount = 0, rejectCount = 0;
+  var actCount = 0, watchCount = 0, rejectCount = 0;
   var scores = [];
   accts.forEach(function(a) {
     totalAct += (metric(a, 'total_activities') || 0);
@@ -291,7 +291,7 @@ function aggregate(accts) {
     var sc = accountScore(a);
     if (sc != null) scores.push(sc);
     (a.signals || []).forEach(function(s) {
-      if (s.disposition === 'KEEP') keepCount++;
+      if (s.disposition === 'ACT') actCount++;
       else if (s.disposition === 'WATCH') watchCount++;
       else if (s.disposition === 'REJECT') rejectCount++;
     });
@@ -300,7 +300,7 @@ function aggregate(accts) {
     count: accts.length,
     withData: accts.filter(function(a){ var m = a && a.internal && a.internal.metrics; return m && Object.keys(m).length > 0; }).length,
     enriched: accts.filter(function(a){ return (a.signals||[]).length > 0; }).length,
-    keepCount: keepCount,
+    actCount: actCount,
     watchCount: watchCount,
     rejectCount: rejectCount,
     highestScore: scores.length ? Math.max.apply(null, scores) : null,
@@ -491,7 +491,7 @@ function summaryKPI() {
     count: s.account_count,
     withData: s.accounts_with_internal_data,
     enriched: s.accounts_enriched,
-    keepCount: s.keep_count,
+    actCount: s.act_count,
     watchCount: s.watch_count,
     highestScore: s.highest_signal_score
   };
@@ -502,7 +502,7 @@ function kpiRowHTML(agg) {
     '<div class="kpi-card"><div class="kpi-value">' + agg.count + '</div><div class="kpi-label">Accounts</div></div>' +
     '<div class="kpi-card"><div class="kpi-value">' + agg.withData + '</div><div class="kpi-label">Internal Data</div></div>' +
     '<div class="kpi-card"><div class="kpi-value">' + agg.enriched + '</div><div class="kpi-label">Enriched</div></div>' +
-    '<div class="kpi-card"><div class="kpi-value">' + agg.keepCount + ' / ' + agg.watchCount + '</div><div class="kpi-label">Keep / Watch</div></div>' +
+    '<div class="kpi-card"><div class="kpi-value">' + agg.actCount + ' / ' + agg.watchCount + '</div><div class="kpi-label">Act / Watch</div></div>' +
     '<div class="kpi-card"><div class="kpi-value">' + (agg.highestScore != null ? agg.highestScore : '—') + '</div><div class="kpi-label">Highest Score</div></div>' +
   '</div>';
 }
@@ -568,7 +568,7 @@ function renderGroupView(accts, drillField, remainingLevels) {
   html += sortHeaderHTML('Activities', 'totalActivities', 'num');
   html += sortHeaderHTML('Meetings (30d)', 'meetings30d', 'num');
   html += '<th>Trend</th>';
-  html += sortHeaderHTML('Keep', 'keepCount', 'num');
+  html += sortHeaderHTML('Act', 'actCount', 'num');
   html += sortHeaderHTML('Watch', 'watchCount', 'num');
   html += '<th></th>';
   html += '</tr></thead><tbody>';
@@ -603,7 +603,7 @@ function renderGroupView(accts, drillField, remainingLevels) {
     html += '<td class="num">' + gAgg.totalActivities + '</td>';
     html += '<td class="num">' + gAgg.meetings30d + '</td>';
     html += '<td>' + trendHTML(gAgg.overallTrend, true) + '</td>';
-    html += '<td class="num">' + gAgg.keepCount + '</td>';
+    html += '<td class="num">' + gAgg.actCount + '</td>';
     html += '<td class="num">' + gAgg.watchCount + '</td>';
     html += '<td><a class="drill-link" onclick="EM.drillGroup(' + idx + ')">Open &rarr;</a></td>';
     html += '</tr>';
@@ -662,14 +662,14 @@ function renderAccountListView(accts) {
 
   sorted.forEach(function(a, idx) {
     var signals = a.signals || [];
-    var keepN = signals.filter(function(s){ return s.disposition === 'KEEP'; }).length;
+    var actN = signals.filter(function(s){ return s.disposition === 'ACT'; }).length;
     var watchN = signals.filter(function(s){ return s.disposition === 'WATCH'; }).length;
     var sc = accountScore(a);
 
     var signalCell = '';
-    if (keepN > 0) signalCell += pillHTML('KEEP', keepN) + ' ';
+    if (actN > 0) signalCell += pillHTML('ACT', actN) + ' ';
     if (watchN > 0) signalCell += pillHTML('WATCH', watchN);
-    if (!keepN && !watchN) signalCell = signals.length ? String(signals.length) : '0';
+    if (!actN && !watchN) signalCell = signals.length ? String(signals.length) : '0';
 
     html += '<tr>';
     html += '<td><strong>' + esc(a.account_name) + '</strong></td>';
@@ -698,7 +698,7 @@ function renderAccountDetail(a) {
     return (y.score || 0) - (x.score || 0);
   });
 
-  var keepN = signals.filter(function(s){ return s.disposition === 'KEEP'; }).length;
+  var actN = signals.filter(function(s){ return s.disposition === 'ACT'; }).length;
   var watchN = signals.filter(function(s){ return s.disposition === 'WATCH'; }).length;
 
   var html = '<div class="page-header"><div class="page-header-inner">';
@@ -731,7 +731,7 @@ function renderAccountDetail(a) {
     html += '<div class="table-card" style="overflow:visible"><div class="table-header"><h2>Signals</h2><div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">';
     html += '<span class="source-filter" data-filter-group="disposition">';
     html += '<span class="source-filter-pill active" data-filter-value="all" onclick="EM.filterSignals(this)">All (' + signals.length + ')</span>';
-    if (keepN) html += '<span class="source-filter-pill" data-filter-value="KEEP" onclick="EM.filterSignals(this)">Keep (' + keepN + ')</span>';
+    if (actN) html += '<span class="source-filter-pill" data-filter-value="ACT" onclick="EM.filterSignals(this)">Act (' + actN + ')</span>';
     if (watchN) html += '<span class="source-filter-pill" data-filter-value="WATCH" onclick="EM.filterSignals(this)">Watch (' + watchN + ')</span>';
     html += '</span>';
     html += '<span class="source-filter" data-filter-group="source">';
@@ -884,7 +884,7 @@ function renderGuideView() {
     '<div class="guide-section"><h3>Signals: Keep, Watch, Reject</h3>' +
     '<p>Each signal is a piece of intelligence about an account. The system sorts every signal into one of three buckets:</p>' +
     '<table class="def-table"><thead><tr><th>Label</th><th>Meaning</th></tr></thead><tbody>' +
-    '<tr><td><span class="status-pill keep">KEEP</span></td><td>Act on this. The signal is strong, relevant, and worth your time now.</td></tr>' +
+    '<tr><td><span class="status-pill act">ACT</span></td><td>Act on this. The signal is strong, relevant, and worth your time now.</td></tr>' +
     '<tr><td><span class="status-pill watch">WATCH</span></td><td>Worth knowing, but not urgent. Check back later or gather more information.</td></tr>' +
     '<tr><td><span class="status-pill reject">REJECT</span></td><td>Noise. The system found it but decided it is not relevant or useful. Rejected signals are hidden by default.</td></tr>' +
     '</tbody></table></div>' +

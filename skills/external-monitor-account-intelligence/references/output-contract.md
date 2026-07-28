@@ -9,7 +9,7 @@ One `portfolio.json` drives both Portfolio View and Account View.
 - `summary.account_count`
 - `summary.accounts_with_internal_data`
 - `summary.accounts_enriched`
-- `summary.keep_count`
+- `summary.act_count`
 - `summary.watch_count`
 - `summary.highest_signal_score`
 - `summary.text`
@@ -20,7 +20,7 @@ Each account row exposes:
 - hierarchy fields
 - signal score (average of per-signal scores, rounded integer — the user-facing metric)
 - engagement and activity metrics
-- KEEP/WATCH counts
+- ACT/WATCH counts
 - top reason for attention
 - enrichment status
 
@@ -38,7 +38,7 @@ The selected account exposes:
 
 ## Disposition semantics
 
-- `KEEP`: actionable now; enough evidence and relevance for account-team attention.
+- `ACT`: actionable now; enough evidence and relevance for account-team attention.
 - `WATCH`: meaningful but timing, evidence, or actionability is not yet sufficient.
 - `REJECT`: retained only in raw run artifacts, not shown by default in the portfolio.
 

@@ -80,21 +80,21 @@ def update_envelope(portfolio, accounts_with_signals, total_signals):
     if portfolio["run"].get("status") != "partial":
         portfolio["run"]["status"] = "completed"
 
-    keep = 0
+    act = 0
     watch = 0
     highest = None
     for acct in portfolio["accounts"]:
         for s in acct.get("signals", []):
             disp = s.get("disposition")
             score = s.get("score")
-            if disp == "KEEP":
-                keep += 1
+            if disp == "ACT":
+                act += 1
             elif disp == "WATCH":
                 watch += 1
             if score is not None and (highest is None or score > highest):
                 highest = score
 
-    portfolio["summary"]["keep_count"] = keep
+    portfolio["summary"]["act_count"] = act
     portfolio["summary"]["watch_count"] = watch
     portfolio["summary"]["highest_signal_score"] = highest
     portfolio["summary"]["total_signals"] = total_signals

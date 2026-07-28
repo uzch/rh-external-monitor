@@ -159,7 +159,7 @@ External research produces signal objects that conform to the portfolio schema (
 ```json
 {
   "signal_id": "ext-<account_id>-<sequential>",
-  "disposition": "KEEP or WATCH",
+  "disposition": "ACT or WATCH",
   "score": 0-100,
   "headline": "Concise factual headline",
   "what_changed": "What happened",

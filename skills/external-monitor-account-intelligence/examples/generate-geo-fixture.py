@@ -73,7 +73,7 @@ TOPICS_POOL = [
     "security compliance", "infrastructure as code",
 ]
 
-HEADLINES_KEEP = [
+HEADLINES_ACT = [
     ("Strong engagement trajectory with executive backing",
      "Activity volume increased 35% month-over-month with C-level meetings.",
      "Growing momentum suggests readiness for expanded engagement.",
@@ -200,8 +200,8 @@ def make_metrics(has_data, trend):
     }
 
 def make_signal(sig_id, disposition, score):
-    if disposition == "KEEP":
-        h = random.choice(HEADLINES_KEEP)
+    if disposition == "ACT":
+        h = random.choice(HEADLINES_ACT)
     else:
         h = random.choice(HEADLINES_WATCH)
     src = random.choice(SOURCE_TYPES)
@@ -221,7 +221,7 @@ def make_signal(sig_id, disposition, score):
     }
 
 accounts = []
-total_keep = 0
+total_act = 0
 total_watch = 0
 highest_score = 0
 acct_idx = 0
@@ -234,17 +234,17 @@ for region_name, territories in REGIONS.items():
             trend = random.choice(["increasing", "stable", "declining"]) if has_data else None
 
             if has_data:
-                n_keep = random.randint(1, 4)
+                n_act = random.randint(1, 4)
                 n_watch = random.randint(0, 3)
                 signals = []
-                for i in range(n_keep):
+                for i in range(n_act):
                     score = random.randint(55, 92)
-                    signals.append(make_signal(f"sig-{acct_idx:03d}-{i+1}", "KEEP", score))
+                    signals.append(make_signal(f"sig-{acct_idx:03d}-{i+1}", "ACT", score))
                     highest_score = max(highest_score, score)
                 for i in range(n_watch):
                     score = random.randint(35, 65)
-                    signals.append(make_signal(f"sig-{acct_idx:03d}-k{n_keep+i+1}", "WATCH", score))
-                total_keep += n_keep
+                    signals.append(make_signal(f"sig-{acct_idx:03d}-k{n_act+i+1}", "WATCH", score))
+                total_act += n_act
                 total_watch += n_watch
                 sig_scores = [s["score"] for s in signals]
                 signal_score = round(sum(sig_scores) / len(sig_scores))
@@ -309,10 +309,10 @@ portfolio = {
         "account_count": len(accounts),
         "accounts_with_internal_data": with_data,
         "accounts_enriched": enriched,
-        "keep_count": total_keep,
+        "act_count": total_act,
         "watch_count": total_watch,
         "highest_signal_score": highest_score,
-        "text": f"GEO {GEO} contains {len(accounts)} accounts across {len(REGIONS)} regions and {sum(len(t) for t in REGIONS.values())} territories. {enriched} accounts enriched with MCP and external research. {total_keep} KEEP and {total_watch} WATCH signals identified. INTEL and DEFENSE regions show the strongest engagement signals, while CIVILIAN has mixed results with several unresolved identities.",
+        "text": f"GEO {GEO} contains {len(accounts)} accounts across {len(REGIONS)} regions and {sum(len(t) for t in REGIONS.values())} territories. {enriched} accounts enriched with MCP and external research. {total_act} ACT and {total_watch} WATCH signals identified. INTEL and DEFENSE regions show the strongest engagement signals, while CIVILIAN has mixed results with several unresolved identities.",
     },
     "accounts": accounts,
     "_meta": {
@@ -339,5 +339,5 @@ print(f"  Regions: {len(REGIONS)}")
 print(f"  Territories: {sum(len(t) for t in REGIONS.values())}")
 print(f"  With data: {with_data}")
 print(f"  Enriched: {enriched}")
-print(f"  KEEP: {total_keep}, WATCH: {total_watch}")
+print(f"  ACT: {total_act}, WATCH: {total_watch}")
 print(f"  Highest score: {highest_score}")

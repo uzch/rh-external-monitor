@@ -20,7 +20,7 @@ Each account carries:
 ## Conventions
 
 - `null` means unavailable. `0` means the source explicitly returned zero. Never convert missing data to zero without a caveat.
-- `KEEP`, `WATCH`, and `REJECT` are output dispositions, not claims about customer intent.
+- `ACT`, `WATCH`, and `REJECT` are output dispositions, not claims about customer intent.
 
 ## Nested field paths
 

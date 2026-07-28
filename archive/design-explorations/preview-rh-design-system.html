@@ -65,7 +65,7 @@ body{font-family:'Red Hat Text',sans-serif;background:#f2f2f2;color:#1f1f1f;line
 
 /* Status pills */
 .status-pill{display:inline-block;border-radius:999px;padding:3px 12px;font-size:12px;font-weight:700;letter-spacing:.02em;text-transform:uppercase;white-space:nowrap}
-.status-pill.keep{background:#e9f7df;color:#3d7317}
+.status-pill.act{background:#e9f7df;color:#3d7317}
 .status-pill.watch{background:#ffe8cc;color:#9e4a06}
 .status-pill.reject{background:#ffe3d9;color:#b1380b}
 
@@ -211,7 +211,7 @@ details[open] summary::before{content:"\25BC\00a0"}
       </div>
       <div class="kpi-card">
         <div class="kpi-value">4 / 3</div>
-        <div class="kpi-label">Keep / Watch</div>
+        <div class="kpi-label">Act / Watch</div>
       </div>
       <div class="kpi-card">
         <div class="kpi-value">91</div>
@@ -261,7 +261,7 @@ details[open] summary::before{content:"\25BC\00a0"}
             <th>Activities</th>
             <th>Meetings (30d)</th>
             <th>Trend</th>
-            <th>Keep</th>
+            <th>Act</th>
             <th>Watch</th>
             <th></th>
           </tr>
@@ -353,7 +353,7 @@ details[open] summary::before{content:"\25BC\00a0"}
       </div>
       <div class="kpi-card">
         <div class="kpi-value">2 / 1</div>
-        <div class="kpi-label">Keep / Watch</div>
+        <div class="kpi-label">Act / Watch</div>
       </div>
       <div class="kpi-card">
         <div class="kpi-value">91</div>
@@ -412,7 +412,7 @@ details[open] summary::before{content:"\25BC\00a0"}
           <tr>
             <td><strong>Example Health Agency</strong></td>
             <td>91</td>
-            <td><span class="status-pill keep">2 KEEP</span></td>
+            <td><span class="status-pill act">2 ACT</span></td>
             <td>47</td>
             <td>6</td>
             <td class="trend-up">&#8593;</td>
@@ -488,14 +488,14 @@ details[open] summary::before{content:"\25BC\00a0"}
           <div class="table-header">
             <h2>Signals</h2>
             <div style="display:flex;gap:8px">
-              <span class="status-pill keep">2 keep</span>
+              <span class="status-pill act">2 act</span>
               <span class="status-pill watch">1 watch</span>
             </div>
           </div>
 
           <div class="signal-card" style="border-radius:0;border:none;border-bottom:1px solid #e0e0e0">
             <div class="signal-card-header">
-              <span class="status-pill keep">KEEP</span>
+              <span class="status-pill act">ACT</span>
               <span class="signal-score">91</span>
               <span class="signal-meta">high confidence &bull; derived</span>
             </div>
@@ -522,7 +522,7 @@ details[open] summary::before{content:"\25BC\00a0"}
 
           <div class="signal-card" style="border-radius:0;border:none;border-bottom:1px solid #e0e0e0">
             <div class="signal-card-header">
-              <span class="status-pill keep">KEEP</span>
+              <span class="status-pill act">ACT</span>
               <span class="signal-score">85</span>
               <span class="signal-meta">high confidence &bull; external_public</span>
             </div>
@@ -656,12 +656,12 @@ details[open] summary::before{content:"\25BC\00a0"}
       </div>
 
       <div class="guide-section">
-        <h3>Signals: Keep, Watch, Reject</h3>
+        <h3>Signals: Act, Watch, Reject</h3>
         <p>Each signal is a piece of intelligence about an account. The system sorts every signal into one of three buckets:</p>
         <table class="def-table">
           <thead><tr><th>Label</th><th>Meaning</th></tr></thead>
           <tbody>
-            <tr><td><span class="status-pill keep">KEEP</span></td><td>Act on this. The signal is strong, relevant, and worth your time now.</td></tr>
+            <tr><td><span class="status-pill act">ACT</span></td><td>Act on this. The signal is strong, relevant, and worth your time now.</td></tr>
             <tr><td><span class="status-pill watch">WATCH</span></td><td>Worth knowing, but not urgent. Check back later or gather more information.</td></tr>
             <tr><td><span class="status-pill reject">REJECT</span></td><td>Noise. The system found it but decided it is not relevant or useful. Rejected signals are hidden by default.</td></tr>
           </tbody>

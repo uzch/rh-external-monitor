@@ -9,7 +9,7 @@
     "account_count": 6,
     "accounts_with_internal_data": 5,
     "accounts_enriched": 4,
-    "keep_count": 5,
+    "act_count": 5,
     "watch_count": 3,
     "highest_signal_score": 91,
     "text": "Federal Civilian region has 6 accounts across 2 territories. Healthcare shows the strongest engagement signals with two accounts requiring immediate follow-up. Defense IT has steady engagement but lower urgency. Two accounts have immediate engagement gaps, and three show emerging public signals around platform modernization."
@@ -62,7 +62,7 @@
       "signals": [
         {
           "signal_id": "sig-001",
-          "disposition": "KEEP",
+          "disposition": "ACT",
           "score": 91,
           "headline": "Strong engagement without a next meeting",
           "what_changed": "Recent activity remains high while the upcoming-meeting count is zero.",
@@ -76,7 +76,7 @@
         },
         {
           "signal_id": "sig-002",
-          "disposition": "KEEP",
+          "disposition": "ACT",
           "score": 85,
           "headline": "Agency announces $200M cloud modernization initiative",
           "what_changed": "FY2027 budget request published with explicit cloud modernization line item.",
@@ -151,7 +151,7 @@
       "signals": [
         {
           "signal_id": "sig-004",
-          "disposition": "KEEP",
+          "disposition": "ACT",
           "score": 68,
           "headline": "Container platform POC progressing with active technical engagement",
           "what_changed": "Three technical meetings held in the past 30 days focused on container architecture.",
@@ -261,7 +261,7 @@
       "signals": [
         {
           "signal_id": "sig-006",
-          "disposition": "KEEP",
+          "disposition": "ACT",
           "score": 74,
           "headline": "RHEL migration phase 2 accelerating with executive backing",
           "what_changed": "CTO signed off on Phase 2 expansion to 2,000 additional nodes.",
@@ -336,7 +336,7 @@
       "signals": [
         {
           "signal_id": "sig-008",
-          "disposition": "KEEP",
+          "disposition": "ACT",
           "score": 52,
           "headline": "Engagement declining but automation interest was previously strong",
           "what_changed": "Monthly activity dropped 40% compared to previous period.",

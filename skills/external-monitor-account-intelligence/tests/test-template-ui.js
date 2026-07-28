@@ -211,9 +211,9 @@ function assert(condition, msg) {
   assert(guideHeadings.includes('Match status'), `Guide covers match status`);
   assert(guideHeadings.includes('Activity trend'), `Guide covers activity trend`);
   assert(guideHeadings.includes('How to navigate'), `Guide covers navigation`);
-  assert(guideHeadings.some(h => h.includes('Keep')), `Guide covers Keep/Watch/Reject`);
+  assert(guideHeadings.some(h => h.includes('Act')), `Guide covers Act/Watch/Reject`);
   assert((await page.$$('.def-table')).length >= 5, `At least 5 definition tables in guide`);
-  assert((await page.$$('.guide .status-pill')).length >= 3, `Guide shows KEEP/WATCH/REJECT pills`);
+  assert((await page.$$('.guide .status-pill')).length >= 3, `Guide shows ACT/WATCH/REJECT pills`);
   assert((await page.$$('.guide .match-badge')).length >= 4, `Guide shows all match badge types`);
 
   // ── BACK FROM GUIDE ──

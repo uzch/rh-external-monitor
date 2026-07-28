@@ -263,7 +263,7 @@ def build_portfolio(accounts, scope_type, scope_value, lookback):
             "accounts_with_internal_data": enriched_count + no_activity,
             "text": summary_text,
             "accounts_enriched": 0,
-            "keep_count": 0,
+            "act_count": 0,
             "watch_count": 0,
             "highest_signal_score": None,
         },

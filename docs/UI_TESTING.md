@@ -46,7 +46,7 @@ The test runs **57 assertions** across 8 sections:
 - Title matches the GEO name
 - Tab bar shows dynamic scope label and Guide
 - Subtitle includes region, territory, and account counts
-- 5 KPI cards render with correct values (Accounts, Internal Data, Enriched, Keep/Watch, Highest Score)
+- 5 KPI cards render with correct values (Accounts, Internal Data, Enriched, Act/Watch, Highest Score)
 - Executive Summary card present
 - 5 activity stat cards (Total Activities, Meetings 30d, Emails 30d, Opportunities, Trend)
 - Region table has correct row count with "Open →" links
@@ -67,7 +67,7 @@ The test runs **57 assertions** across 8 sections:
 - 30-Second Summary card
 - Recommended Next Move card
 - Signal cards rendered and sorted by score descending
-- Disposition pills (KEEP/WATCH) on each signal card
+- Disposition pills (ACT/WATCH) on each signal card
 - Collapsible `<details>` sections open to show detail grids
 - Sidebar cards: Account Details, Activity, Caveats
 - Priority Score displayed in sidebar
@@ -79,9 +79,9 @@ The test runs **57 assertions** across 8 sections:
 ### Guide tab
 - Page title is "Guide"
 - At least 8 content sections covering all interface concepts
-- Specific sections verified: signal score, match status, activity trend, navigation, Keep/Watch/Reject
+- Specific sections verified: signal score, match status, activity trend, navigation, Act/Watch/Reject
 - At least 5 definition tables
-- Styled status pills (KEEP, WATCH, REJECT) and match badges rendered in-context
+- Styled status pills (ACT, WATCH, REJECT) and match badges rendered in-context
 
 ### Edge cases
 - Navigate to an account with `not_found` or `ambiguous` match status
@@ -99,7 +99,7 @@ The synthetic data generator (`examples/generate-geo-fixture.py`) creates a GEO-
 - 9 territories across those regions
 - 25 accounts with varied match statuses (matched, ambiguous, not_found, unresolved)
 - Full activity metrics on matched accounts, null metrics on unmatched
-- Multiple signals per account (KEEP and WATCH dispositions) with varied scores
+- Multiple signals per account (ACT and WATCH dispositions) with varied scores
 - Deterministic output (`random.seed(42)`) so the test assertions are stable
 
 The generator is **not** part of the tool pipeline. It is only used for UI testing when explicitly requested. See the warning header in the script.

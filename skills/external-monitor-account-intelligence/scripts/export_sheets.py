@@ -31,7 +31,7 @@ GEO_FILL = PatternFill(start_color="E8E8E8", end_color="E8E8E8", fill_type="soli
 REGION_FILL = PatternFill(start_color="F0F0F0", end_color="F0F0F0", fill_type="solid")
 TERRITORY_FILL = PatternFill(start_color="F8F8F8", end_color="F8F8F8", fill_type="solid")
 
-KEEP_FILL = PatternFill(start_color="DCFCE7", end_color="DCFCE7", fill_type="solid")
+ACT_FILL = PatternFill(start_color="DCFCE7", end_color="DCFCE7", fill_type="solid")
 WATCH_FILL = PatternFill(start_color="FEF3C7", end_color="FEF3C7", fill_type="solid")
 
 WRAP_ALIGNMENT = Alignment(vertical="top", wrap_text=True)
@@ -51,7 +51,7 @@ PORTFOLIO_COLUMNS = [
     ("Emails 30d", 13),
     ("Opportunities", 14),
     ("Activity Trend", 14),
-    ("Signals KEEP", 14),
+    ("Signals ACT", 14),
     ("Signals WATCH", 15),
     ("Top Signal", 50),
     ("Top Action Item", 50),
@@ -130,7 +130,7 @@ def aggregate_accounts(accounts):
     meetings_30d = 0
     emails_30d = 0
     opportunities = 0
-    keep_count = 0
+    act_count = 0
     watch_count = 0
 
     for acct in accounts:
@@ -147,8 +147,8 @@ def aggregate_accounts(accounts):
 
         for sig in acct.get("signals") or []:
             disp = sig.get("disposition", "")
-            if disp == "KEEP":
-                keep_count += 1
+            if disp == "ACT":
+                act_count += 1
             elif disp == "WATCH":
                 watch_count += 1
 
@@ -166,7 +166,7 @@ def aggregate_accounts(accounts):
         "meetings_30d": meetings_30d,
         "emails_30d": emails_30d,
         "opportunities": opportunities,
-        "keep_count": keep_count,
+        "act_count": act_count,
         "watch_count": watch_count,
         "top_signal_headline": ts.get("headline") if ts else None,
         "top_action": ts.get("recommended_action") if ts else None,
@@ -232,7 +232,7 @@ def write_portfolio_tab(ws, hierarchy, all_accounts):
         values = [
             "GEO", geo, "", agg["account_count"], agg["signal_score"],
             agg["total_activities"], agg["meetings_30d"], agg["emails_30d"],
-            agg["opportunities"], None, agg["keep_count"], agg["watch_count"],
+            agg["opportunities"], None, agg["act_count"], agg["watch_count"],
             agg["top_signal_headline"], agg["top_action"],
             None, None, None,
         ]
@@ -249,7 +249,7 @@ def write_portfolio_tab(ws, hierarchy, all_accounts):
             values = [
                 "REGION", region, geo, agg["account_count"], agg["signal_score"],
                 agg["total_activities"], agg["meetings_30d"], agg["emails_30d"],
-                agg["opportunities"], None, agg["keep_count"], agg["watch_count"],
+                agg["opportunities"], None, agg["act_count"], agg["watch_count"],
                 agg["top_signal_headline"], agg["top_action"],
                 None, None, None,
             ]
@@ -265,7 +265,7 @@ def write_portfolio_tab(ws, hierarchy, all_accounts):
                 values = [
                     "TERRITORY", territory, region, agg["account_count"], agg["signal_score"],
                     agg["total_activities"], agg["meetings_30d"], agg["emails_30d"],
-                    agg["opportunities"], None, agg["keep_count"], agg["watch_count"],
+                    agg["opportunities"], None, agg["act_count"], agg["watch_count"],
                     agg["top_signal_headline"], agg["top_action"],
                     None, None, None,
                 ]
@@ -280,7 +280,7 @@ def write_portfolio_tab(ws, hierarchy, all_accounts):
     )
     for acct in sorted_accounts:
         signals = acct.get("signals") or []
-        keep_count = sum(1 for s in signals if s.get("disposition") == "KEEP")
+        act_count = sum(1 for s in signals if s.get("disposition") == "ACT")
         watch_count = sum(1 for s in signals if s.get("disposition") == "WATCH")
         ts = top_signal([acct])
         values = [
@@ -294,7 +294,7 @@ def write_portfolio_tab(ws, hierarchy, all_accounts):
             extract_metric(acct, "email_count_30d"),
             extract_metric(acct, "linked_opportunity_count"),
             extract_metric(acct, "activity_trend"),
-            keep_count,
+            act_count,
             watch_count,
             ts.get("headline") if ts else None,
             ts.get("recommended_action") if ts else None,
@@ -353,8 +353,8 @@ def write_signals_tab(ws, accounts):
 
         # Disposition cell fill
         disp_cell = ws.cell(row=row, column=2)
-        if disposition == "KEEP":
-            disp_cell.fill = KEEP_FILL
+        if disposition == "ACT":
+            disp_cell.fill = ACT_FILL
         elif disposition == "WATCH":
             disp_cell.fill = WATCH_FILL
 

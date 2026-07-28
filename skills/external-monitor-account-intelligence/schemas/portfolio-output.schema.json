@@ -26,12 +26,12 @@
     },
     "summary": {
       "type": "object",
-      "required": ["account_count", "accounts_with_internal_data", "accounts_enriched", "keep_count", "watch_count", "text"],
+      "required": ["account_count", "accounts_with_internal_data", "accounts_enriched", "act_count", "watch_count", "text"],
       "properties": {
         "account_count": {"type": "integer", "minimum": 0},
         "accounts_with_internal_data": {"type": "integer", "minimum": 0},
         "accounts_enriched": {"type": "integer", "minimum": 0},
-        "keep_count": {"type": "integer", "minimum": 0},
+        "act_count": {"type": "integer", "minimum": 0},
         "watch_count": {"type": "integer", "minimum": 0},
         "highest_signal_score": {"type": ["number", "null"], "minimum": 0, "maximum": 100},
         "text": {"type": "string"}
@@ -113,7 +113,7 @@
       "required": ["signal_id", "disposition", "score", "headline", "source_type"],
       "properties": {
         "signal_id": {"type": "string"},
-        "disposition": {"enum": ["KEEP", "WATCH", "REJECT"]},
+        "disposition": {"enum": ["ACT", "WATCH", "REJECT"]},
         "score": {"type": "number", "minimum": 0, "maximum": 100},
         "headline": {"type": "string"},
         "what_changed": {"type": ["string", "null"]},

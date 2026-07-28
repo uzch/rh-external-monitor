@@ -13,7 +13,7 @@ The template follows the **Red Hat Design System** visual language:
 - **UX black**: `#151515` — header background and primary text
 - **Links**: `#0066cc`
 - **Status colors**:
-  - KEEP: green background `#e9f7df`, green text `#3d7317`
+  - ACT: green background `#e9f7df`, green text `#3d7317`
   - WATCH: orange background `#ffe8cc`, orange text `#9e4a06`
   - REJECT: danger-orange background `#ffe3d9`, danger text `#b1380b`
 - **Match badges**: matched (green), ambiguous (orange), not_found (red), unresolved (gray)
@@ -52,10 +52,10 @@ When a group at any level contains only one child, the template skips that level
 Every hierarchy level uses the same layout:
 
 1. **Page header** — breadcrumb trail + title + subtitle (child counts)
-2. **KPI row** — 5 cards: Accounts, With Internal Data, Enriched, Keep/Watch Signals, Highest Score
+2. **KPI row** — 5 cards: Accounts, With Internal Data, Enriched, Act/Watch Signals, Highest Score
 3. **Executive Summary** — `data.summary.text` at top level, or aggregated description at sub-levels
 4. **Activity stats bar** — 5 cards: Total Activities, Meetings (30d), Emails (30d), Opportunities, Overall Trend
-5. **Data table** — rows for each child group with columns: Name, Accounts, Avg Score, KEEP, WATCH, Activities, Trend, Open →
+5. **Data table** — rows for each child group with columns: Name, Accounts, Avg Score, ACT, WATCH, Activities, Trend, Open →
 
 All KPIs and activity stats are aggregated from the accounts within that group. Signal scores use the average of non-null values.
 
@@ -80,7 +80,7 @@ A plain-language reference (always the rightmost tab) covering every concept in 
 
 - How to navigate (drill-down, breadcrumbs, tabs)
 - Signal score (what it means, how it's computed)
-- Keep / Watch / Reject (disposition definitions)
+- Act / Watch / Reject (disposition definitions)
 - Sources (derived, Backstory MCP, external public, People.ai)
 - Confidence levels (high, medium, low)
 - Match status (matched, ambiguous, not_found, unresolved)
