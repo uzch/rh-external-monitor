@@ -34,7 +34,14 @@
         "act_count": {"type": "integer", "minimum": 0},
         "watch_count": {"type": "integer", "minimum": 0},
         "highest_signal_score": {"type": ["number", "null"], "minimum": 0, "maximum": 100},
-        "text": {"type": "string"}
+        "total_signals": {"type": "integer", "minimum": 0},
+        "accounts_with_signals": {"type": "integer", "minimum": 0},
+        "text": {"type": "string"},
+        "group_briefs": {
+          "type": "object",
+          "additionalProperties": {"type": "string"},
+          "description": "AI-authored executive summaries keyed by group name. _top for portfolio level; region or territory names for drill-down levels."
+        }
       },
       "additionalProperties": true
     },
@@ -50,6 +57,7 @@
         "accounts_in_scope": {"type": "integer", "minimum": 0},
         "accounts_enriched": {"type": "integer", "minimum": 0},
         "mcp_status": {"enum": ["connected", "unavailable", "partial", "not_requested"]},
+        "external_research": {"type": "boolean"},
         "caveats": {"type": "array", "items": {"type": "string"}}
       },
       "additionalProperties": true

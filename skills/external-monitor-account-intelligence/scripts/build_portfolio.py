@@ -179,6 +179,7 @@ def build_account(registry, identity, metrics, max_activities):
             "identity_status": identity.get("identity_status"),
             "identity_notes": identity.get("identity_notes"),
         },
+        "signal_score": None,
         "internal_priority_score": score,
         "priority_reasons": reasons,
         "internal": {

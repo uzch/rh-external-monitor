@@ -183,6 +183,7 @@ const data = JSON.parse(document.getElementById('portfolio-data').textContent);
 const accounts = data.accounts || [];
 const scopeType = data.scope.type;
 const scopeValue = data.scope.value;
+var groupBriefs = (data.summary && data.summary.group_briefs) || {};
 
 // ── Helpers ──
 
@@ -223,8 +224,9 @@ function accountScore(a) {
 }
 
 function pillHTML(disposition, count) {
-  var cls = disposition.toLowerCase();
-  var label = count != null ? count + ' ' + disposition : disposition;
+  var norm = disposition === 'KEEP' ? 'ACT' : disposition;
+  var cls = norm.toLowerCase();
+  var label = count != null ? count + ' ' + norm : norm;
   return '<span class="status-pill ' + cls + '">' + esc(label) + '</span>';
 }
 
@@ -291,7 +293,7 @@ function aggregate(accts) {
     var sc = accountScore(a);
     if (sc != null) scores.push(sc);
     (a.signals || []).forEach(function(s) {
-      if (s.disposition === 'ACT') actCount++;
+      if (s.disposition === 'ACT' || s.disposition === 'KEEP') actCount++;
       else if (s.disposition === 'WATCH') watchCount++;
       else if (s.disposition === 'REJECT') rejectCount++;
     });
@@ -311,6 +313,112 @@ function aggregate(accts) {
     opportunities: opps,
     overallTrend: modeTrend(accts)
   };
+}
+
+// ── Dynamic executive summary ──
+
+function generateExecSummary(accts, isTopLevel, childField) {
+  var briefKey = isTopLevel ? '_top' : (navStack.length > 0 ? navStack[navStack.length - 1].key : null);
+  if (briefKey && groupBriefs[briefKey]) {
+    return groupBriefs[briefKey];
+  }
+
+  if (isTopLevel) {
+    var prefix = scopeType.charAt(0).toUpperCase() + scopeType.slice(1) + ' ' + scopeValue + ' contains';
+    if (data.summary.text && data.summary.text.indexOf(prefix) !== 0) {
+      return data.summary.text;
+    }
+  }
+
+  var allItems = [];
+  var matchedCount = 0;
+  for (var i = 0; i < accts.length; i++) {
+    var sigs = accts[i].signals || [];
+    if (accts[i].identity && accts[i].identity.match_status === 'matched') matchedCount++;
+    for (var j = 0; j < sigs.length; j++) {
+      allItems.push({ signal: sigs[j], account: accts[i] });
+    }
+  }
+
+  if (allItems.length === 0) {
+    if (matchedCount === 0) {
+      return 'No accounts in this scope have been matched to internal records. Signal detection requires identity resolution before external intelligence can be gathered.';
+    }
+    return 'No external signals have been identified for the ' + accts.length + ' account' + (accts.length !== 1 ? 's' : '') + ' in this scope. Review individual accounts for internal activity data and engagement patterns.';
+  }
+
+  allItems.sort(function(a, b) { return (b.signal.score || 0) - (a.signal.score || 0); });
+
+  var actionable = [];
+  var actTotal = 0, watchTotal = 0;
+  for (var i = 0; i < allItems.length; i++) {
+    var d = allItems[i].signal.disposition;
+    if (d === 'ACT' || d === 'KEEP') { actionable.push(allItems[i]); actTotal++; }
+    else if (d === 'WATCH') { watchTotal++; }
+  }
+
+  var pool = actionable.length > 0 ? actionable : allItems;
+  var topPicks = [];
+  var seenNames = {};
+  for (var i = 0; i < pool.length && topPicks.length < 3; i++) {
+    var name = pool[i].account.account_name;
+    if (!seenNames[name]) {
+      topPicks.push(pool[i]);
+      seenNames[name] = true;
+    }
+  }
+
+  function trunc(s, n) { return s.length > n ? s.substring(0, n - 1) + '…' : s; }
+
+  function loc(acct) {
+    if (!childField) return '';
+    var v = acct.hierarchy && acct.hierarchy[childField];
+    return v ? ' in ' + v : '';
+  }
+
+  function shortLoc(acct) {
+    if (!childField) return '';
+    var v = acct.hierarchy && acct.hierarchy[childField];
+    return v ? ' (' + v + ')' : '';
+  }
+
+  var sentences = [];
+  var hasAct = actionable.length > 0;
+
+  if (topPicks.length > 0) {
+    var t = topPicks[0];
+    var verb = hasAct ? 'The strongest signal is' : 'The most notable signal to monitor is';
+    sentences.push(verb + ' “' + trunc(t.signal.headline, 80) + '” at ' + t.account.account_name + loc(t.account) + ' (score ' + (t.signal.score || 0) + ').');
+  }
+
+  if (topPicks.length > 1) {
+    var s2 = topPicks[1];
+    sentences.push(s2.account.account_name + ' also warrants attention: “' + trunc(s2.signal.headline, 80) + '”' + shortLoc(s2.account) + '.');
+  }
+
+  var acctWithSigs = {};
+  for (var i = 0; i < allItems.length; i++) {
+    acctWithSigs[allItems[i].account.account_name] = true;
+  }
+  var sigAcctCount = Object.keys(acctWithSigs).length;
+
+  if (hasAct && watchTotal > 0) {
+    sentences.push(sigAcctCount + ' of ' + accts.length + ' accounts carry signals—' + actTotal + ' actionable, ' + watchTotal + ' worth monitoring.');
+  } else if (hasAct) {
+    sentences.push(sigAcctCount + ' of ' + accts.length + ' accounts carry ' + actTotal + ' actionable signal' + (actTotal !== 1 ? 's' : '') + '.');
+  } else {
+    sentences.push(sigAcctCount + ' of ' + accts.length + ' account' + (sigAcctCount !== 1 ? 's carry' : ' carries') + ' WATCH signals; none require immediate action yet.');
+  }
+
+  if (!childField && topPicks.length > 0) {
+    var topAcct = topPicks[0].account;
+    var risks = (topAcct.internal && topAcct.internal.risks) || [];
+    if (risks.length > 0) {
+      sentences.push('Internal risk at ' + topAcct.account_name + ': “' + trunc(risks[0], 80) + '”.');
+    }
+  }
+
+  return sentences.join(' ');
 }
 
 // ── Table sort state ──
@@ -491,7 +599,7 @@ function summaryKPI() {
     count: s.account_count,
     withData: s.accounts_with_internal_data,
     enriched: s.accounts_enriched,
-    actCount: s.act_count,
+    actCount: s.act_count != null ? s.act_count : s.keep_count,
     watchCount: s.watch_count,
     highestScore: s.highest_signal_score
   };
@@ -555,7 +663,8 @@ function renderGroupView(accts, drillField, remainingLevels) {
   html += '<div class="main">';
   html += kpiRowHTML(kpi);
 
-  html += '<div class="summary-card"><h2>Executive Summary</h2><p>' + esc(data.summary.text) + '</p></div>';
+  var summaryText = generateExecSummary(accts, isTopLevel, drillField);
+  html += '<div class="summary-card"><h2>Executive Summary</h2><p>' + esc(summaryText) + '</p></div>';
 
   html += activityBarHTML(agg);
 
@@ -639,7 +748,8 @@ function renderAccountListView(accts) {
   html += '<div class="main">';
   html += kpiRowHTML(kpi);
 
-  html += '<div class="summary-card"><h2>Executive Summary</h2><p>' + esc(data.summary.text) + '</p></div>';
+  var summaryText = generateExecSummary(accts, isTopLevel, null);
+  html += '<div class="summary-card"><h2>Executive Summary</h2><p>' + esc(summaryText) + '</p></div>';
 
   html += activityBarHTML(agg);
 
@@ -662,7 +772,7 @@ function renderAccountListView(accts) {
 
   sorted.forEach(function(a, idx) {
     var signals = a.signals || [];
-    var actN = signals.filter(function(s){ return s.disposition === 'ACT'; }).length;
+    var actN = signals.filter(function(s){ return s.disposition === 'ACT' || s.disposition === 'KEEP'; }).length;
     var watchN = signals.filter(function(s){ return s.disposition === 'WATCH'; }).length;
     var sc = accountScore(a);
 
@@ -698,7 +808,7 @@ function renderAccountDetail(a) {
     return (y.score || 0) - (x.score || 0);
   });
 
-  var actN = signals.filter(function(s){ return s.disposition === 'ACT'; }).length;
+  var actN = signals.filter(function(s){ return s.disposition === 'ACT' || s.disposition === 'KEEP'; }).length;
   var watchN = signals.filter(function(s){ return s.disposition === 'WATCH'; }).length;
 
   var html = '<div class="page-header"><div class="page-header-inner">';
@@ -748,7 +858,8 @@ function renderAccountDetail(a) {
 
     signals.forEach(function(s, i) {
       var isLast = i === signals.length - 1;
-      html += '<div class="signal-card" data-source-type="' + esc(s.source_type) + '" data-disposition="' + esc(s.disposition) + '" data-score="' + (s.score || 0) + '" data-published="' + esc(s.published_at || '') + '" style="border-radius:0;border:none;' + (isLast ? '' : 'border-bottom:1px solid #e0e0e0') + '">';
+      var normDisp = s.disposition === 'KEEP' ? 'ACT' : s.disposition;
+      html += '<div class="signal-card" data-source-type="' + esc(s.source_type) + '" data-disposition="' + esc(normDisp) + '" data-score="' + (s.score || 0) + '" data-published="' + esc(s.published_at || '') + '" style="border-radius:0;border:none;' + (isLast ? '' : 'border-bottom:1px solid #e0e0e0') + '">';
       html += '<div class="signal-card-header">';
       html += pillHTML(s.disposition);
       html += ' ' + scoreHTML(s.score);
@@ -881,7 +992,7 @@ function renderGuideView() {
     '<div class="guide-section"><h3>Signal score</h3>' +
     '<p>A number from 0 to 100. It answers: “how urgently does this account need attention?” Higher means more urgent. The score is the average of all individual signal scores for that account. Accounts with no signals show a dash.</p></div>' +
 
-    '<div class="guide-section"><h3>Signals: Keep, Watch, Reject</h3>' +
+    '<div class="guide-section"><h3>Signals: Act, Watch, Reject</h3>' +
     '<p>Each signal is a piece of intelligence about an account. The system sorts every signal into one of three buckets:</p>' +
     '<table class="def-table"><thead><tr><th>Label</th><th>Meaning</th></tr></thead><tbody>' +
     '<tr><td><span class="status-pill act">ACT</span></td><td>Act on this. The signal is strong, relevant, and worth your time now.</td></tr>' +

@@ -47,7 +47,7 @@ The test runs **57 assertions** across 8 sections:
 - Tab bar shows dynamic scope label and Guide
 - Subtitle includes region, territory, and account counts
 - 5 KPI cards render with correct values (Accounts, Internal Data, Enriched, Act/Watch, Highest Score)
-- Executive Summary card present
+- Executive Summary card present with signal-focused text (not a restatement of KPI numbers)
 - 5 activity stat cards (Total Activities, Meetings 30d, Emails 30d, Opportunities, Trend)
 - Region table has correct row count with "Open →" links
 

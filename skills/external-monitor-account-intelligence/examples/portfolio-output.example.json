@@ -12,7 +12,14 @@
     "act_count": 5,
     "watch_count": 3,
     "highest_signal_score": 91,
-    "text": "Federal Civilian region has 6 accounts across 2 territories. Healthcare shows the strongest engagement signals with two accounts requiring immediate follow-up. Defense IT has steady engagement but lower urgency. Two accounts have immediate engagement gaps, and three show emerging public signals around platform modernization."
+    "total_signals": 8,
+    "accounts_with_signals": 4,
+    "text": "Healthcare accounts dominate the Federal Civilian portfolio with active RHEL and OpenShift evaluations and a $200M cloud modernization initiative. Northrop Defense Systems is accelerating RHEL Phase 2 with executive backing, creating cross-sell potential into Ansible and OpenShift. Two accounts have unresolved identities limiting intelligence coverage. 4 of 6 accounts carry signals; 5 are actionable.",
+    "group_briefs": {
+      "_top": "Healthcare accounts dominate the Federal Civilian portfolio with active RHEL and OpenShift evaluations and a $200M cloud modernization initiative. Northrop Defense Systems is accelerating RHEL Phase 2 with executive backing, creating cross-sell potential into Ansible and OpenShift. Two accounts have unresolved identities limiting intelligence coverage. 4 of 6 accounts carry signals; 5 are actionable.",
+      "Healthcare": "Example Health Agency has strong engagement but no next meeting scheduled, risking momentum on an active platform modernization topic. A $200M cloud modernization initiative creates budget-backed demand for RHEL and OpenShift. Veterans Health Corp is progressing a container platform POC but faces procurement delays. 2 of 3 accounts carry signals.",
+      "Defense IT": "Northrop Defense Systems is the primary driver with an accelerating RHEL migration and three open opportunities. A VMware ELA expiring in Q4 creates a natural displacement window for OpenShift Virtualization. General Dynamics IT engagement is declining and needs re-engagement around automation. 2 of 3 accounts carry signals."
+    }
   },
   "accounts": [
     {

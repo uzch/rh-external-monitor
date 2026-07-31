@@ -97,7 +97,7 @@ def update_envelope(portfolio, accounts_with_signals, total_signals):
     portfolio["summary"]["act_count"] = act
     portfolio["summary"]["watch_count"] = watch
     portfolio["summary"]["highest_signal_score"] = highest
-    portfolio["summary"]["total_signals"] = total_signals
+    portfolio["summary"]["total_signals"] = act + watch
     existing_enriched = portfolio["summary"].get("accounts_enriched", 0)
     portfolio["summary"]["accounts_enriched"] = max(existing_enriched, accounts_with_signals)
     portfolio["summary"]["accounts_with_signals"] = accounts_with_signals
@@ -105,15 +105,19 @@ def update_envelope(portfolio, accounts_with_signals, total_signals):
     if "_meta" not in portfolio:
         portfolio["_meta"] = {}
 
+    existing_meta_enriched = portfolio["_meta"].get("accounts_enriched", 0)
+    portfolio["_meta"]["accounts_enriched"] = max(existing_meta_enriched, accounts_with_signals)
+
     mcp_status = portfolio["_meta"].get("mcp_status")
     if mcp_status in (None, "not_requested"):
         portfolio["_meta"]["mcp_status"] = "unavailable"
     portfolio["_meta"]["external_research"] = True
 
+    total_accounts = len(portfolio["accounts"])
     caveats = portfolio["_meta"].get("caveats", [])
     caveats = [c for c in caveats if "external research" not in c.lower()]
     caveats.append(
-        f"External research performed on all {len(portfolio['accounts'])} accounts."
+        f"External research signals merged for {accounts_with_signals} of {total_accounts} accounts."
     )
     if portfolio["_meta"].get("mcp_status") == "unavailable":
         if not any("MCP enrichment skipped" in c for c in caveats):

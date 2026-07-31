@@ -361,7 +361,43 @@ Key rules (see `RESEARCH.md` for full guidance):
 - Check Backstory `account_company_news` results before searching for the same financial events
 - Stop when searches yield nothing relevant; zero signals is a valid outcome
 
-### 7. Synthesize External Monitor outputs
+### 7. Generate executive summaries
+
+After `merge_external_signals.py` produces the signal-merged portfolio, generate AI-authored executive summaries for each hierarchy level. These replace the placeholder `summary.text` created by `build_portfolio.py` and populate `summary.group_briefs` so the HTML template can display distinct summaries at every drill-down level.
+
+#### Grouping by scope type
+
+- **`geo` scope**: Generate briefs for each region and each territory within the portfolio, plus `_top`.
+- **`region` scope**: Generate briefs for each territory, plus `_top`.
+- **`territory` or `account` scope**: Generate `_top` only (no sub-groups).
+
+Group accounts by `hierarchy.region` (for region-level briefs) and `hierarchy.territory_name` (for territory-level briefs). Use these group names as the keys in `summary.group_briefs`.
+
+#### Brief style
+
+Each brief should be a synthesized paragraph — 2-5 sentences, practical, at-a-glance. Never cite signal headlines verbatim; synthesize into themes.
+
+- **`_top`** (3-5 sentences, strategic): Open with the dominant themes across the portfolio. Name the most consequential accounts and what makes them consequential (M&A, AI investment, restructuring, partnerships). Call out direct Red Hat touchpoints (alliance memberships, platform certifications, joint projects). End with a coverage line (how many accounts carry signals, ACT vs WATCH counts).
+- **Region briefs** (2-4 sentences, strategic): What themes characterize this region versus others? Which accounts are most consequential and why? Red Hat relevance if present.
+- **Territory briefs** (2-4 sentences, tactical): What is the specific situation in this territory? Name the key accounts and what is happening with them. What should the rep know at a glance? Include signal count and disposition balance.
+
+When a group has no signals, the brief should state that honestly and reference any available internal context (activity trend, upcoming renewals) instead.
+
+#### Data available for brief generation
+
+For each group, use the signals (headline, score, disposition, what_changed, why_it_matters, red_hat_relevance), per-account summaries, internal risks and next_steps, activity metrics (total_activities, meeting_count_30d, activity_trend), and linked opportunity information.
+
+#### Output mechanics
+
+1. Read the portfolio JSON.
+2. Construct the `group_briefs` dictionary with `_top` and all group keys.
+3. Set `summary.group_briefs` to the dictionary.
+4. Set `summary.text` to the `_top` brief (replacing the placeholder).
+5. Write the file back with `json.dump(indent=2, ensure_ascii=False)`.
+
+The template checks `summary.group_briefs` first and falls back to dynamic signal-based generation for old portfolios. This step is optional but strongly recommended — without it, the HTML template uses a formulaic signal-citation fallback.
+
+### 8. Synthesize External Monitor outputs
 
 Produce `portfolio.json` conforming to `schemas/portfolio-output.schema.json`.
 
@@ -375,7 +411,7 @@ The portfolio summary must answer:
 
 The account view must be concise and action-oriented. Avoid long narrative dumps from MCP responses.
 
-### 8. Render and export
+### 9. Render and export
 
 A complete run produces three output files from the final `portfolio.json`:
 

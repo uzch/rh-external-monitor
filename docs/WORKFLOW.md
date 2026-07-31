@@ -167,6 +167,16 @@ MCP-enriched portfolio + research-batch-*.json
   -> portfolio.json
 ```
 
+## 10. Generate executive summaries
+
+After the signal merge produces the final portfolio, the agent generates AI-authored executive summaries for each hierarchy level and writes them into `summary.group_briefs`. The `_top` key holds the portfolio-level brief; region and territory names hold group-level briefs. The agent also replaces `summary.text` with the `_top` brief so downstream consumers (XLSX export, external integrations) see the AI-authored summary rather than the `build_portfolio.py` placeholder.
+
+This is an agent-driven step — like MCP synthesis and external research, it uses LLM reasoning rather than a deterministic script. See SKILL.md section 7 for the grouping logic, style guidance, and output mechanics.
+
+The HTML template checks `summary.group_briefs` first and falls back to dynamic signal-based generation for portfolios that lack pre-authored briefs. Old portfolios continue to work without this step.
+
+## 11. Validate and render
+
 `scripts/validate_portfolio.py` validates the final file against `schemas/portfolio-output.schema.json`. Structural validation is necessary but not sufficient: the research procedure, not the current schema, enforces that an `external_public` signal has a non-null, verified source URL.
 
 After successful validation:

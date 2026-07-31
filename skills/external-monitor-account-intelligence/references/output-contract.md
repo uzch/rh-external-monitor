@@ -13,6 +13,9 @@ One `portfolio.json` drives both Portfolio View and Account View.
 - `summary.watch_count`
 - `summary.highest_signal_score`
 - `summary.text`
+- `summary.total_signals`
+- `summary.accounts_with_signals`
+- `summary.group_briefs` — AI-authored executive summaries keyed by group name (`_top`, region names, territory names)
 - `accounts[]`
 
 Each account row exposes:

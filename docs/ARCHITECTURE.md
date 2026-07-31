@@ -138,7 +138,13 @@ flowchart LR
     MCPMerge --> ExternalMerge
     ResearchBatch --> ExternalMerge
 
-    subgraph OUTPUT["5. Validated contract and views"]
+    subgraph SUMMARY["5. Executive summary synthesis"]
+        ExecSummary["Agent generates group_briefs"]
+    end
+
+    ExternalMerge --> ExecSummary
+
+    subgraph OUTPUT["6. Validated contract and views"]
         Portfolio["portfolio.json"]
         Schema["validate_portfolio.py"]
         HTMLRenderer["render_portfolio.py"]
@@ -147,7 +153,7 @@ flowchart LR
         XLSX["XLSX workbook"]
     end
 
-    ExternalMerge --> Portfolio
+    ExecSummary --> Portfolio
     Portfolio --> Schema
     Schema --> HTMLRenderer
     Schema --> XLSXExporter
@@ -166,7 +172,7 @@ flowchart LR
     class MainSkill,PeopleSkills,ResearchGuide,Select skill
     class Load,Resolve,Aggregate,QueryRunner,Build,MCPMerge,ExternalMerge,Schema,HTMLRenderer,XLSXExporter script
     class Registry,Scoped,IdentityCache,Identities,Metrics,Base,MCPData,ResearchBatch data
-    class IdentityLookup,QueryAPI,Backstory,MCPSynthesis,PublicWeb,WebResearch external
+    class IdentityLookup,QueryAPI,Backstory,MCPSynthesis,PublicWeb,WebResearch,ExecSummary external
     class Portfolio contract
     class HTML,XLSX output
 ```

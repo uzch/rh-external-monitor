@@ -34,5 +34,7 @@ Account data is grouped by domain. Code that reads portfolio.json must use the c
 | Internal priority score (triage) | `account.internal_priority_score` | `account.internal.priority_score` |
 | Activity metrics | `account.internal.metrics.total_activities` | `account.total_activities` |
 | Signal publish date | `signal.published_at` | `signal.published` |
+| Portfolio executive summary | `summary.text` or `summary.group_briefs["_top"]` | `data.summary` (the object) |
+| Territory-level brief | `summary.group_briefs["TERR_NAME"]` | `account.summary` (per-account, different) |
 
 `hierarchy`, `identity`, and `internal` are always objects, never null. Use safe access (e.g., `acct.get("hierarchy", {}).get("geo")`) to handle malformed input gracefully.
